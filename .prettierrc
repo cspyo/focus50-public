@@ -8,7 +8,7 @@
   "semi": true,
   "printWidth": 100,
   "singleQuote": true,
-  "tabWidth": 4,
+  "tabWidth": 2,
   "trailingComma": "all",
   "arrowParens": "always",
   "overrides": [
@@ -23,7 +23,7 @@
       "options": {
         "parser": "angular"
       }
-    }
+    },
     {
       "files": "*.json",
       "options": {
