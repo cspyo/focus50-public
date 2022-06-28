@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
+      theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
       routes: {
         '/': (context) => AboutScreen(),
         '/calendar': (context) => CalendarScreen(),

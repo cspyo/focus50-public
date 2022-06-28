@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:html';
+
+import '../consts/colors.dart';
 
 class Line extends StatelessWidget {
   const Line({Key? key}) : super(key: key);
@@ -7,8 +8,8 @@ class Line extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 0.5,
-      color: Colors.black,
+      height: 1.5,
+      color: border100,
     );
   }
 }
