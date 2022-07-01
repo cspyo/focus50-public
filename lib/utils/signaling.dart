@@ -23,6 +23,8 @@ class Signaling {
   String? roomId;
   String? currentRoomText;
   StreamStateCallback? onAddRemoteStream;
+  bool _isOpenMic = false;
+  bool _isOpenCamera = false;
 
   Future<String> createRoom(RTCVideoRenderer remoteRenderer) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -181,17 +183,41 @@ class Signaling {
     }
   }
 
+  //* MediaStream 단의 객체
+  //* localStream (class member)
+  //* remoteStream (class member)
+  //* navigator.mediaDevices.getUserMedia
+  //* remoteVideo(:RTCVideoRenderer).srcObject
+
   Future<void> openUserMedia(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
   ) async {
     var stream = await navigator.mediaDevices
-        .getUserMedia({'video': true, 'audio': false});
+        .getUserMedia({'video': true, 'audio': true});
+    _isOpenMic = true;
+    _isOpenCamera = true;
 
     localVideo.srcObject = stream;
     localStream = stream;
 
     remoteVideo.srcObject = await createLocalMediaStream('key');
+  }
+
+  Future<void> toggleUserCamera(
+    RTCVideoRenderer localVideo,
+    RTCVideoRenderer remoteVideo,
+  ) async {
+    localVideo.srcObject!.getVideoTracks()[0].enabled =
+        !localVideo.srcObject!.getVideoTracks()[0].enabled;
+  }
+
+  Future<void> toggleUserMic(
+    RTCVideoRenderer localVideo,
+    RTCVideoRenderer remoteVideo,
+  ) async {
+    localVideo.srcObject!.getAudioTracks()[0].enabled =
+        !localVideo.srcObject!.getAudioTracks()[0].enabled;
   }
 
   Future<void> hangUp(RTCVideoRenderer localVideo) async {

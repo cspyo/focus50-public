@@ -28,6 +28,8 @@ class _SessionPageState extends State<SessionPage> {
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
+  bool _isOpenCamera = false;
+  bool _isOpenMic = false;
 
   @override
   void initState() {
@@ -66,6 +68,30 @@ class _SessionPageState extends State<SessionPage> {
                   signaling.openUserMedia(_localRenderer, _remoteRenderer);
                 },
                 child: Text("Open camera & microphone"),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: purple300,
+                ),
+                onPressed: () {
+                  signaling.toggleUserCamera(_localRenderer, _remoteRenderer);
+                },
+                child: Text("toggle camera"),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  primary: purple300,
+                ),
+                onPressed: () {
+                  signaling.toggleUserMic(_localRenderer, _remoteRenderer);
+                },
+                child: Text("toggle microphone"),
               ),
               SizedBox(
                 width: 8,
