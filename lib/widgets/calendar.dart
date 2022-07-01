@@ -65,22 +65,6 @@ class CalendarAppointment extends State<Calendar> {
     );
   }
 
-  // _DataSource _getDataSource() {
-  //   List<Appointment> appointments = <Appointment>[];
-  //   reservation.get().then((QuerySnapshot querySnapshot) {
-  //     querySnapshot.docs.forEach((doc) {
-  //       appointments.add(Appointment(
-  //         startTime: doc['startTime'].toDate(),
-  //         endTime: doc['endTime'].toDate(),
-  //         subject: doc['user1Name'],
-  //         color: Colors.teal,
-  //       ));
-  //     });
-  //   });
-  //   print(appointments);
-  //   return _DataSource(appointments);
-  // }
-
   void calendarTapped(CalendarTapDetails calendarTapDetails) {
     final user = FirebaseAuth.instance.currentUser;
     final name = user?.displayName;
