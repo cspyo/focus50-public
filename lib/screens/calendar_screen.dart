@@ -9,6 +9,12 @@ import '../widgets/todo.dart';
 
 // ignore: use_key_in_widget_constructors
 class CalendarScreen extends StatelessWidget {
+  int remainingTime = 0;
+  DateTime now = new DateTime.now();
+  String fastReservation = '10시';
+  DateTime fastestReservation =
+      new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,8 +32,13 @@ class CalendarScreen extends StatelessWidget {
             decoration: BoxDecoration(
                 border:
                     Border(right: BorderSide(color: border100, width: 1.5))),
-            child: Column(children: const <Widget>[
-              Reservation(),
+            child: Column(children: <Widget>[
+              Reservation(
+                  // remainingTime: remainingTime,
+                  // now: now,
+                  // fastReservation: fastReservation,
+                  // fastestReservation: fastestReservation,
+                  ),
               Todo(),
             ]),
           ),

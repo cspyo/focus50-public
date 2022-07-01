@@ -11,17 +11,35 @@ class Calendar extends StatefulWidget {
 
 class CalendarAppointment extends State<Calendar> {
   late CalendarDataSource _dataSource;
-  @override
+  List<Appointment> appointments = <Appointment>[];
+  CollectionReference reservation =
+      FirebaseFirestore.instance.collection('reservation');
   void initState() {
-    // _dataSource = _getDataSource();
-    _getDataSource();
+    // _dataSource = _DataSource(appointments);
+    // _getDataSource();
+    // _dataSource = _DataSource();
+    // _dataSource =
+    _dataSource = _DataSource(appointments);
+    setState(() {
+      reservation.get().then((QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          Appointment app = Appointment(
+            startTime: doc['startTime'].toDate(),
+            endTime: doc['endTime'].toDate(),
+            subject: doc['user1Name'],
+            color: Colors.teal,
+          );
+          _dataSource.appointments!.add(app);
+          // print(_dataSource.appointments);
+          _dataSource.notifyListeners(
+              CalendarDataSourceAction.add, <Appointment>[app]);
+        });
+      });
+    });
     super.initState();
   }
 
-  CollectionReference reservation =
-      FirebaseFirestore.instance.collection('reservation');
-
-  List<Appointment> appointments = <Appointment>[];
+  // List<Appointment> appointments = <Appointment>[];
 
   @override
   Widget build(BuildContext context) {
@@ -47,34 +65,34 @@ class CalendarAppointment extends State<Calendar> {
     );
   }
 
-  _DataSource _getDataSource() {
-    List<Appointment> appointments = <Appointment>[];
-    // _dataSource = await FirebaseFirestore.instance
-    // .collection('reservation').get().then<_DataSource>((DocumentSnapshot documentSnapshot) {
-    //   documentSnapshot.data();
-    // };
-    appointments.add(Appointment(
-      startTime: DateTime.now(),
-      endTime: DateTime.now().add(Duration(hours: 1)),
-      subject: 'Meeting',
-      color: Colors.teal,
-    ));
-    return _DataSource(appointments);
-  }
+  // _DataSource _getDataSource() {
+  //   List<Appointment> appointments = <Appointment>[];
+  //   reservation.get().then((QuerySnapshot querySnapshot) {
+  //     querySnapshot.docs.forEach((doc) {
+  //       appointments.add(Appointment(
+  //         startTime: doc['startTime'].toDate(),
+  //         endTime: doc['endTime'].toDate(),
+  //         subject: doc['user1Name'],
+  //         color: Colors.teal,
+  //       ));
+  //     });
+  //   });
+  //   print(appointments);
+  //   return _DataSource(appointments);
+  // }
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) {
     final user = FirebaseAuth.instance.currentUser;
     final name = user?.displayName;
     if (user != null && name != null) {
       final uid = user.uid;
-
       Appointment app = Appointment(
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
           subject: name,
           color: purple300);
       _dataSource.appointments!.add(app);
-      // print(_dataSource.appointments);
+      print(_dataSource.appointments);
       _dataSource
           .notifyListeners(CalendarDataSourceAction.add, <Appointment>[app]);
 
@@ -84,6 +102,8 @@ class CalendarAppointment extends State<Calendar> {
             'endTime': calendarTapDetails.date!.add(Duration(hours: 1)),
             'user1Uid': uid,
             'user1Name': name,
+            'user2Uid': '',
+            'user2Name': '',
           })
           .then((value) => print("예약되었습니다"))
           .catchError((error) => print("Failed to add user: $error"));

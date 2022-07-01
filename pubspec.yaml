@@ -35,7 +35,7 @@ dependencies:
   firebase_remote_config: '^2.0.9'
   syncfusion_flutter_calendar: '^20.1.61'
   date_format: ^2.0.6
-  timer_builder: ^2.0.0
+  flutter_timer_countdown: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +55,7 @@ flutter:
   assets:
     # - lib/images/promis.png
     - assets/meet.png
-    - assets/Add_Icon.jpg
+    # - assets/Add_Icon.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
