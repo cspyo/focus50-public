@@ -3,9 +3,10 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/utils/signaling.dart';
 
+import '../widgets/countdown_timer_widget.dart';
+
 class SessionScreen extends StatelessWidget {
   const SessionScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -174,10 +175,31 @@ class _SessionPageState extends State<SessionPage> {
               ),
               Flexible(
                   fit: FlexFit.tight,
-                  child: Text(
-                    "TODO",
-                    textAlign: TextAlign.center,
-                  ))
+                  child: Expanded(
+                      child: Column(children: [
+                    const Flexible(
+                      fit: FlexFit.tight,
+                      child: Text(
+                        "TODO",
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Flexible(
+                        fit: FlexFit.tight,
+                        child: Container(
+                          // decoration: BoxDecoration(
+                          //     borderRadius: BorderRadius.circular(10),
+                          //     border: Border.all(
+                          //       color: blackCustomized,
+                          //       width: 0.5,
+                          //     )),
+                          alignment: Alignment.center,
+                          child: CountDownTimer(
+                            duration: Duration(minutes: 50),
+                            startTime: DateTime(2023, 9, 7, 17, 30),
+                          ),
+                        ))
+                  ])))
             ],
           )),
           Padding(
