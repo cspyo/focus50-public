@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../widgets/todo_add.dart';
+import '../widgets/todo_ui.dart';
+
 // import 'package:focus42/consts/colors.dart';
-import '../widgets/todo_list.dart';
 // import 'package:todo/todo.dart';
 
 // ignore: camel_case_types
@@ -12,17 +14,38 @@ class Todo extends StatefulWidget {
 }
 
 class TodoState extends State<Todo> {
-  // int buttonClick = 0;
-  // bool isAdd = false;
-
+  final collRef = FirebaseFirestore.instance.collection('todo');
+  final user = FirebaseAuth.instance.currentUser;
+  late String jsonString;
+  int plusPressCount = 0;
+  String todoList = '';
+  List todoTest = [];
   @override
   Widget build(BuildContext context) {
+    collRef
+        .where('userUid', isEqualTo: user!.uid)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      todoTest.clear();
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          todoTest.add({
+            'task': doc['task'],
+            'isComplete': doc['isComplete'],
+            'createdDate': doc['createdDate'],
+            'userUid': doc['userUid'],
+            'docId': doc.id,
+          });
+        });
+
+        // print(todoTest[0]['docId']);
+      });
+    });
     return Container(
       margin: EdgeInsets.only(top: 27),
       width: 380,
       child: Column(children: [
         Container(
-          margin: EdgeInsets.only(bottom: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -35,20 +58,71 @@ class TodoState extends State<Todo> {
                           fontWeight: FontWeight.w600))),
               IconButton(
                   onPressed: () {
-                    // buttonClick++;
+                    setState(() {
+                      plusPressCount++;
+                    });
+                    // print(plus);
                   },
                   iconSize: 30,
+                  splashColor: Colors.transparent,
                   hoverColor: Colors.transparent,
-                  icon: Icon(
-                    Icons.add,
-                    color: Colors.black,
-                  )),
+                  icon: plusPressCount % 2 == 0
+                      ? Icon(
+                          Icons.add,
+                          color: Colors.black,
+                        )
+                      : Icon(
+                          Icons.close,
+                          color: Colors.black,
+                        )),
             ],
           ),
         ),
-        TodoAdd(),
-        TodoList(textContent: '영어회화 공부 20p부터', isFinished: true),
-        TodoList(textContent: '최승표 절대 지켜', isFinished: false),
+        plusPressCount % 2 == 1
+            ? Container(
+                margin: EdgeInsets.only(top: 9),
+                width: 360,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: TextField(
+                    autofocus: true,
+                    textInputAction: TextInputAction.go,
+                    onSubmitted: (value) {
+                      setState(() {
+                        plusPressCount++;
+                        collRef.add({
+                          'userUid': user!.uid,
+                          'task': value,
+                          'createdDate': Timestamp.fromDate(DateTime.now()),
+                          'isComplete': false,
+                        });
+                      });
+                    },
+                    decoration: InputDecoration(
+                      hintText: '할 일을 적어주세요',
+                      fillColor: Colors.white,
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: Colors.black, width: 2.0),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: Colors.black, width: 2.0),
+                      ),
+                    )))
+            : Text(''),
+        for (var i = 0; i < todoTest.length; i++)
+          todoTest.length == 0
+              ? Text('')
+              : TodoUi(
+                  task: todoTest[i]['task'],
+                  isComplete: todoTest[i]['isComplete'],
+                  createdDate: todoTest[i]['createdDate'],
+                  userUid: todoTest[i]['userUid'],
+                  docId: todoTest[i]['docId'])
       ]),
     );
   }
