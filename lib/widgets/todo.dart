@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../consts/colors.dart';
 import '../widgets/todo_ui.dart';
 
 // import 'package:focus42/consts/colors.dart';
@@ -23,6 +24,9 @@ class TodoState extends State<Todo> {
   @override
   Widget build(BuildContext context) {
     collRef
+        // .orderBy('createdDate', descending: true)
+        // .orderBy('modifiedDate', descending: true)
+        // .orderBy('completedDate')
         .where('userUid', isEqualTo: user!.uid)
         .get()
         .then((QuerySnapshot querySnapshot) {
@@ -35,10 +39,16 @@ class TodoState extends State<Todo> {
             'createdDate': doc['createdDate'],
             'userUid': doc['userUid'],
             'docId': doc.id,
+            'modifiedDate': doc['modifiedDate'],
+            'completedDate': doc['completedDate']
           });
-        });
+          todoTest.sort((a, b) => b['createdDate'].compareTo(a['createdDate']));
 
-        // print(todoTest[0]['docId']);
+          todoTest
+              .sort((a, b) => b['modifiedDate'].compareTo(a['modifiedDate']));
+          todoTest
+              .sort((a, b) => a['completedDate'].compareTo(b['completedDate']));
+        });
       });
     });
     return Container(
@@ -98,6 +108,10 @@ class TodoState extends State<Todo> {
                           'task': value,
                           'createdDate': Timestamp.fromDate(DateTime.now()),
                           'isComplete': false,
+                          'modifiedDate': Timestamp.fromDate(
+                              DateTime.fromMicrosecondsSinceEpoch(0)),
+                          'completedDate': Timestamp.fromDate(
+                              DateTime.fromMicrosecondsSinceEpoch(0))
                         });
                       });
                     },
@@ -116,7 +130,40 @@ class TodoState extends State<Todo> {
             : Text(''),
         for (var i = 0; i < todoTest.length; i++)
           todoTest.length == 0
-              ? Text('')
+              ? Container(
+                  margin: EdgeInsets.only(top: 32),
+                  padding: EdgeInsets.all(15),
+                  width: 380,
+                  height: 120,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(width: 1.5, color: border100),
+                      borderRadius: BorderRadius.all(Radius.circular(32)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          spreadRadius: 0,
+                          blurRadius: 4,
+                          offset: Offset(0, 6),
+                        ),
+                      ]),
+                  child: Center(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                        Text('투두가 없습니다',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Color.fromARGB(255, 24, 24, 24))),
+                        Text('해야할 일을 정해 입력해보세요!',
+                            style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromARGB(105, 105, 105, 100))),
+                      ])))
               : TodoUi(
                   task: todoTest[i]['task'],
                   isComplete: todoTest[i]['isComplete'],
