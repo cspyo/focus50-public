@@ -39,7 +39,7 @@ class LogInState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(children: [
-      DesktopHeader(), //header
+      desktopheader(), //header
       const Line(),
       Container(
           //child: ElevatedButton(child: ),

@@ -1,5 +1,7 @@
 # Customized
 /lib/firebase_options.dart
+/ios/Flutter/*.xcconfig
+pupspec.lock
 
 # Miscellaneous
 *.class
