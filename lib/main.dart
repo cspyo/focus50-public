@@ -3,12 +3,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/screens/about_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
-import 'package:focus42/screens/login_screen.dart';
+import 'package:focus42/screens/login_screen_demo.dart';
 import 'package:focus42/screens/profile_screen.dart';
 import 'package:focus42/screens/session_screen.dart';
 import 'package:focus42/screens/signup_screen.dart';
 
 import 'firebase_options.dart';
+import 'screens/add_profile_screen.dart';
+import 'screens/signup_email_screen.dart';
 
 // FirebaseFirestore firestore = FirebaseFirestore.instance;
 void main() async {
@@ -31,8 +33,9 @@ class MyApp extends StatelessWidget {
         '/': (context) => AboutScreen(),
         '/calendar': (context) => CalendarScreen(),
         '/profile': (context) => ProfileScreen(),
-        '/login': (context) => LoginScreen(),
-        '/signup': (context) => SignupScreen(),
+        '/login': (context) => LoginScreenDemo(),
+        '/signup': (context) => SignupEmailScreen(),
+        '/addProfile': (context) => AddProfileScreen(),
         '/session': (context) => SessionScreen(),
       },
     );
