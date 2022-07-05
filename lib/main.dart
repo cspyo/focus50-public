@@ -5,6 +5,8 @@ import 'package:focus42/screens/about_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
 import 'package:focus42/screens/login_screen_demo.dart';
 import 'package:focus42/screens/profile_screen.dart';
+import 'package:focus42/screens/session_screen.dart';
+import 'package:focus42/screens/signup_screen.dart';
 
 import 'firebase_options.dart';
 import 'screens/add_profile_screen.dart';
@@ -19,19 +21,6 @@ void main() async {
   runApp(MyApp());
 }
 
-// CollectionReference users = FirebaseFirestore.instance.collection('users');
-// Future<void> addUser() {
-//   // Call the user's CollectionReference to add a new user
-//   return users
-//       .add({
-//         'full_name': 'HwangJaewon', // John Doe
-//         'company': 'Soma', // Stokes and Sons
-//         'age': 21 // 42
-//       })
-//       .then((value) => print("User Added"))
-//       .catchError((error) => print("Failed to add user: $error"));
-// }
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -39,6 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
+      theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
       routes: {
         '/': (context) => AboutScreen(),
         '/calendar': (context) => CalendarScreen(),
@@ -46,20 +36,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreenDemo(),
         '/signup': (context) => SignupEmailScreen(),
         '/addProfile': (context) => AddProfileScreen(),
+        '/session': (context) => SessionScreen(),
       },
-      // title: "focus42",
-      // home: Scaffold( s
-      //   appBar: AppBar(
-      //     title: Text('MaterialApp'),
-      //     centerTitle: true,
-      //   ),
-      //   body: Center(
-      //     child: TextButton(
-      //       onPressed: addUser,
-      //       child: Text('add user'),
-      //     ),
-      //   ),
-      // )
     );
   }
 }

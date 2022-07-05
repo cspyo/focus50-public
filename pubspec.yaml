@@ -31,7 +31,11 @@ dependencies:
     sdk: flutter
   image_picker: ^0.8.5+3
   url_strategy: ^0.2.0
-
+  # firebase_core_platform_interface: ^4.0.0
+  syncfusion_flutter_calendar: '^20.1.61'
+  date_format: ^2.0.6
+  flutter_timer_countdown: ^1.0.3
+  flutter_webrtc: ^0.8.9
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,6 +53,9 @@ flutter:
   assets:
     - lib/images/promis.png
     # - images/LogoImage.png
+    - assets/meet.png
+    # - assets/Add_Icon.jpg
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
