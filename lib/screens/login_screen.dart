@@ -3,14 +3,18 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/desktop_header.dart';
+import '../widgets/line.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State createState() => LogInDemoState();
+  State createState() => LogInState();
 }
 
-class LogInDemoState extends State<LoginScreen> {
+class LogInState extends State<LoginScreen> {
+  FirebaseAuth auth = FirebaseAuth.instance;
   Future<UserCredential> signInWithGoogle() async {
     // Create a new provider
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
@@ -20,27 +24,26 @@ class LogInDemoState extends State<LoginScreen> {
     googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
 
     // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
+    return await auth.signInWithPopup(googleProvider);
 
     // Or use signInWithRedirect
     // return await FirebaseAuth.instance.signInWithRedirect(googleProvider);
   }
 
+  getCurrentUser() async {
+    final userCredential = await signInWithGoogle();
+    print(userCredential.user?.uid);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Google Sign In'),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            const Text('You are not currently signed in.'),
-            ElevatedButton(
-              onPressed: signInWithGoogle,
-              child: const Text('SIGN IN'),
-            ),
-          ],
-        ));
+        body: Column(children: [
+      DesktopHeader(), //header
+      const Line(),
+      Container(
+          //child: ElevatedButton(child: ),
+          )
+    ]));
   }
 }
