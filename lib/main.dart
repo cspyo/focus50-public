@@ -19,19 +19,6 @@ void main() async {
   runApp(MyApp());
 }
 
-// CollectionReference users = FirebaseFirestore.instance.collection('users');
-// Future<void> addUser() {
-//   // Call the user's CollectionReference to add a new user
-//   return users
-//       .add({
-//         'full_name': 'HwangJaewon', // John Doe
-//         'company': 'Soma', // Stokes and Sons
-//         'age': 21 // 42
-//       })
-//       .then((value) => print("User Added"))
-//       .catchError((error) => print("Failed to add user: $error"));
-// }
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -39,6 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
+      theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
       routes: {
         '/': (context) => AboutScreen(),
         '/calendar': (context) => CalendarScreen(),
@@ -47,19 +35,6 @@ class MyApp extends StatelessWidget {
         '/signup': (context) => SignupScreen(),
         '/session': (context) => SessionScreen(),
       },
-      // title: "focus42",
-      // home: Scaffold(
-      //   appBar: AppBar(
-      //     title: Text('MaterialApp'),
-      //     centerTitle: true,
-      //   ),
-      //   body: Center(
-      //     child: TextButton(
-      //       onPressed: addUser,
-      //       child: Text('add user'),
-      //     ),
-      //   ),
-      // )
     );
   }
 }
