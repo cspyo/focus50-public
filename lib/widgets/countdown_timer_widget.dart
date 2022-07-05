@@ -48,6 +48,7 @@ class _CountDownTimerState extends State<CountDownTimer>
   @override
   void initState() {
     super.initState();
+    // TODO: duration 무조건 50분 아니고 만약에 시작 시간 이후에 들어오면 50분 보다 적음
     controller = AnimationController(
       vsync: this,
       duration: duration,

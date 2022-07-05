@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+
+import '../utils/signaling.dart';
 
 class MatchingMethods {
+  // TODO: userId, docId 받아오기
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final String _userId = "tempId12345";
-  final String _docId = "PoF1k15cAr4eiKRqgqME";
+  final String _docId = "0z9yZ0niffihShdBXoEP";
 
   Future<void> matchRoom({required DateTime date}) async {
     /* matchRoom
@@ -72,5 +76,26 @@ class MatchingMethods {
     } else {
       throw Exception("There is not rooms for cancellation!");
     }
+  }
+
+  Future<void> enterRoom(
+    Signaling signaling,
+    RTCVideoRenderer localRenderer,
+    RTCVideoRenderer remoteRenderer,
+  ) async {
+    await signaling.openUserMedia(localRenderer, remoteRenderer);
+    signaling.peerClose();
+    CollectionReference reservations = _firestore.collection('Reservation');
+    DocumentReference reservation = reservations.doc(_docId);
+    return _firestore.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(reservation);
+      String? roomId = snapshot.get('room');
+      if (roomId == null) {
+        roomId = await signaling.createRoom(remoteRenderer);
+        transaction.update(reservation, {'room': roomId});
+      } else {
+        signaling.joinRoom(roomId, remoteRenderer);
+      }
+    });
   }
 }

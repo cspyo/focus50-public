@@ -220,6 +220,13 @@ class Signaling {
         !localVideo.srcObject!.getAudioTracks()[0].enabled;
   }
 
+  void peerClose() {
+    if (remoteStream != null) {
+      remoteStream!.getTracks().forEach((track) => track.stop());
+    }
+    if (peerConnection != null) peerConnection!.close();
+  }
+
   Future<void> hangUp(RTCVideoRenderer localVideo) async {
     List<MediaStreamTrack> tracks = localVideo.srcObject!.getTracks();
     tracks.forEach((track) {

@@ -3,6 +3,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/utils/signaling.dart';
 
+import '../resources/matching_methods.dart';
 import '../widgets/countdown_timer_widget.dart';
 
 class SessionScreen extends StatelessWidget {
@@ -41,8 +42,8 @@ class _SessionPageState extends State<SessionPage> {
       _remoteRenderer.srcObject = stream;
       setState(() {});
     });
-
     super.initState();
+    MatchingMethods().enterRoom(signaling, _localRenderer, _remoteRenderer);
   }
 
   @override
@@ -117,6 +118,7 @@ class _SessionPageState extends State<SessionPage> {
                 ),
                 onPressed: () {
                   // Add roomId
+                  signaling.peerClose();
                   signaling.joinRoom(
                     textEditingController.text,
                     _remoteRenderer,
@@ -174,16 +176,14 @@ class _SessionPageState extends State<SessionPage> {
                 ),
               ),
               Flexible(
-                  fit: FlexFit.tight,
-                  child: Expanded(
-                      child: Column(children: [
-                    const Flexible(
-                      fit: FlexFit.tight,
-                      child: Text(
-                        "TODO",
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
+                child: Column(
+                  children: [
+                    Flexible(
+                        fit: FlexFit.tight,
+                        child: Text(
+                          "TODO",
+                          textAlign: TextAlign.center,
+                        )),
                     Flexible(
                         fit: FlexFit.tight,
                         child: Container(
@@ -199,7 +199,9 @@ class _SessionPageState extends State<SessionPage> {
                             startTime: DateTime(2023, 9, 7, 17, 30),
                           ),
                         ))
-                  ])))
+                  ],
+                ),
+              )
             ],
           )),
           Padding(
