@@ -49,19 +49,16 @@ class _ReservationState extends State<Reservation> {
         if (now.isBefore(docDate) &&
             docDate.isBefore(fastestReservation) &&
             (doc['user1Uid'] == user?.uid || doc['user2Uid'] == user?.uid)) {
-          setState(() {
-            fastestReservation = docDate;
-            remainingTime = Timestamp.fromDate(fastestReservation).seconds -
-                Timestamp.fromDate(now).seconds;
-            reservationTime = DateFormat('H').format(fastestReservation);
-            if (doc['user1Uid'] == user!.uid) {
-              opponentUsername = doc['user2Name'];
-            } else {
-              opponentUsername = doc['user1Name'];
-            }
-          });
+          fastestReservation = docDate;
+          remainingTime = Timestamp.fromDate(fastestReservation).seconds -
+              Timestamp.fromDate(now).seconds;
+          reservationTime = DateFormat('H').format(fastestReservation);
+          if (doc['user1Uid'] == user!.uid) {
+            opponentUsername = doc['user2Name'];
+          } else {
+            opponentUsername = doc['user1Name'];
+          }
           print(fastestReservation);
-          setState(() {});
         }
       });
     });
