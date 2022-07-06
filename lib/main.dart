@@ -7,6 +7,7 @@ import 'package:focus42/screens/login_screen.dart';
 import 'package:focus42/screens/profile_screen.dart';
 import 'package:focus42/screens/session_screen.dart';
 
+
 import 'firebase_options.dart';
 import 'screens/add_profile_screen.dart';
 import 'screens/signup_screen.dart';
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignUpScreen(),
         '/addProfile': (context) => AddProfileScreen(),
-        '/session': (context) => SessionScreen(),
+        // '/session': (context) => SessionScreen(),
       },
     );
   }
