@@ -2,6 +2,7 @@
 /lib/firebase_options.dart
 /ios/Flutter/*.xcconfig
 pupspec.lock
+ios/Podfile
 
 # Miscellaneous
 *.class

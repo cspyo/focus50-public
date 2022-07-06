@@ -18,6 +18,13 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   final TextEditingController _jobController = TextEditingController();
   bool _isLoading = false;
 
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  
   @override
   void dispose() {
     // TODO: implement dispose

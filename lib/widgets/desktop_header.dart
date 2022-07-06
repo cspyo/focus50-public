@@ -1,85 +1,114 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/consts/colors.dart';
 
-import '../consts/colors.dart';
+class DesktopHeader extends StatefulWidget {
+  DesktopHeader({Key? key}) : super(key: key);
 
-class desktopheader extends StatelessWidget {
+  @override
+  State<DesktopHeader> createState() => _DesktopHeaderState();
+}
+
+class _DesktopHeaderState extends State<DesktopHeader> {
+  final _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding:
-            const EdgeInsets.only(top: 15, bottom: 15, left: 25, right: 25),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return // 데스크탑 헤더
+        Container(
+      padding: const EdgeInsets.only(top: 15, bottom: 15, left: 25, right: 25),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            children: const <Widget>[
+              Text('Focus',
+                  style: TextStyle(
+                      fontFamily: 'poppins',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 30,
+                      color: Colors.black)),
+              Text('50',
+                  style: TextStyle(
+                      fontFamily: 'poppins',
+                      fontWeight: FontWeight.w900,
+                      fontSize: 30,
+                      color: purple300)),
+            ],
+          ),
+          Row(
             children: <Widget>[
-              Row(
-                children: const <Widget>[
-                  Text('Focus',
-                      style: TextStyle(
-                          fontFamily: 'poppins',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 30,
-                          color: Colors.black)),
-                  Text('42',
-                      style: TextStyle(
-                          fontFamily: 'poppins',
-                          fontWeight: FontWeight.w900,
-                          fontSize: 30,
-                          color: purple300)),
-                ],
-              ),
-              Row(children: <Widget>[
-                TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/');
-                    },
-                    child: const Text('About',
-                        style: TextStyle(
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17,
-                            color: Colors.black))),
-                SizedBox(width: 10),
-                TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/calendar');
-                    },
-                    child: const Text('Calendar',
-                        style: TextStyle(
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17,
-                            color: Colors.black))),
-                SizedBox(width: 10),
-                TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                    child: const Text('Profile',
-                        style: TextStyle(
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w300,
-                            fontSize: 17,
-                            color: Colors.black))),
-                SizedBox(width: 10),
-                OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      primary: purple300,
-                    ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
-                    child: const Text('Login')),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: purple300,
-                  ),
+              TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/signup');
+                    Navigator.pushNamed(context, '/');
                   },
-                  child: const Text('Sign Up'),
-                )
-              ])
-            ]));
+                  child: const Text('About',
+                      style: TextStyle(
+                          fontFamily: 'poppins',
+                          fontWeight: FontWeight.w300,
+                          fontSize: 17,
+                          color: Colors.black))),
+              SizedBox(width: 10),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/calendar');
+                  },
+                  child: const Text('Calendar',
+                      style: TextStyle(
+                          fontFamily: 'poppins',
+                          fontWeight: FontWeight.w300,
+                          fontSize: 17,
+                          color: Colors.black))),
+              SizedBox(width: 10),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  child: const Text('Profile',
+                      style: TextStyle(
+                          fontFamily: 'poppins',
+                          fontWeight: FontWeight.w300,
+                          fontSize: 17,
+                          color: Colors.black))),
+              SizedBox(width: 10),
+              (_auth.currentUser != null)
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: purple300,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _auth.signOut();
+                        });
+                        print(_auth.currentUser);
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: const Text('  Logout  '),
+                    )
+                  : OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        primary: purple300,
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/signup');
+                      },
+                      child: const Text('Sign Up')),
+              (_auth.currentUser != null) ? Container() : SizedBox(width: 20),
+              (_auth.currentUser != null)
+                  ? Container()
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: purple300,
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: const Text('  Log In  '),
+                    ),
+            ],
+          ),
+        ],
+      ),
+    ); //header
   }
 }
