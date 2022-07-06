@@ -3,25 +3,29 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/utils/signaling.dart';
 
+import '../models/reservation_model.dart';
 import '../resources/matching_methods.dart';
 import '../widgets/countdown_timer_widget.dart';
 
 class SessionScreen extends StatelessWidget {
-  const SessionScreen({Key? key}) : super(key: key);
+  final ReservationModel session;
+  const SessionScreen({Key? key, required ReservationModel this.session})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SessionPage(),
+      home: SessionPage(session: session),
     );
   }
 }
 
 class SessionPage extends StatefulWidget {
-  SessionPage({Key? key}) : super(key: key);
+  final ReservationModel session;
+  SessionPage({Key? key, required this.session}) : super(key: key);
 
   @override
-  _SessionPageState createState() => _SessionPageState();
+  _SessionPageState createState() => _SessionPageState(session: session);
 }
 
 class _SessionPageState extends State<SessionPage> {
@@ -30,8 +34,9 @@ class _SessionPageState extends State<SessionPage> {
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
-  bool _isOpenCamera = false;
-  bool _isOpenMic = false;
+  final ReservationModel session;
+
+  _SessionPageState({required this.session}) : super();
 
   @override
   void initState() {
@@ -43,7 +48,8 @@ class _SessionPageState extends State<SessionPage> {
       setState(() {});
     });
     super.initState();
-    MatchingMethods().enterRoom(signaling, _localRenderer, _remoteRenderer);
+    MatchingMethods()
+        .enterRoom(session.pk!, signaling, _localRenderer, _remoteRenderer);
   }
 
   @override
@@ -196,7 +202,7 @@ class _SessionPageState extends State<SessionPage> {
                           alignment: Alignment.center,
                           child: CountDownTimer(
                             duration: Duration(minutes: 50),
-                            startTime: DateTime(2023, 9, 7, 17, 30),
+                            startTime: session.startTime!,
                           ),
                         ))
                   ],

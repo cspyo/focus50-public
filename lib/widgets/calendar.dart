@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/resources/matching_methods.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+
+import '../models/reservation_model.dart';
 
 class Calendar extends StatefulWidget {
   @override
@@ -12,28 +15,35 @@ class Calendar extends StatefulWidget {
 class CalendarAppointment extends State<Calendar> {
   late CalendarDataSource _dataSource;
   List<Appointment> appointments = <Appointment>[];
-  CollectionReference reservation =
-      FirebaseFirestore.instance.collection('reservation');
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _user = FirebaseAuth.instance;
+  late CollectionReference _reservationColRef;
+
   void initState() {
-    // _dataSource = _DataSource(appointments);
-    // _getDataSource();
-    // _dataSource = _DataSource();
-    // _dataSource =
+    this._reservationColRef =
+        _firestore.collection('reservation').withConverter<ReservationModel>(
+              fromFirestore: ReservationModel.fromFirestore,
+              toFirestore: (ReservationModel reservationModel, _) =>
+                  reservationModel.toFirestore(),
+            );
+
     _dataSource = _DataSource(appointments);
     setState(() {
-      reservation.get().then((QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
+      _reservationColRef.get().then((QuerySnapshot querySnapshot) {
+        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+          ReservationModel reservation = doc.data() as ReservationModel;
           Appointment app = Appointment(
-            startTime: doc['startTime'].toDate(),
-            endTime: doc['endTime'].toDate(),
-            subject: doc['user1Name'],
+            startTime: reservation.startTime!,
+            endTime: reservation.endTime!,
+            subject: reservation.user1Name!,
             color: Colors.teal,
           );
           _dataSource.appointments!.add(app);
           // print(_dataSource.appointments);
           _dataSource.notifyListeners(
               CalendarDataSourceAction.add, <Appointment>[app]);
-        });
+        }
       });
     });
     super.initState();
@@ -76,21 +86,13 @@ class CalendarAppointment extends State<Calendar> {
           subject: name,
           color: purple300);
       _dataSource.appointments!.add(app);
-      print(_dataSource.appointments);
       _dataSource
           .notifyListeners(CalendarDataSourceAction.add, <Appointment>[app]);
 
-      reservation
-          .add({
-            'startTime': calendarTapDetails.date!,
-            'endTime': calendarTapDetails.date!.add(Duration(hours: 1)),
-            'user1Uid': uid,
-            'user1Name': name,
-            'user2Uid': '',
-            'user2Name': '',
-          })
-          .then((value) => print("예약되었습니다"))
-          .catchError((error) => print("Failed to add user: $error"));
+      MatchingMethods().matchRoom(
+        startTime: calendarTapDetails.date!,
+        endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
+      );
     }
   }
 }

@@ -56,10 +56,9 @@ class _CountDownTimerState extends State<CountDownTimer>
     // ..addStatusListener((status) { })
     // TODO: timer 끝났을 때 event 걸기
 
-    Duration diff = DateTime.now().difference(startTime);
-    // _timer = Timer(diff, startTimer);
+    Duration diff = startTime.difference(DateTime.now());
     // TODO: timer duration argument firebase 데이터 포맷 맞추기
-    _timer = Timer(const Duration(seconds: 15), startTimer);
+    _timer = Timer(diff, startTimer);
   }
 
   @override
