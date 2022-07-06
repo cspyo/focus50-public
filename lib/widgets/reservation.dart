@@ -3,67 +3,127 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:focus42/models/reservation_model.dart';
 import 'package:intl/intl.dart';
 
 import '../consts/colors.dart';
+import '../screens/session_screen.dart';
+
+final int maxDateTime = 10000000000000000;
 
 class Reservation extends StatefulWidget {
-  // int remainingTime;
-  // final DateTime now;
-  // String fastReservation;
-  // DateTime fastestReservation;
-  Reservation({
-    Key? key,
-    // required this.remainingTime,
-    // required this.now,
-    // required this.fastReservation,
-    // required this.fastestReservation,
-  }) : super(key: key);
+  Reservation({Key? key}) : super(key: key);
   @override
   _ReservationState createState() => _ReservationState();
 }
 
 class _ReservationState extends State<Reservation> {
-  var opponentUsername = '사용자31';
-  var reservationTime = '10시';
+  String? partnerName = '사용자1';
+  String reservationTime = '10시';
   int remainingTime = 0;
   bool isTenMinutesLeft = true;
 
   DateTime now = new DateTime.now();
-  late String fastReservation;
-  DateTime fastestReservation =
-      new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
+  ReservationModel? nextReservation = null;
+  DateTime? nextReservationStartTime;
+  String? nextReservationId;
 
-  final Stream<QuerySnapshot> _usersStream =
-      FirebaseFirestore.instance.collection('reservation').snapshots();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _user = FirebaseAuth.instance;
+  late CollectionReference _reservationColRef;
+
+  void enterReservation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => SessionScreen(
+                session: nextReservation!,
+              )),
+    );
+  }
+
+  void getNextSession() async {
+    await _reservationColRef
+        .where('user1Uid', isEqualTo: _user.currentUser!.uid)
+        .orderBy('startTime')
+        .get()
+        .then((QuerySnapshot querySnapshot) async {
+      if (querySnapshot.size > 0) {
+        DocumentReference reservationRef =
+            _reservationColRef.doc(querySnapshot.docs.first.id);
+        DocumentSnapshot reservationSnap = await reservationRef.get();
+        ReservationModel tempReservation =
+            reservationSnap.data() as ReservationModel;
+        tempReservation.pk = reservationRef.id;
+        if (nextReservation != null) {
+          nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                  nextReservation!.startTime!
+                      .isBefore(tempReservation.startTime!))
+              ? nextReservation
+              : tempReservation;
+        } else {
+          nextReservation = (now.isBefore(tempReservation.startTime!))
+              ? tempReservation
+              : nextReservation;
+        }
+      }
+    });
+
+    await _reservationColRef
+        .where('user2Uid', isEqualTo: _user.currentUser!.uid)
+        .orderBy('startTime')
+        .get()
+        .then((QuerySnapshot querySnapshot) async {
+      if (querySnapshot.size > 0) {
+        DocumentReference reservationRef =
+            _reservationColRef.doc(querySnapshot.docs.first.id);
+        DocumentSnapshot reservationSnap = await reservationRef.get();
+        ReservationModel tempReservation =
+            reservationSnap.data() as ReservationModel;
+        tempReservation.pk = reservationRef.id;
+        if (nextReservation != null) {
+          nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                  nextReservation!.startTime!
+                      .isBefore(tempReservation.startTime!))
+              ? nextReservation
+              : tempReservation;
+        } else {
+          nextReservation = (now.isBefore(tempReservation.startTime!))
+              ? tempReservation
+              : nextReservation;
+        }
+      }
+    });
+
+    if (nextReservation != null) {
+      nextReservationStartTime = nextReservation!.startTime!;
+      remainingTime = Timestamp.fromDate(nextReservationStartTime!).seconds -
+          Timestamp.fromDate(now).seconds;
+      reservationTime = DateFormat('H').format(nextReservationStartTime!);
+      if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+        partnerName = nextReservation!.user2Name;
+      } else {
+        partnerName = nextReservation!.user1Name;
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    this._reservationColRef =
+        _firestore.collection('reservation').withConverter<ReservationModel>(
+              fromFirestore: ReservationModel.fromFirestore,
+              toFirestore: (ReservationModel reservationModel, _) =>
+                  reservationModel.toFirestore(),
+            );
+    getNextSession();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-    FirebaseFirestore.instance
-        .collection('reservation')
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((doc) {
-        var docDate = doc['startTime'].toDate();
-        //doc에 있는 date가 현재 시간보다 뒤고,fastestReservation보다 앞이고,현재 로그인된 유저가 user1이거나 user2일때 아래 내용 실행
-        if (now.isBefore(docDate) &&
-            docDate.isBefore(fastestReservation) &&
-            (doc['user1Uid'] == user?.uid || doc['user2Uid'] == user?.uid)) {
-          fastestReservation = docDate;
-          remainingTime = Timestamp.fromDate(fastestReservation).seconds -
-              Timestamp.fromDate(now).seconds;
-          reservationTime = DateFormat('H').format(fastestReservation);
-          if (doc['user1Uid'] == user!.uid) {
-            opponentUsername = doc['user2Name'];
-          } else {
-            opponentUsername = doc['user1Name'];
-          }
-          print(fastestReservation);
-        }
-      });
-    });
     return StreamBuilder<QuerySnapshot>(
-      stream: _usersStream,
+      stream: _firestore.collection('reservation').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -71,28 +131,7 @@ class _ReservationState extends State<Reservation> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Text("Loading");
         }
-        snapshot.data!.docs.forEach((doc) {
-          var docDate = doc['startTime'].toDate();
-          //doc에 있는 date가 현재 시간보다 뒤고,fastestReservation보다 앞이고,현재 로그인된 유저가 user1이거나 user2일때 아래 내용 실행
-          if (now.isBefore(docDate) &&
-              docDate.isBefore(fastestReservation) &&
-              (doc['user1Uid'] == user?.uid || doc['user2Uid'] == user?.uid)) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                fastestReservation = docDate;
-                remainingTime = Timestamp.fromDate(fastestReservation).seconds -
-                    Timestamp.fromDate(now).seconds;
-                reservationTime = DateFormat('H').format(fastestReservation);
-                if (doc['user1Uid'] == user!.uid) {
-                  opponentUsername = doc['user2Name'];
-                } else {
-                  opponentUsername = doc['user1Name'];
-                }
-              });
-            });
-            print(fastestReservation);
-          }
-        });
+        getNextSession();
         return remainingTime != 0
             ? Container(
                 margin: EdgeInsets.only(top: 32),
@@ -155,13 +194,13 @@ class _ReservationState extends State<Reservation> {
                                 )),
                           ],
                         ),
-                        opponentUsername != ''
+                        partnerName != ''
                             ? Container(
                                 margin: EdgeInsets.only(top: 12),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text('$opponentUsername',
+                                    Text('$partnerName',
                                         style: const TextStyle(
                                           height: 1.0,
                                           fontFamily: 'poppins',
@@ -221,10 +260,11 @@ class _ReservationState extends State<Reservation> {
                                     Container(
                                         width: 119,
                                         height: 54,
-                                        child: isTenMinutesLeft
+                                        child: isTenMinutesLeft &&
+                                                nextReservation != null
                                             ? ElevatedButton(
                                                 onPressed: () {
-                                                  // getReservation();
+                                                  enterReservation();
                                                 },
                                                 style: ButtonStyle(
                                                   shape: MaterialStateProperty.all<
@@ -251,7 +291,7 @@ class _ReservationState extends State<Reservation> {
                                                     )))
                                             : TextButton(
                                                 onPressed: () {
-                                                  // getReservation();
+                                                  // enterReservation();
                                                 },
                                                 style: ButtonStyle(
                                                   shape: MaterialStateProperty.all<
