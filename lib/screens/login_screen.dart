@@ -1,8 +1,10 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../consts/colors.dart';
+import '../consts/routes.dart';
 import '../resources/auth_method.dart';
 import '../utils/utils.dart';
 import '../widgets/line.dart';
@@ -23,13 +25,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _emailController.dispose();
     _passwordController.dispose();
 
@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (res == 'wrong-password') {
       showSnackBar("비밀번호가 틀렸습니다.", context);
     } else {
-      Navigator.pushNamed(context, '/calendar');
+      Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
     setState(() {
@@ -69,9 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-      Navigator.pushNamed(context, '/calendar');
+      Get.rootDelegate.offNamed(Routes.CALENDAR);
     } else {
-      Navigator.pushNamed(context, '/addProfile');
+      Get.rootDelegate.offNamed(Routes.PROFILE);
     }
 
     setState(() {
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/signup');
+                          Get.rootDelegate.toNamed(Routes.SIGNUP);
                         },
                         child: const Text(
                           '    Sign up    ',

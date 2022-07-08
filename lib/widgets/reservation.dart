@@ -291,7 +291,7 @@ class _ReservationState extends State<Reservation> {
                                                     )))
                                             : TextButton(
                                                 onPressed: () {
-                                                  // enterReservation();
+                                                  enterReservation();
                                                 },
                                                 style: ButtonStyle(
                                                   shape: MaterialStateProperty.all<

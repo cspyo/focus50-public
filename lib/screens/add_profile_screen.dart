@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../consts/colors.dart';
+import '../consts/routes.dart';
 import '../resources/auth_method.dart';
 import '../widgets/line.dart';
 
@@ -18,16 +20,13 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   final TextEditingController _jobController = TextEditingController();
   bool _isLoading = false;
 
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
-  
+
   @override
   void dispose() {
-    // TODO: implement dispose
     _nameController.dispose();
     _nicknameController.dispose();
     _jobController.dispose();
@@ -40,14 +39,13 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
       _isLoading = true;
     });
 
-    String res = await AuthMethods().saveUserProfile(
+    await AuthMethods().saveUserProfile(
       username: _nameController.text,
       nickname: _nicknameController.text,
       job: _jobController.text,
     );
 
-    print(res);
-    Navigator.pushNamed(context, '/calendar');
+    Get.rootDelegate.toNamed(Routes.CALENDAR);
 
     setState(() {
       _isLoading = false;
@@ -96,7 +94,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/login');
+                          Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
                           '    Login    ',

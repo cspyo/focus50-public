@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../consts/colors.dart';
+import '../consts/routes.dart';
 import '../widgets/line.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -14,7 +16,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -52,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: <Widget>[
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/');
+                      Get.rootDelegate.toNamed(Routes.ABOUT);
                     },
                     child: const Text('About',
                         style: TextStyle(
@@ -63,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(width: 10),
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/calendar');
+                      Get.rootDelegate.toNamed(Routes.CALENDAR);
                     },
                     child: const Text('Calendar',
                         style: TextStyle(
@@ -74,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(width: 10),
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
+                      Get.rootDelegate.toNamed(Routes.PROFILE);
                     },
                     child: const Text('Profile',
                         style: TextStyle(
@@ -92,8 +93,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           setState(() {
                             _auth.signOut();
                           });
-                          print(_auth.currentUser);
-                          Navigator.pushNamed(context, '/login');
+
+                          Get.rootDelegate.toNamed(Routes.LOGIN);
                         },
                         child: const Text('  Logout  '),
                       )
@@ -102,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/signup');
+                          Get.rootDelegate.toNamed(Routes.SIGNUP);
                         },
                         child: const Text('Sign Up')),
                 (_auth.currentUser != null) ? Container() : SizedBox(width: 20),
@@ -113,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/login');
+                          Get.rootDelegate.toNamed(Routes.LOGIN);
                         },
                         child: const Text('  Log In  '),
                       ),
@@ -121,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-      ), //header, //header //header
+      ), //header
       const Line(),
       Container(
         child: Text('profile'),
