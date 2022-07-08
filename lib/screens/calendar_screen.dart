@@ -1,13 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../consts/colors.dart';
+import '../consts/routes.dart';
 import '../widgets/calendar.dart';
 import '../widgets/line.dart';
 import '../widgets/reservation.dart';
+import '../widgets/todo.dart';
 
 // ignore: use_key_in_widget_constructors
 class CalendarScreen extends StatefulWidget {
+  CalendarScreen({Key? key}) : super(key: key);
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
@@ -22,16 +26,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime fastestReservation =
       new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  User? user;
 
   @override
   void initState() {
-    // TODO: implement initState
+    user = auth.currentUser;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    // FirebaseAuth.instance.idTokenChanges().listen((event) {
+    //   user = auth.currentUser!;
+    //   print("On Data: ${event}");
+    //   user = event;
+    // });
+
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(//페이지 전체 구성
@@ -63,7 +74,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 children: <Widget>[
                   TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/');
+                        Get.rootDelegate.toNamed(Routes.ABOUT);
                       },
                       child: const Text('About',
                           style: TextStyle(
@@ -74,7 +85,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   SizedBox(width: 10),
                   TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/calendar');
+                        Get.rootDelegate.toNamed(Routes.CALENDAR);
                       },
                       child: const Text('Calendar',
                           style: TextStyle(
@@ -85,7 +96,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   SizedBox(width: 10),
                   TextButton(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/profile');
+                        Get.rootDelegate.toNamed(Routes.PROFILE);
                       },
                       child: const Text('Profile',
                           style: TextStyle(
@@ -94,17 +105,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               fontSize: 17,
                               color: Colors.black))),
                   SizedBox(width: 10),
-                  (_auth.currentUser != null)
+                  (user != null)
                       ? ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             primary: purple300,
                           ),
                           onPressed: () {
                             setState(() {
-                              _auth.signOut();
+                              auth.signOut();
                             });
-                            print(_auth.currentUser);
-                            Navigator.pushNamed(context, '/login');
+
+                            Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
                           child: const Text('  Logout  '),
                         )
@@ -113,20 +124,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             primary: purple300,
                           ),
                           onPressed: () {
-                            Navigator.pushNamed(context, '/signup');
+                            Get.rootDelegate.toNamed(Routes.SIGNUP);
                           },
                           child: const Text('Sign Up')),
-                  (_auth.currentUser != null)
-                      ? Container()
-                      : SizedBox(width: 20),
-                  (_auth.currentUser != null)
+                  (user != null) ? Container() : SizedBox(width: 20),
+                  (user != null)
                       ? Container()
                       : ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             primary: purple300,
                           ),
                           onPressed: () {
-                            Navigator.pushNamed(context, '/login');
+                            Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
                           child: const Text('  Log In  '),
                         ),
@@ -152,7 +161,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   // fastReservation: fastReservation,
                   // fastestReservation: fastestReservation,
                   ),
-              // Todo(),
+              Todo(),
             ]),
           ),
           Container(child: Calendar())
