@@ -18,7 +18,7 @@ class Reservation extends StatefulWidget {
 }
 
 class _ReservationState extends State<Reservation> {
-  String? partnerName = '사용자1';
+  String? partnerName = '';
   String reservationTime = '10시';
   int remainingTime = 0;
   bool isTenMinutesLeft = true;
@@ -46,66 +46,186 @@ class _ReservationState extends State<Reservation> {
     await _reservationColRef
         .where('user1Uid', isEqualTo: _user.currentUser!.uid)
         .orderBy('startTime')
-        .get()
-        .then((QuerySnapshot querySnapshot) async {
-      if (querySnapshot.size > 0) {
-        DocumentReference reservationRef =
-            _reservationColRef.doc(querySnapshot.docs.first.id);
-        DocumentSnapshot reservationSnap = await reservationRef.get();
-        ReservationModel tempReservation =
-            reservationSnap.data() as ReservationModel;
-        tempReservation.pk = reservationRef.id;
-        if (nextReservation != null) {
-          nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                  nextReservation!.startTime!
-                      .isBefore(tempReservation.startTime!))
-              ? nextReservation
-              : tempReservation;
+        .snapshots()
+        .listen((QuerySnapshot querySnapshot) async {
+      // print("[DEBUG] getNextSession1");
+      ReservationModel? nextReservation_origin;
+      querySnapshot.docChanges.forEach((element) {
+        // print("[DEBUG] getNextSession1/forEach/");
+        if (element.type == DocumentChangeType.added) {
+          // print("[DEBUG] getNextSession1/forEach-added/");
+          DocumentSnapshot reservationSnap = element.doc;
+          ReservationModel tempReservation =
+              reservationSnap.data() as ReservationModel;
+          tempReservation.pk = reservationSnap.id;
+          if (nextReservation != null) {
+            nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                    nextReservation!.startTime!
+                        .isBefore(tempReservation.startTime!))
+                ? nextReservation
+                : tempReservation;
+          } else {
+            nextReservation = (now.isBefore(tempReservation.startTime!))
+                ? tempReservation
+                : nextReservation;
+          }
+          if (nextReservation != nextReservation_origin) {
+            if (nextReservation != null) {
+              // print("[DEBUG] next time is ${nextReservation!.startTime}");
+              setState(() {
+                nextReservationStartTime = nextReservation!.startTime!;
+                remainingTime =
+                    Timestamp.fromDate(nextReservationStartTime!).seconds -
+                        Timestamp.fromDate(now).seconds;
+                reservationTime =
+                    DateFormat('H').format(nextReservationStartTime!);
+                if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+                  partnerName = nextReservation!.user2Name;
+                } else {
+                  partnerName = nextReservation!.user1Name;
+                }
+              });
+            }
+          }
         } else {
-          nextReservation = (now.isBefore(tempReservation.startTime!))
-              ? tempReservation
-              : nextReservation;
+          if (querySnapshot.size > 0) {
+            // print("[DEBUG] getNextSession1/forEach-not added/");
+            nextReservation = null;
+            querySnapshot.docs.forEach((element) {
+              ReservationModel tempReservation =
+                  element.data() as ReservationModel;
+              tempReservation.pk = element.id;
+              if (nextReservation != null) {
+                nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                        nextReservation!.startTime!
+                            .isBefore(tempReservation.startTime!))
+                    ? nextReservation
+                    : tempReservation;
+              } else {
+                nextReservation = (now.isBefore(tempReservation.startTime!))
+                    ? tempReservation
+                    : nextReservation;
+              }
+            });
+          }
+          if (nextReservation != null) {
+            // print("[DEBUG] next time is ${nextReservation!.startTime}");
+            setState(() {
+              nextReservationStartTime = nextReservation!.startTime!;
+              remainingTime =
+                  Timestamp.fromDate(nextReservationStartTime!).seconds -
+                      Timestamp.fromDate(now).seconds;
+              reservationTime =
+                  DateFormat('H').format(nextReservationStartTime!);
+              if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+                partnerName = nextReservation!.user2Name;
+              } else {
+                partnerName = nextReservation!.user1Name;
+              }
+            });
+          } else {
+            setState(() {
+              nextReservationStartTime = null;
+              partnerName = '';
+              remainingTime = 0;
+              reservationTime = '';
+            });
+          }
         }
-      }
+      });
     });
 
     await _reservationColRef
         .where('user2Uid', isEqualTo: _user.currentUser!.uid)
         .orderBy('startTime')
-        .get()
-        .then((QuerySnapshot querySnapshot) async {
-      if (querySnapshot.size > 0) {
-        DocumentReference reservationRef =
-            _reservationColRef.doc(querySnapshot.docs.first.id);
-        DocumentSnapshot reservationSnap = await reservationRef.get();
-        ReservationModel tempReservation =
-            reservationSnap.data() as ReservationModel;
-        tempReservation.pk = reservationRef.id;
-        if (nextReservation != null) {
-          nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                  nextReservation!.startTime!
-                      .isBefore(tempReservation.startTime!))
-              ? nextReservation
-              : tempReservation;
+        .snapshots()
+        .listen((QuerySnapshot querySnapshot) async {
+      // print("[DEBUG] getNextSession1");
+      ReservationModel? nextReservation_origin;
+      querySnapshot.docChanges.forEach((element) {
+        // print("[DEBUG] getNextSession1/forEach/");
+        if (element.type == DocumentChangeType.added) {
+          // print("[DEBUG] getNextSession1/forEach-added/");
+          DocumentSnapshot reservationSnap = element.doc;
+          ReservationModel tempReservation =
+              reservationSnap.data() as ReservationModel;
+          tempReservation.pk = reservationSnap.id;
+          if (nextReservation != null) {
+            nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                    nextReservation!.startTime!
+                        .isBefore(tempReservation.startTime!))
+                ? nextReservation
+                : tempReservation;
+          } else {
+            nextReservation = (now.isBefore(tempReservation.startTime!))
+                ? tempReservation
+                : nextReservation;
+          }
+          if (nextReservation != nextReservation_origin) {
+            if (nextReservation != null) {
+              // print("[DEBUG] next time is ${nextReservation!.startTime}");
+              setState(() {
+                nextReservationStartTime = nextReservation!.startTime!;
+                remainingTime =
+                    Timestamp.fromDate(nextReservationStartTime!).seconds -
+                        Timestamp.fromDate(now).seconds;
+                reservationTime =
+                    DateFormat('H').format(nextReservationStartTime!);
+                if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+                  partnerName = nextReservation!.user2Name;
+                } else {
+                  partnerName = nextReservation!.user1Name;
+                }
+              });
+            }
+          }
         } else {
-          nextReservation = (now.isBefore(tempReservation.startTime!))
-              ? tempReservation
-              : nextReservation;
+          if (querySnapshot.size > 0) {
+            // print("[DEBUG] getNextSession1/forEach-not added/");
+            nextReservation = null;
+            querySnapshot.docs.forEach((element) {
+              ReservationModel tempReservation =
+                  element.data() as ReservationModel;
+              tempReservation.pk = element.id;
+              if (nextReservation != null) {
+                nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                        nextReservation!.startTime!
+                            .isBefore(tempReservation.startTime!))
+                    ? nextReservation
+                    : tempReservation;
+              } else {
+                nextReservation = (now.isBefore(tempReservation.startTime!))
+                    ? tempReservation
+                    : nextReservation;
+              }
+            });
+          }
+          if (nextReservation != null) {
+            // print("[DEBUG] next time is ${nextReservation!.startTime}");
+            setState(() {
+              nextReservationStartTime = nextReservation!.startTime!;
+              remainingTime =
+                  Timestamp.fromDate(nextReservationStartTime!).seconds -
+                      Timestamp.fromDate(now).seconds;
+              reservationTime =
+                  DateFormat('H').format(nextReservationStartTime!);
+              if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+                partnerName = nextReservation!.user2Name;
+              } else {
+                partnerName = nextReservation!.user1Name;
+              }
+            });
+          } else {
+            setState(() {
+              nextReservationStartTime = null;
+              partnerName = '';
+              remainingTime = 0;
+              reservationTime = '';
+            });
+          }
         }
-      }
+      });
     });
-
-    if (nextReservation != null) {
-      nextReservationStartTime = nextReservation!.startTime!;
-      remainingTime = Timestamp.fromDate(nextReservationStartTime!).seconds -
-          Timestamp.fromDate(now).seconds;
-      reservationTime = DateFormat('H').format(nextReservationStartTime!);
-      if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
-        partnerName = nextReservation!.user2Name;
-      } else {
-        partnerName = nextReservation!.user1Name;
-      }
-    }
   }
 
   @override
@@ -118,247 +238,231 @@ class _ReservationState extends State<Reservation> {
                   reservationModel.toFirestore(),
             );
     getNextSession();
+    print("[DEBUG] initState: next reservation: ${nextReservation?.startTime}");
   }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('reservation').snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
-        }
-        getNextSession();
-        return remainingTime != 0
-            ? Container(
-                margin: EdgeInsets.only(top: 32),
-                padding: EdgeInsets.all(15),
-                width: 380,
-                height: 292, //355
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 1.5, color: border100),
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        spreadRadius: 0,
-                        blurRadius: 4,
-                        offset: Offset(0, 6),
-                      ),
-                    ]),
-                child: Container(
-                    margin: EdgeInsets.only(top: 5),
-                    child: Column(
+    return remainingTime != 0
+        ? Container(
+            margin: EdgeInsets.only(top: 32),
+            padding: EdgeInsets.all(15),
+            width: 380,
+            height: 292, //355
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1.5, color: border100),
+                borderRadius: BorderRadius.all(Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: Offset(0, 6),
+                  ),
+                ]),
+            child: Container(
+                margin: EdgeInsets.only(top: 5),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TimerCountdown(
-                              format: CountDownTimerFormat.hoursMinutesSeconds,
-                              endTime: DateTime.now().add(
-                                Duration(
-                                  seconds: remainingTime,
-                                ),
-                              ),
-                              enableDescriptions: false,
-                              onEnd: () {
-                                setState(() {
-                                  isTenMinutesLeft = true;
-                                });
-                              },
-                              timeTextStyle: TextStyle(
-                                height: 1.0,
-                                fontFamily: 'poppins',
-                                fontSize: 26,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              colonsTextStyle: TextStyle(
-                                height: 1.0,
-                                fontFamily: 'poppins',
-                                fontSize: 26,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              spacerWidth: 0,
+                        TimerCountdown(
+                          format: CountDownTimerFormat.hoursMinutesSeconds,
+                          endTime: DateTime.now().add(
+                            Duration(
+                              seconds: remainingTime,
                             ),
-                            Text(' 남았습니다',
-                                // textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  height: 1.0,
-                                  fontFamily: 'poppins',
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w600,
-                                )),
-                          ],
+                          ),
+                          enableDescriptions: false,
+                          onEnd: () {
+                            setState(() {
+                              isTenMinutesLeft = true;
+                            });
+                          },
+                          timeTextStyle: TextStyle(
+                            height: 1.0,
+                            fontFamily: 'poppins',
+                            fontSize: 26,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          colonsTextStyle: TextStyle(
+                            height: 1.0,
+                            fontFamily: 'poppins',
+                            fontSize: 26,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          spacerWidth: 0,
                         ),
-                        partnerName != ''
-                            ? Container(
-                                margin: EdgeInsets.only(top: 12),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('$partnerName',
-                                        style: const TextStyle(
-                                          height: 1.0,
-                                          fontFamily: 'poppins',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: purple300,
-                                        )),
-                                    Text(
-                                      '님과의 세션이 $reservationTime시에 예약되었어요!',
-                                      style: TextStyle(
-                                        height: 1.0,
-                                        fontFamily: 'Poppins',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: black100,
-                                      ),
-                                    )
-                                  ],
-                                ))
-                            : Container(
-                                margin: EdgeInsets.only(top: 12),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('$reservationTime',
-                                        style: const TextStyle(
-                                          height: 1.0,
-                                          fontFamily: 'poppins',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: purple300,
-                                        )),
-                                    Text(
-                                      '시에 예약되었어요!',
-                                      style: TextStyle(
-                                        height: 1.0,
-                                        fontFamily: 'Poppins',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: black100,
-                                      ),
-                                    )
-                                  ],
-                                )),
-                        Stack(
-                          children: [
-                            Image.asset(
-                              'meet.png',
-                              height: 200,
-                            ),
-                            Positioned(
-                                bottom: 0,
-                                right: -60,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                        width: 119,
-                                        height: 54,
-                                        child: isTenMinutesLeft &&
-                                                nextReservation != null
-                                            ? ElevatedButton(
-                                                onPressed: () {
-                                                  enterReservation();
-                                                },
-                                                style: ButtonStyle(
-                                                  shape: MaterialStateProperty.all<
-                                                          RoundedRectangleBorder>(
-                                                      RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      16.0),
-                                                          side: BorderSide(
-                                                              color: Colors
-                                                                  .transparent))),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                          Color>(purple300),
-                                                ),
-                                                child: Text('입장하기',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Poppins',
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.white,
-                                                    )))
-                                            : TextButton(
-                                                onPressed: () {
-                                                  enterReservation();
-                                                },
-                                                style: ButtonStyle(
-                                                  shape: MaterialStateProperty.all<
-                                                          RoundedRectangleBorder>(
-                                                      RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      16.0),
-                                                          side: BorderSide(
-                                                              color: Colors
-                                                                  .transparent))),
-                                                  backgroundColor:
-                                                      MaterialStateProperty.all<
-                                                              Color>(
-                                                          Colors.black38),
-                                                ),
-                                                child: Text('입장하기',
-                                                    style: TextStyle(
-                                                      fontFamily: 'Poppins',
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      color: Colors.white,
-                                                    )))),
-                                  ],
-                                ))
-                          ],
-                          clipBehavior: Clip.none,
-                        ),
-                      ],
-                    )))
-            : Container(
-                margin: EdgeInsets.only(top: 32),
-                padding: EdgeInsets.all(15),
-                width: 380,
-                height: 120,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 1.5, color: border100),
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        spreadRadius: 0,
-                        blurRadius: 4,
-                        offset: Offset(0, 6),
-                      ),
-                    ]),
-                child: Center(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                      Text('예약이 없습니다',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 20,
+                        Text(' 남았습니다',
+                            // textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              height: 1.0,
+                              fontFamily: 'poppins',
+                              fontSize: 26,
                               fontWeight: FontWeight.w600,
-                              color: Color.fromARGB(255, 24, 24, 24))),
-                      Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
-                          style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromARGB(105, 105, 105, 100))),
-                    ])));
-      },
-    );
+                            )),
+                      ],
+                    ),
+                    partnerName != ''
+                        ? Container(
+                            margin: EdgeInsets.only(top: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('$partnerName',
+                                    style: const TextStyle(
+                                      height: 1.0,
+                                      fontFamily: 'poppins',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: purple300,
+                                    )),
+                                Text(
+                                  '님과의 세션이 $reservationTime시에 예약되었어요!',
+                                  style: TextStyle(
+                                    height: 1.0,
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: black100,
+                                  ),
+                                )
+                              ],
+                            ))
+                        : Container(
+                            margin: EdgeInsets.only(top: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('$reservationTime',
+                                    style: const TextStyle(
+                                      height: 1.0,
+                                      fontFamily: 'poppins',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: purple300,
+                                    )),
+                                Text(
+                                  '시에 예약되었어요!',
+                                  style: TextStyle(
+                                    height: 1.0,
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: black100,
+                                  ),
+                                )
+                              ],
+                            )),
+                    Stack(
+                      children: [
+                        Image.asset(
+                          'meet.png',
+                          height: 200,
+                        ),
+                        Positioned(
+                            bottom: 0,
+                            right: -60,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                    width: 119,
+                                    height: 54,
+                                    child: isTenMinutesLeft &&
+                                            nextReservation != null
+                                        ? ElevatedButton(
+                                            onPressed: () {
+                                              enterReservation();
+                                            },
+                                            style: ButtonStyle(
+                                              shape: MaterialStateProperty.all<
+                                                      RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16.0),
+                                                      side: BorderSide(
+                                                          color: Colors
+                                                              .transparent))),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(purple300),
+                                            ),
+                                            child: Text('입장하기',
+                                                style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                )))
+                                        : TextButton(
+                                            onPressed: () {
+                                              // enterReservation();
+                                            },
+                                            style: ButtonStyle(
+                                              shape: MaterialStateProperty.all<
+                                                      RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16.0),
+                                                      side: BorderSide(
+                                                          color: Colors
+                                                              .transparent))),
+                                              backgroundColor:
+                                                  MaterialStateProperty.all<
+                                                      Color>(Colors.black38),
+                                            ),
+                                            child: Text('입장하기',
+                                                style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                )))),
+                              ],
+                            ))
+                      ],
+                      clipBehavior: Clip.none,
+                    ),
+                  ],
+                )))
+        : Container(
+            margin: EdgeInsets.only(top: 32),
+            padding: EdgeInsets.all(15),
+            width: 380,
+            height: 120,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1.5, color: border100),
+                borderRadius: BorderRadius.all(Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    spreadRadius: 0,
+                    blurRadius: 4,
+                    offset: Offset(0, 6),
+                  ),
+                ]),
+            child: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                  Text('예약이 없습니다',
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Color.fromARGB(255, 24, 24, 24))),
+                  Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color.fromARGB(105, 105, 105, 100))),
+                ])));
   }
 }
