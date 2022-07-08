@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/widgets/reservation.dart';
+import 'package:focus42/widgets/todo.dart';
 
 import '../consts/colors.dart';
 import '../widgets/calendar.dart';
 import '../widgets/line.dart';
-import '../widgets/reservation.dart';
 
 // ignore: use_key_in_widget_constructors
 class CalendarScreen extends StatefulWidget {
@@ -23,9 +24,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
       new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  // User user = User
   @override
   void initState() {
+    _auth.idTokenChanges().listen((event) {
+      // user = event;
+    });
     // TODO: implement initState
     super.initState();
   }
@@ -152,7 +156,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   // fastReservation: fastReservation,
                   // fastestReservation: fastestReservation,
                   ),
-              // Todo(),
+              Todo(),
             ]),
           ),
           Container(child: Calendar())
