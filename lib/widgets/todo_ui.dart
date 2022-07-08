@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/models/todo_model.dart';
 
 import '../consts/colors.dart';
 
@@ -22,7 +23,11 @@ class TodoUi extends StatefulWidget {
 }
 
 class TodoUiState extends State<TodoUi> {
-  final collRef = FirebaseFirestore.instance.collection('todo');
+  final _todoColRef =
+      FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
+            fromFirestore: TodoModel.fromFirestore,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+          );
   bool isHover = false;
   bool isEdit = false;
   void onHover(PointerEvent details) {
@@ -75,19 +80,22 @@ class TodoUiState extends State<TodoUi> {
                   TextButton(
                       onPressed: () {
                         setState(() {
+                          TodoModel newTodo;
                           if (!isComplete) {
-                            collRef.doc(widget.docId).update({
-                              'isComplete': !isComplete,
-                              'completedDate':
-                                  Timestamp.fromDate(DateTime.now())
-                            });
+                            newTodo = TodoModel(
+                              completedDate: DateTime.now(),
+                              isComplete: !isComplete,
+                            );
                           } else {
-                            collRef.doc(widget.docId).update({
-                              'isComplete': !isComplete,
-                              'completedDate': Timestamp.fromDate(
-                                  DateTime.fromMicrosecondsSinceEpoch(0))
-                            });
+                            newTodo = TodoModel(
+                              completedDate:
+                                  DateTime.fromMicrosecondsSinceEpoch(0),
+                              isComplete: !isComplete,
+                            );
                           }
+                          _todoColRef
+                              .doc(widget.docId)
+                              .update(newTodo.toUpdateFirestore());
                         });
                       },
                       child: isComplete
@@ -110,14 +118,14 @@ class TodoUiState extends State<TodoUi> {
                                   autofocus: true,
                                   initialValue: task,
                                   onFieldSubmitted: (value) {
-                                    setState(() {
-                                      collRef
+                                    setState(() async {
+                                      TodoModel newTodo = TodoModel(
+                                        task: value,
+                                        modifiedDate: DateTime.now(),
+                                      );
+                                      _todoColRef
                                           .doc(widget.docId)
-                                          .update({'task': value});
-                                      collRef.doc(widget.docId).update({
-                                        'modifiedDate':
-                                            Timestamp.fromDate(DateTime.now())
-                                      });
+                                          .update(newTodo.toUpdateFirestore());
                                       isEdit = false;
                                     });
                                   }))
@@ -143,7 +151,7 @@ class TodoUiState extends State<TodoUi> {
                               width: 40,
                               child: TextButton(
                                   onPressed: () {
-                                    collRef.doc(widget.docId).delete();
+                                    _todoColRef.doc(widget.docId).delete();
                                   },
                                   child: Container(
                                       width: 30,
