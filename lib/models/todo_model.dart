@@ -8,6 +8,7 @@ class TodoModel {
   final DateTime? modifiedDate;
   final DateTime? completedDate;
   final bool? isComplete;
+  final String? assignedSessionId;
 
 //default Constructor
   TodoModel({
@@ -17,6 +18,7 @@ class TodoModel {
     this.modifiedDate,
     this.completedDate,
     this.isComplete,
+    this.assignedSessionId,
   });
 
   factory TodoModel.fromFirestore(
@@ -31,6 +33,7 @@ class TodoModel {
       modifiedDate: data?['modifiedDate']?.toDate(),
       completedDate: data?['completedDate']?.toDate(),
       isComplete: data?['isComplete'],
+      assignedSessionId: data?['assignedSessionId'],
     );
   }
   Map<String, dynamic> toFirestore() {
@@ -41,6 +44,7 @@ class TodoModel {
       'modifiedDate': modifiedDate,
       'completedDate': completedDate,
       'isComplete': isComplete,
+      'assignedSessionId': assignedSessionId,
     };
   }
 
@@ -52,6 +56,7 @@ class TodoModel {
       if (modifiedDate != null) 'modifiedDate': modifiedDate,
       if (completedDate != null) 'completedDate': completedDate,
       if (isComplete != null) 'isComplete': isComplete,
+      'assignedSessionId': assignedSessionId,
     };
   }
 }

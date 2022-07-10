@@ -204,20 +204,32 @@ class Signaling {
     remoteVideo.srcObject = await createLocalMediaStream('key');
   }
 
-  Future<void> toggleUserCamera(
+  Future<void> turnOnUserCamera(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
   ) async {
-    localVideo.srcObject!.getVideoTracks()[0].enabled =
-        !localVideo.srcObject!.getVideoTracks()[0].enabled;
+    localVideo.srcObject!.getVideoTracks()[0].enabled = true;
   }
 
-  Future<void> toggleUserMic(
+  Future<void> turnOffUserCamera(
     RTCVideoRenderer localVideo,
     RTCVideoRenderer remoteVideo,
   ) async {
-    localVideo.srcObject!.getAudioTracks()[0].enabled =
-        !localVideo.srcObject!.getAudioTracks()[0].enabled;
+    localVideo.srcObject!.getVideoTracks()[0].enabled = false;
+  }
+
+  Future<void> turnOnUserMic(
+    RTCVideoRenderer localVideo,
+    RTCVideoRenderer remoteVideo,
+  ) async {
+    localVideo.srcObject!.getAudioTracks()[0].enabled = true;
+  }
+
+  Future<void> turnOffUserMic(
+    RTCVideoRenderer localVideo,
+    RTCVideoRenderer remoteVideo,
+  ) async {
+    localVideo.srcObject!.getAudioTracks()[0].enabled = false;
   }
 
   void peerClose() {
