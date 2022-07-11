@@ -10,16 +10,20 @@ class TodoUi extends StatefulWidget {
   final Timestamp createdDate;
   final String userUid;
   final String docId;
-  const TodoUi(
-      {Key? Key,
-      required this.task,
-      required this.isComplete,
-      required this.createdDate,
-      required this.userUid,
-      required this.docId})
-      : super(key: Key);
+  final String? assignedSessionId;
+
+  const TodoUi({
+    Key? Key,
+    required this.task,
+    required this.isComplete,
+    required this.createdDate,
+    required this.userUid,
+    required this.docId,
+    this.assignedSessionId,
+  }) : super(key: Key);
   @override
-  State<TodoUi> createState() => TodoUiState();
+  State<TodoUi> createState() =>
+      TodoUiState(assignedSessionId: assignedSessionId);
 }
 
 class TodoUiState extends State<TodoUi> {
@@ -30,6 +34,7 @@ class TodoUiState extends State<TodoUi> {
           );
   bool isHover = false;
   bool isEdit = false;
+  final String? assignedSessionId;
   void onHover(PointerEvent details) {
     // print('hovered');
     setState(() {
@@ -43,6 +48,8 @@ class TodoUiState extends State<TodoUi> {
       isHover = false;
     });
   }
+
+  TodoUiState({required this.assignedSessionId});
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +92,14 @@ class TodoUiState extends State<TodoUi> {
                             newTodo = TodoModel(
                               completedDate: DateTime.now(),
                               isComplete: !isComplete,
+                              assignedSessionId: assignedSessionId,
                             );
                           } else {
                             newTodo = TodoModel(
                               completedDate:
                                   DateTime.fromMicrosecondsSinceEpoch(0),
                               isComplete: !isComplete,
+                              assignedSessionId: assignedSessionId,
                             );
                           }
                           _todoColRef
