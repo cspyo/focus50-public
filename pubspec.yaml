@@ -36,6 +36,7 @@ dependencies:
   getxbottombar: ^0.0.1
   image_picker: ^0.8.5+3
   intl: ^0.17.0
+  logger: ^1.1.0
   syncfusion_flutter_calendar: ^20.1.61
   url_strategy: ^0.2.0
 

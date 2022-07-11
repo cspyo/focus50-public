@@ -48,8 +48,8 @@ class ReservationModel {
       //     startTimeStamp!.millisecondsSinceEpoch),
       // endTime: DateTime.fromMillisecondsSinceEpoch(
       //     endTimeStamp!.millisecondsSinceEpoch),
-      startTime: data?['startTime'].toDate(),
-      endTime: data?['endTime'].toDate(),
+      startTime: data?['startTime']?.toDate(),
+      endTime: data?['endTime']?.toDate(),
       user1Uid: data?['user1Uid'],
       user1Name: data?['user1Name'],
       user2Uid: data?['user2Uid'],

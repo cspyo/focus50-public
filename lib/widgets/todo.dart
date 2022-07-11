@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import '../consts/colors.dart';
+import '../models/todo_model.dart';
 import '../widgets/todo_ui.dart';
 
 // import 'package:focus42/consts/colors.dart';
@@ -15,45 +17,48 @@ class Todo extends StatefulWidget {
 }
 
 class TodoState extends State<Todo> {
-  final user = FirebaseAuth.instance.currentUser;
-  final Stream<QuerySnapshot> _usersStream = FirebaseFirestore.instance
-      .collection('todo')
-      // .where('userUid', isEqualTo: user?.uid)
-      .snapshots();
-  final collRef = FirebaseFirestore.instance.collection('todo');
+  final _user = FirebaseAuth.instance;
+  final _todoColRef =
+      FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
+            fromFirestore: TodoModel.fromFirestore,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+          );
+  late final Stream<QuerySnapshot> _myTodoColRef;
+  List<TodoModel> myTodo = [];
+  bool isTodoCompleted = false;
 
-  late String jsonString;
-  int plusPressCount = 0;
-  String todoList = '';
-  List todoTest = [];
+  @override
+  void initState() {
+    _myTodoColRef = _todoColRef
+        .where('userUid', isEqualTo: _user.currentUser?.uid)
+        .orderBy('completedDate')
+        .orderBy('modifiedDate', descending: true)
+        .orderBy('createdDate', descending: true)
+        .snapshots();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _usersStream,
+      stream: _myTodoColRef,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
+          var logger = Logger();
+          logger.e(snapshot.error);
           return Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Text("Loading");
         }
-        todoTest.clear();
+        var logger = Logger();
+        logger.d("updated");
+        myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
-          todoTest.add({
-            'task': doc['task'],
-            'isComplete': doc['isComplete'],
-            'createdDate': doc['createdDate'],
-            'userUid': doc['userUid'],
-            'docId': doc.id,
-            'modifiedDate': doc['modifiedDate'],
-            'completedDate': doc['completedDate']
-          });
-          todoTest.sort((a, b) => b['createdDate'].compareTo(a['createdDate']));
-          todoTest
-              .sort((a, b) => b['modifiedDate'].compareTo(a['modifiedDate']));
-          todoTest
-              .sort((a, b) => a['completedDate'].compareTo(b['completedDate']));
+          // TODO: 효율적으로 todo list 보여주기
+          final TodoModel todo = doc.data() as TodoModel;
+          todo.pk = doc.id;
+          myTodo.add(todo);
         });
         return Container(
           margin: EdgeInsets.only(top: 27),
@@ -73,14 +78,14 @@ class TodoState extends State<Todo> {
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          plusPressCount++;
+                          isTodoCompleted = !isTodoCompleted;
                         });
                         // print(plus);
                       },
                       iconSize: 30,
                       splashColor: Colors.transparent,
                       hoverColor: Colors.transparent,
-                      icon: plusPressCount % 2 == 0
+                      icon: isTodoCompleted == false
                           ? Icon(
                               Icons.add,
                               color: Colors.black,
@@ -92,7 +97,7 @@ class TodoState extends State<Todo> {
                 ],
               ),
             ),
-            plusPressCount % 2 == 1
+            isTodoCompleted == true
                 ? Container(
                     margin: EdgeInsets.only(top: 9),
                     width: 360,
@@ -105,18 +110,20 @@ class TodoState extends State<Todo> {
                         autofocus: true,
                         textInputAction: TextInputAction.go,
                         onSubmitted: (value) {
+                          DateTime now = DateTime.now();
+                          // ?(질문): setState 하는게 맞나?
                           setState(() {
-                            plusPressCount++;
-                            collRef.add({
-                              'userUid': user!.uid,
-                              'task': value,
-                              'createdDate': Timestamp.fromDate(DateTime.now()),
-                              'isComplete': false,
-                              'modifiedDate': Timestamp.fromDate(
-                                  DateTime.fromMicrosecondsSinceEpoch(0)),
-                              'completedDate': Timestamp.fromDate(
-                                  DateTime.fromMicrosecondsSinceEpoch(0))
-                            });
+                            isTodoCompleted = !isTodoCompleted;
+                            TodoModel todo = TodoModel(
+                              userUid: _user.currentUser!.uid,
+                              task: value,
+                              createdDate: now,
+                              modifiedDate: now,
+                              completedDate:
+                                  DateTime.fromMicrosecondsSinceEpoch(0),
+                              isComplete: false,
+                            );
+                            _todoColRef.add(todo);
                           });
                         },
                         decoration: InputDecoration(
@@ -132,8 +139,9 @@ class TodoState extends State<Todo> {
                           ),
                         )))
                 : Text(''),
-            for (var i = 0; i < todoTest.length; i++)
-              todoTest.length == 0
+            for (var i = 0; i < myTodo.length; i++)
+              // ?(질문): for 문 사용법 모르겠어요
+              myTodo.length == 0
                   ? Container(
                       margin: EdgeInsets.only(top: 32),
                       padding: EdgeInsets.all(15),
@@ -169,11 +177,11 @@ class TodoState extends State<Todo> {
                                     color: Color.fromARGB(105, 105, 105, 100))),
                           ])))
                   : TodoUi(
-                      task: todoTest[i]['task'],
-                      isComplete: todoTest[i]['isComplete'],
-                      createdDate: todoTest[i]['createdDate'],
-                      userUid: todoTest[i]['userUid'],
-                      docId: todoTest[i]['docId'])
+                      task: myTodo[i].task!,
+                      isComplete: myTodo[i].isComplete!,
+                      createdDate: Timestamp.fromDate(myTodo[i].createdDate!),
+                      userUid: myTodo[i].userUid!,
+                      docId: myTodo[i].pk!)
           ]),
         );
       },
