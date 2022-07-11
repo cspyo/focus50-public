@@ -59,6 +59,8 @@ class CalendarAppointment extends State<Calendar> {
     });
   }
 
+  void deleteAppointment() {}
+
   void initState() {
     this._reservationColRef =
         _firestore.collection('reservation').withConverter<ReservationModel>(
@@ -177,20 +179,25 @@ class CalendarAppointment extends State<Calendar> {
                         )));
               },
             ),
-            // Positioned(
-            //     child: MouseRegion(
-            //   child: CalendarHover(),
-            // ))
           ],
         ));
   }
 
-// calendarTapDetails.appointments![0].subject == name
   void calendarTapped(CalendarTapDetails calendarTapDetails) {
-    // var details = await calendarTapDetails.appointments![0].subject;
+    final appointment = calendarTapDetails.appointments?[0];
+    if (appointment != null && appointment.subject == name) {
+      _dataSource.appointments!
+          .removeAt(_dataSource.appointments!.indexOf(appointment));
+
+      _dataSource.notifyListeners(
+          CalendarDataSourceAction.remove, <Appointment>[]..add(appointment));
+      return;
+    }
+
     if (_user != null &&
         name != null &&
-        countAppointmentOverlap(_dataSource, calendarTapDetails) < 2) {
+        countAppointmentOverlap(_dataSource, calendarTapDetails) < 2 &&
+        (appointment == null || appointment?.subject != name)) {
       Appointment app = Appointment(
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(minutes: 28)),
@@ -222,3 +229,6 @@ int countAppointmentOverlap(_dataSource, calendarTapDetails) {
   }
   return count;
 }
+    // final Appointment appointment = 
+    // // print(appointment);
+ 
