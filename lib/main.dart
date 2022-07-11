@@ -1,16 +1,13 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:focus42/screens/about_screen.dart';
-import 'package:focus42/screens/calendar_screen.dart';
-import 'package:focus42/screens/login_screen.dart';
-import 'package:focus42/screens/profile_screen.dart';
-import 'package:focus42/screens/session_screen.dart';
+import 'package:focus42/consts/app_pages.dart';
+import 'package:get/get.dart';
 
-
+import 'consts/app_router_delegate.dart';
 import 'firebase_options.dart';
-import 'screens/add_profile_screen.dart';
-import 'screens/signup_screen.dart';
 
 // FirebaseFirestore firestore = FirebaseFirestore.instance;
 void main() async {
@@ -18,6 +15,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  if (kIsWeb) {
+    await FirebaseAuth.instance.authStateChanges().first;
+  }
   runApp(MyApp());
 }
 
@@ -25,19 +25,21 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp.router(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
       theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
-      routes: {
-        '/': (context) => AboutScreen(),
-        '/calendar': (context) => CalendarScreen(),
-        '/profile': (context) => ProfileScreen(),
-        '/login': (context) => LoginScreen(),
-        '/signup': (context) => SignUpScreen(),
-        '/addProfile': (context) => AddProfileScreen(),
-        // '/session': (context) => SessionScreen(),
-      },
+      defaultTransition: Transition.fade,
+      getPages: AppPages.pages,
+      routerDelegate: AppRouterDelegate(),
+      // routes: {
+      //   '/': (context) => AboutScreen(),
+      //   '/calendar': (context) => CalendarScreen(),
+      //   '/profile': (context) => ProfileScreen(),
+      //   '/login': (context) => LoginScreen(),
+      //   '/signup': (context) => SignUpScreen(),
+      //   '/addProfile': (context) => AddProfileScreen(),
+      // '/session': (context) => SessionScreen(),
+      // },
     );
   }
 }
