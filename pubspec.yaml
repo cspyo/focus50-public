@@ -39,6 +39,7 @@ dependencies:
   logger: ^1.1.0
   syncfusion_flutter_calendar: ^20.1.61
   url_strategy: ^0.2.0
+  webviewx: ^0.2.1
 
 dev_dependencies:
   flutter_test:
