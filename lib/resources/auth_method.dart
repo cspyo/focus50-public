@@ -1,19 +1,44 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/resources/storage_method.dart';
+
+import '../models/user_model.dart';
 
 class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // 유저 정보 가져오기
+  Future<UserModel> getUserDetails() async {
+    User currentUser = _auth.currentUser!;
+
+    DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+        await _firestore.collection('users').doc(currentUser.uid).get();
+
+    return UserModel.fromFirestore(documentSnapshot, null);
+  }
+
+  // UserModel Collection Reference 가져오기
+  CollectionReference getUserColRef() {
+    final userColRef = _firestore.collection('users').withConverter<UserModel>(
+          fromFirestore: UserModel.fromFirestore,
+          toFirestore: (UserModel userModel, _) => userModel.toFirestore(),
+        );
+    return userColRef;
+  }
+
   // 회원가입 (email and password)
   Future<String> signUpWithEmail(
       {required String email, required String password}) async {
-    String res = "Some error occurred";
+    String res = ERROR;
     try {
       if (email.isNotEmpty || password.isNotEmpty) {
         await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        res = "success";
+        res = SUCCESS;
       }
     } on FirebaseAuthException catch (err) {
       res = err.code;
@@ -24,12 +49,16 @@ class AuthMethods {
   // 로그인 (email and password)
   Future<String> loginUser(
       {required String email, required String password}) async {
-    String res = "Some error occurred";
+    String res = ERROR;
     try {
       if (email.isNotEmpty || password.isNotEmpty) {
         await _auth.signInWithEmailAndPassword(
             email: email, password: password);
-        res = "success";
+        if (await isSignedUp(uid: _auth.currentUser!.uid)) {
+          res = SIGNED_UP;
+        } else {
+          res = NOT_SIGNED_UP;
+        }
       } else {
         res = "Pleas enter all the fields";
       }
@@ -67,21 +96,40 @@ class AuthMethods {
     required String username,
     required String nickname,
     required String job,
+    required Uint8List file,
   }) async {
-    String res = "Some error occurred";
+    String res = ERROR;
     try {
-      if (username.isNotEmpty || job.isNotEmpty || nickname.isNotEmpty) {
+      if (username.isNotEmpty ||
+          job.isNotEmpty ||
+          nickname.isNotEmpty ||
+          file != null) {
         String uid = _auth.currentUser!.uid;
         String? email = _auth.currentUser!.email;
 
-        _firestore.collection('users').doc(uid).set({
-          'username': username,
-          'uid': uid,
-          'email': email,
-          'job': job,
-          'nickname': nickname
-        });
-        res = "success";
+        String photoUrl =
+            await StorageMethods().uploadImageToStorage('profilePics', file);
+
+        CollectionReference userColRef = getUserColRef();
+        print("[DEBUG] make colref");
+
+        UserModel user = new UserModel(
+          username: username,
+          uid: uid,
+          photoUrl: photoUrl,
+          email: email!,
+          nickname: nickname,
+          job: job,
+        );
+
+        print("[DEBUG] make usermodel");
+        await _firestore.collection('users').doc(uid).set(user.toFirestore());
+
+        print("[DEBUG] to firestore");
+
+        //_firestore.collection('users').doc(uid).set(data)
+
+        res = SUCCESS;
       }
     } catch (err) {
       res = err.toString();
