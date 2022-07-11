@@ -50,7 +50,6 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
         job: _jobController.text,
         file: _image!);
 
-    print(res);
     Get.rootDelegate.toNamed(Routes.CALENDAR);
 
     setState(() {

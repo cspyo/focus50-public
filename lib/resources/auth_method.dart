@@ -111,7 +111,6 @@ class AuthMethods {
             await StorageMethods().uploadImageToStorage('profilePics', file);
 
         CollectionReference userColRef = getUserColRef();
-        print("[DEBUG] make colref");
 
         UserModel user = new UserModel(
           username: username,
@@ -122,10 +121,7 @@ class AuthMethods {
           job: job,
         );
 
-        print("[DEBUG] make usermodel");
         await _firestore.collection('users').doc(uid).set(user.toFirestore());
-
-        print("[DEBUG] to firestore");
 
         //_firestore.collection('users').doc(uid).set(data)
 
