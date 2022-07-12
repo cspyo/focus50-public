@@ -34,7 +34,8 @@ class MatchingMethods {
      * 3-2. 만든다.
     */
     print("DEBUG matchroom");
-    return _firestore.runTransaction((transaction) async {
+    String docId = '';
+    _firestore.runTransaction((transaction) async {
       await _reservationColRef
           .where('startTime', isEqualTo: Timestamp.fromDate(startTime))
           .where('isFull', isEqualTo: false)
@@ -43,6 +44,7 @@ class MatchingMethods {
         if (querySnapshot.size > 0) {
           DocumentReference reservationRef =
               _reservationColRef.doc(querySnapshot.docs.first.id);
+          docId = reservationRef.id;
           DocumentSnapshot reservationSnap =
               await transaction.get(reservationRef);
 
@@ -85,10 +87,12 @@ class MatchingMethods {
               user2Name: null,
               isFull: false,
               room: null);
-          _reservationColRef.add(newReservation);
+          DocumentReference doc = await _reservationColRef.add(newReservation);
+          docId = doc.id;
         }
       });
     });
+    // return docId;
   }
 
   Future<void> cancelRoom(String _docId) async {
