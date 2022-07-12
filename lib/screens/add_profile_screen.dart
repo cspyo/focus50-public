@@ -1,9 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
 import '../resources/auth_method.dart';
+import '../utils/utils.dart';
 import '../widgets/line.dart';
 
 class AddProfileScreen extends StatefulWidget {
@@ -19,6 +23,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
   bool _isLoading = false;
+  Uint8List? _image;
 
   @override
   void initState() {
@@ -39,16 +44,23 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
       _isLoading = true;
     });
 
-    await AuthMethods().saveUserProfile(
-      username: _nameController.text,
-      nickname: _nicknameController.text,
-      job: _jobController.text,
-    );
+    String res = await AuthMethods().saveUserProfile(
+        username: _nameController.text,
+        nickname: _nicknameController.text,
+        job: _jobController.text,
+        file: _image!);
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
 
     setState(() {
       _isLoading = false;
+    });
+  }
+
+  void selectImage() async {
+    Uint8List im = await pickImage(ImageSource.gallery);
+    setState(() {
+      _image = im;
     });
   }
 
@@ -123,6 +135,35 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                       fontSize: 30,
                       color: purple300,
                     ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Stack(
+                    children: [
+                      _image != null
+                          ? CircleAvatar(
+                              radius: 64,
+                              backgroundColor: Colors.red,
+                              backgroundImage: MemoryImage(_image!),
+                            )
+                          : CircleAvatar(
+                              radius: 64,
+                              backgroundColor: Colors.red,
+                              backgroundImage: NetworkImage(
+                                  'https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg'),
+                            ),
+                      Positioned(
+                        bottom: -10,
+                        left: 80,
+                        child: IconButton(
+                          onPressed: selectImage,
+                          icon: const Icon(
+                            Icons.add_a_photo,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(
                     height: 30,

@@ -28,6 +28,7 @@ dependencies:
   firebase_auth: ^3.3.20
   firebase_core: ^1.18.0
   firebase_remote_config: ^2.0.9
+  firebase_storage: ^10.3.1
   flutter:
     sdk: flutter
   flutter_timer_countdown: ^1.0.3
@@ -39,7 +40,9 @@ dependencies:
   logger: ^1.1.0
   syncfusion_flutter_calendar: ^20.1.61
   url_strategy: ^0.2.0
+  uuid: ^3.0.6
   webviewx: ^0.2.1
+
 
 dev_dependencies:
   flutter_test:

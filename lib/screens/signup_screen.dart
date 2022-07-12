@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:get/get.dart';
 
@@ -46,11 +47,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       password: _passwordController.text,
     );
 
-    if (res == 'email-already-in-use') {
+    if (res == EMAIL_ALREADY_IN_USE) {
       showSnackBar("이미 존재하는 이메일입니다.", context);
-    } else if (res == 'success') {
+    } else if (res == SUCCESS) {
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
-    } else {}
+    } else {
+      showSnackBar(res, context);
+    }
 
     setState(() {
       _isLoading_email = false;
@@ -117,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/login');
+                          Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
                           '    Log In    ',

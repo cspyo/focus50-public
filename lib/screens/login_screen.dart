@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/consts/error_message.dart';
 import 'package:get/get.dart';
 
 import '../consts/colors.dart';
@@ -47,10 +48,12 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
 
-    if (res == 'user-not-found') {
+    if (res == USER_NOT_FOUND) {
       showSnackBar("회원으로 등록되어있지 않습니다.", context);
-    } else if (res == 'wrong-password') {
+    } else if (res == WRONG_PASSWORD) {
       showSnackBar("비밀번호가 틀렸습니다.", context);
+    } else if (res == NOT_SIGNED_UP) {
+      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
