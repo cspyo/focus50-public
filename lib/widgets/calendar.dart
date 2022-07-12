@@ -95,9 +95,14 @@ class CalendarAppointment extends State<Calendar> {
         Appointment app = Appointment(
             startTime: reservation.startTime!,
             endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
-            subject: reservation.user1Name!,
+            subject: reservation.user2Name == null
+                ? reservation.user1Name!
+                : reservation.user2Name == name
+                    ? reservation.user2Name!
+                    : reservation.user1Name!,
             color: Colors.teal,
             id: doc.id);
+
         _dataSource.appointments!.add(app);
       }
       _dataSource.notifyListeners(
@@ -190,24 +195,35 @@ class CalendarAppointment extends State<Calendar> {
   }
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
+    // print(
+    // "[DEBUG] in calendartap appoitments: ${calendarTapDetails.appointments}");
     final appointment = calendarTapDetails.appointments?[0];
-    //이미 예약이 있는 공간에 클릭했을 때
-    if (appointment != null && appointment.subject == name) {
-      docId = await appointment.id.toString();
-      await _reservationColRef
-          .doc(docId)
-          .delete()
-          .then((value) => print("DEBUG : calendar appointment deleted!"));
-      return;
-    }
     //빈 공간에 클릭 했을 때
-    if (_user != null &&
-        countAppointmentOverlap(_dataSource, calendarTapDetails) < 2 &&
-        (appointment == null || appointment?.subject != name)) {
+    if (appointment == null) {
       await MatchingMethods().matchRoom(
         startTime: calendarTapDetails.date!,
         endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
       );
+    }
+
+    //이미 예약이 있는 공간에 클릭했을 때
+    else {
+      if (appointment.subject == name) {
+        //내가 넣은거에 다시 클릭할때
+        docId = await appointment.id.toString();
+        await _reservationColRef
+            .doc(docId)
+            .delete()
+            .then((value) => print("DEBUG : calendar appointment deleted!"));
+      } else {
+        //상대방이 넣은거에 다시 클릭할때
+        print('상대방이 넣은 거에 다시 클릭');
+        await MatchingMethods().matchRoom(
+          startTime: calendarTapDetails.date!,
+          endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
+        );
+      }
+      return;
     }
   }
 }

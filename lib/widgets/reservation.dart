@@ -18,7 +18,7 @@ class Reservation extends StatefulWidget {
 }
 
 class _ReservationState extends State<Reservation> {
-  String? partnerName = '';
+  String? partnerName = null;
   String reservationTime = '10시';
   int remainingTime = 0;
   bool isTenMinutesLeft = true;
@@ -48,12 +48,9 @@ class _ReservationState extends State<Reservation> {
         .orderBy('startTime')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) async {
-      // print("[DEBUG] getNextSession1");
       ReservationModel? nextReservation_origin;
       querySnapshot.docChanges.forEach((element) {
-        // print("[DEBUG] getNextSession1/forEach/");
         if (element.type == DocumentChangeType.added) {
-          // print("[DEBUG] getNextSession1/forEach-added/");
           DocumentSnapshot reservationSnap = element.doc;
           ReservationModel tempReservation =
               reservationSnap.data() as ReservationModel;
@@ -71,7 +68,6 @@ class _ReservationState extends State<Reservation> {
           }
           if (nextReservation != nextReservation_origin) {
             if (nextReservation != null) {
-              // print("[DEBUG] next time is ${nextReservation!.startTime}");
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
                 remainingTime =
@@ -89,7 +85,6 @@ class _ReservationState extends State<Reservation> {
           }
         } else {
           if (querySnapshot.size > 0) {
-            // print("[DEBUG] getNextSession1/forEach-not added/");
             nextReservation = null;
             querySnapshot.docs.forEach((element) {
               ReservationModel tempReservation =
@@ -109,7 +104,6 @@ class _ReservationState extends State<Reservation> {
             });
           }
           if (nextReservation != null) {
-            // print("[DEBUG] next time is ${nextReservation!.startTime}");
             setState(() {
               nextReservationStartTime = nextReservation!.startTime!;
               remainingTime =
@@ -140,12 +134,9 @@ class _ReservationState extends State<Reservation> {
         .orderBy('startTime')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) async {
-      // print("[DEBUG] getNextSession1");
       ReservationModel? nextReservation_origin;
       querySnapshot.docChanges.forEach((element) {
-        // print("[DEBUG] getNextSession1/forEach/");
         if (element.type == DocumentChangeType.added) {
-          // print("[DEBUG] getNextSession1/forEach-added/");
           DocumentSnapshot reservationSnap = element.doc;
           ReservationModel tempReservation =
               reservationSnap.data() as ReservationModel;
@@ -163,7 +154,6 @@ class _ReservationState extends State<Reservation> {
           }
           if (nextReservation != nextReservation_origin) {
             if (nextReservation != null) {
-              // print("[DEBUG] next time is ${nextReservation!.startTime}");
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
                 remainingTime =
@@ -181,7 +171,6 @@ class _ReservationState extends State<Reservation> {
           }
         } else {
           if (querySnapshot.size > 0) {
-            // print("[DEBUG] getNextSession1/forEach-not added/");
             nextReservation = null;
             querySnapshot.docs.forEach((element) {
               ReservationModel tempReservation =
@@ -201,7 +190,6 @@ class _ReservationState extends State<Reservation> {
             });
           }
           if (nextReservation != null) {
-            // print("[DEBUG] next time is ${nextReservation!.startTime}");
             setState(() {
               nextReservationStartTime = nextReservation!.startTime!;
               remainingTime =
@@ -238,7 +226,6 @@ class _ReservationState extends State<Reservation> {
                   reservationModel.toFirestore(),
             );
     getNextSession();
-    print("[DEBUG] initState: next reservation: ${nextReservation?.startTime}");
   }
 
   @override
@@ -305,7 +292,7 @@ class _ReservationState extends State<Reservation> {
                             )),
                       ],
                     ),
-                    partnerName != ''
+                    partnerName != null
                         ? Container(
                             margin: EdgeInsets.only(top: 12),
                             child: Row(

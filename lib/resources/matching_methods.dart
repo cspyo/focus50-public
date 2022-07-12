@@ -55,6 +55,10 @@ class MatchingMethods {
           final ReservationModel reservation = ReservationModel.fromFirestore(
               reservationSnap as DocumentSnapshot<Map<String, dynamic>>, null);
           ReservationModel newReservation;
+          if (userId == reservation.user2Uid ||
+              userId == reservation.user1Uid) {
+            throw Exception('reservation two same user!');
+          }
           if (reservation.isEmptyUser1()) {
             newReservation = ReservationModel(
                 startTime: reservation.startTime,
@@ -92,7 +96,6 @@ class MatchingMethods {
         }
       });
     });
-    // return docId;
   }
 
   Future<void> cancelRoom(String _docId) async {
