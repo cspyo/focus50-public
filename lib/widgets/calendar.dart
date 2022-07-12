@@ -15,16 +15,22 @@ class Calendar extends StatefulWidget {
 }
 
 final _user = FirebaseAuth.instance.currentUser;
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 class CalendarAppointment extends State<Calendar> {
   late CalendarDataSource _dataSource;
   List<Appointment> appointments = <Appointment>[];
   bool isHover = false;
   bool isEdit = false;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  String docId = '';
+  CollectionReference _reservationColRef =
+      _firestore.collection('reservation').withConverter<ReservationModel>(
+            fromFirestore: ReservationModel.fromFirestore,
+            toFirestore: (ReservationModel reservationModel, _) =>
+                reservationModel.toFirestore(),
+          );
   final name = _user?.displayName;
-  late CollectionReference _reservationColRef;
+
   int getCurrentDayPosition() {
     String currentDay = DateFormat('E').format(DateTime.now());
     switch (currentDay) {
@@ -59,34 +65,56 @@ class CalendarAppointment extends State<Calendar> {
     });
   }
 
-  void deleteAppointment() {}
+  // void initState() {
+  //   this._reservationColRef =
+  //       _firestore.collection('reservation').withConverter<ReservationModel>(
+  //             fromFirestore: ReservationModel.fromFirestore,
+  //             toFirestore: (ReservationModel reservationModel, _) =>
+  //                 reservationModel.toFirestore(),
+  //           );
+  //   _dataSource = _DataSource(appointments);
+  //   setState(() {
+  //     _reservationColRef.get().then((QuerySnapshot querySnapshot) {
+  //       _dataSource.appointments!.clear();
+  //       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+  //         ReservationModel reservation = doc.data() as ReservationModel;
+  //         Appointment app = Appointment(
+  //             startTime: reservation.startTime!,
+  //             endTime: reservation.endTime!.subtract(Duration(minutes: 32)),
+  //             subject: reservation.user1Name!,
+  //             color: Colors.teal,
+  //             id: doc.id);
+  //         _dataSource.appointments!.add(app);
+  //         _dataSource.notifyListeners(
+  //             CalendarDataSourceAction.add, <Appointment>[app]);
+  //       }
+  //     });
+  //   });
+  //   super.initState();
+  // }
 
+  @override
   void initState() {
-    this._reservationColRef =
-        _firestore.collection('reservation').withConverter<ReservationModel>(
-              fromFirestore: ReservationModel.fromFirestore,
-              toFirestore: (ReservationModel reservationModel, _) =>
-                  reservationModel.toFirestore(),
-            );
-
+    super.initState();
     _dataSource = _DataSource(appointments);
-    setState(() {
-      _reservationColRef.get().then((QuerySnapshot querySnapshot) {
-        for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-          ReservationModel reservation = doc.data() as ReservationModel;
-          Appointment app = Appointment(
+    _reservationColRef.snapshots().listen((snapshot) {
+      var querySnapshot = snapshot;
+      _dataSource.appointments!.clear();
+      print("in initstate");
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        ReservationModel reservation = doc.data() as ReservationModel;
+        Appointment app = Appointment(
             startTime: reservation.startTime!,
             endTime: reservation.endTime!.subtract(Duration(minutes: 32)),
             subject: reservation.user1Name!,
             color: Colors.teal,
-          );
-          _dataSource.appointments!.add(app);
-          _dataSource.notifyListeners(
-              CalendarDataSourceAction.add, <Appointment>[app]);
-        }
-      });
+            id: doc.id);
+        _dataSource.appointments!.add(app);
+      }
+      // print(_dataSource.appointments![0]);
+      _dataSource.notifyListeners(
+          CalendarDataSourceAction.reset, _dataSource.appointments!);
     });
-    super.initState();
   }
 
   @override
@@ -133,8 +161,7 @@ class CalendarAppointment extends State<Calendar> {
                 return Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: meeting.subject
-                                .contains(_user!.displayName.toString())
+                        color: meeting.subject.contains(name.toString())
                             ? purple200
                             : Colors.white,
                         boxShadow: [
@@ -166,15 +193,6 @@ class CalendarAppointment extends State<Calendar> {
                                   maxLines: 1,
                                   textAlign: TextAlign.center,
                                 ))
-                            //  Text(
-                            //         'X',
-                            //         style: TextStyle(
-                            //             color: Colors.black,
-                            //             fontSize: 20,
-                            //             fontWeight: FontWeight.w900),
-                            //         textAlign: TextAlign.center,
-                            //       )
-                            //     :
                           ],
                         )));
               },
@@ -183,30 +201,23 @@ class CalendarAppointment extends State<Calendar> {
         ));
   }
 
-  void calendarTapped(CalendarTapDetails calendarTapDetails) {
+  void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     final appointment = calendarTapDetails.appointments?[0];
+    //이미 예약이 있는 공간에 클릭했을 때
     if (appointment != null && appointment.subject == name) {
-      _dataSource.appointments!
-          .removeAt(_dataSource.appointments!.indexOf(appointment));
-
-      _dataSource.notifyListeners(
-          CalendarDataSourceAction.remove, <Appointment>[]..add(appointment));
+      docId = await appointment.id.toString();
+      await _reservationColRef
+          .doc(docId)
+          .delete()
+          .then((value) => print("DEBUG : calendar appointment deleted!"));
       return;
     }
-
+    //빈 공간에 클릭 했을 때
     if (_user != null &&
         name != null &&
         countAppointmentOverlap(_dataSource, calendarTapDetails) < 2 &&
         (appointment == null || appointment?.subject != name)) {
-      Appointment app = Appointment(
-          startTime: calendarTapDetails.date!,
-          endTime: calendarTapDetails.date!.add(Duration(minutes: 28)),
-          subject: name!,
-          color: purple300);
-      _dataSource.appointments!.add(app);
-      _dataSource
-          .notifyListeners(CalendarDataSourceAction.add, <Appointment>[app]);
-      MatchingMethods().matchRoom(
+      await MatchingMethods().matchRoom(
         startTime: calendarTapDetails.date!,
         endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
       );
@@ -229,6 +240,3 @@ int countAppointmentOverlap(_dataSource, calendarTapDetails) {
   }
   return count;
 }
-    // final Appointment appointment = 
-    // // print(appointment);
- 
