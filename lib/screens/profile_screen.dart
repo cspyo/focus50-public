@@ -3,13 +3,14 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/models/user_model.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
-import '../models/user_model.dart';
 import '../resources/auth_method.dart';
+import '../resources/storage_method.dart';
 import '../utils/utils.dart';
 import '../widgets/line.dart';
 
@@ -79,12 +80,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void updateProfile(UserModel user) async {
+  void updateProfile(String uid, String email, String username, String nickname,
+      String job) async {
     setState(() {
       isUpdating = true;
     });
 
+    String photoUrl;
+    if (_image == null) {
+      photoUrl = userData['photoUrl'];
+    } else {
+      photoUrl =
+          await StorageMethods().uploadImageToStorage('profilePics', _image!);
+    }
+
+    UserModel user = new UserModel(
+        username: username,
+        uid: uid,
+        photoUrl: photoUrl,
+        email: email,
+        nickname: nickname,
+        job: job);
+
     await _userColRef.doc(_auth.currentUser!.uid).update(user.toFirestore());
+
+    showSnackBar("업데이트 완료", context);
 
     setState(() {
       isUpdating = false;
@@ -395,20 +415,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: 250,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               final username = _nameController.text;
                               final nickname = _nicknameController.text;
                               final job = _jobController.text;
 
                               updateProfile(
-                                new UserModel(
-                                  uid: userData['uid'],
-                                  email: userData['email'],
-                                  photoUrl: userData['photoUrl'],
-                                  username: username,
-                                  nickname: nickname,
-                                  job: job,
-                                ),
+                                userData['uid'],
+                                userData['email'],
+                                username,
+                                nickname,
+                                job,
                               );
                             },
                             style: ElevatedButton.styleFrom(
