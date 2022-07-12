@@ -23,13 +23,13 @@ class CalendarAppointment extends State<Calendar> {
   bool isHover = false;
   bool isEdit = false;
   String docId = '';
+  String? name = _user?.displayName;
   CollectionReference _reservationColRef =
       _firestore.collection('reservation').withConverter<ReservationModel>(
             fromFirestore: ReservationModel.fromFirestore,
             toFirestore: (ReservationModel reservationModel, _) =>
                 reservationModel.toFirestore(),
           );
-  final name = _user?.displayName;
 
   int getCurrentDayPosition() {
     String currentDay = DateFormat('E').format(DateTime.now());
@@ -65,53 +65,41 @@ class CalendarAppointment extends State<Calendar> {
     });
   }
 
-  // void initState() {
-  //   this._reservationColRef =
-  //       _firestore.collection('reservation').withConverter<ReservationModel>(
-  //             fromFirestore: ReservationModel.fromFirestore,
-  //             toFirestore: (ReservationModel reservationModel, _) =>
-  //                 reservationModel.toFirestore(),
-  //           );
-  //   _dataSource = _DataSource(appointments);
-  //   setState(() {
-  //     _reservationColRef.get().then((QuerySnapshot querySnapshot) {
-  //       _dataSource.appointments!.clear();
-  //       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-  //         ReservationModel reservation = doc.data() as ReservationModel;
-  //         Appointment app = Appointment(
-  //             startTime: reservation.startTime!,
-  //             endTime: reservation.endTime!.subtract(Duration(minutes: 32)),
-  //             subject: reservation.user1Name!,
-  //             color: Colors.teal,
-  //             id: doc.id);
-  //         _dataSource.appointments!.add(app);
-  //         _dataSource.notifyListeners(
-  //             CalendarDataSourceAction.add, <Appointment>[app]);
-  //       }
-  //     });
-  //   });
-  //   super.initState();
-  // }
-
   @override
   void initState() {
     super.initState();
+    //user model 써서 바꿔야합니다!
+
     _dataSource = _DataSource(appointments);
-    _reservationColRef.snapshots().listen((snapshot) {
+    _reservationColRef
+        .where('startTime', isGreaterThan: Timestamp.fromDate(DateTime.now()))
+        .snapshots()
+        .listen((snapshot) {
       var querySnapshot = snapshot;
+
       _dataSource.appointments!.clear();
-      print("in initstate");
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        // *첫번째 받아올 때(init) 모든게 docChange 로 인식된다
+        // 1번의 경우는 add
+        // 어떤 게 변화되었다 a.type = add / a의 변경사항을 dataSource 에 넣으면 된다.
+        // -> doc change 에서 가져오면 된다
+
+        // 2번의 경우는 delete modify
+        // -> a.type = delete / a 의 변경사항을 반영하려면 리스트에서 찾아야 한다.
+        // 찾으려면 결국 list traverse 를 해야한다.
+        // dictionary(hash table) dic(docId) -> remove 를 하면 되지 않을까
+        // dict -> list
+        // dart에도 있을까?
+
         ReservationModel reservation = doc.data() as ReservationModel;
         Appointment app = Appointment(
             startTime: reservation.startTime!,
-            endTime: reservation.endTime!.subtract(Duration(minutes: 32)),
+            endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
             subject: reservation.user1Name!,
             color: Colors.teal,
             id: doc.id);
         _dataSource.appointments!.add(app);
       }
-      // print(_dataSource.appointments![0]);
       _dataSource.notifyListeners(
           CalendarDataSourceAction.reset, _dataSource.appointments!);
     });
@@ -137,7 +125,7 @@ class CalendarAppointment extends State<Calendar> {
               timeSlotViewSettings: TimeSlotViewSettings(
                   dayFormat: 'EEE',
                   timeIntervalHeight: 50,
-                  timeInterval: Duration(minutes: 30),
+                  timeInterval: Duration(hours: 1),
                   timeFormat: 'h:mm'),
               viewHeaderStyle: ViewHeaderStyle(
                   backgroundColor: Colors.white,
@@ -214,7 +202,6 @@ class CalendarAppointment extends State<Calendar> {
     }
     //빈 공간에 클릭 했을 때
     if (_user != null &&
-        name != null &&
         countAppointmentOverlap(_dataSource, calendarTapDetails) < 2 &&
         (appointment == null || appointment?.subject != name)) {
       await MatchingMethods().matchRoom(

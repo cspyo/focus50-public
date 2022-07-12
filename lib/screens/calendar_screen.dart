@@ -27,10 +27,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   // User user = User
   @override
   void initState() {
-    _auth.idTokenChanges().listen((event) {
-      // user = event;
-    });
-    // TODO: implement initState
     super.initState();
   }
 
