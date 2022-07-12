@@ -6,14 +6,30 @@ import 'package:focus42/utils/signaling.dart';
 
 class MatchingMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _user = FirebaseAuth.instance;
+
   late String userId;
   late String? userName;
   late CollectionReference _reservationColRef;
+  final FirebaseAuth _user = FirebaseAuth.instance;
+  var userData = {};
+  String? nickName;
+
+  void getUserName() async {
+    try {
+      var userSnap = await _firestore
+          .collection('users')
+          .doc(_user.currentUser!.uid)
+          .get();
+
+      userData = userSnap.data()!;
+      nickName = userData['nickname'];
+    } catch (e) {}
+  }
 
   MatchingMethods() {
+    getUserName();
     this.userId = _user.currentUser!.uid;
-    this.userName = _user.currentUser?.displayName;
+    this.userName = nickName;
     this._reservationColRef =
         _firestore.collection('reservation').withConverter<ReservationModel>(
               fromFirestore: ReservationModel.fromFirestore,

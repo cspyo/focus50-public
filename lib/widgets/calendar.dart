@@ -23,7 +23,10 @@ class CalendarAppointment extends State<Calendar> {
   bool isHover = false;
   bool isEdit = false;
   String docId = '';
-  String? name = _user?.displayName;
+
+  var userData = {};
+  String? nickName;
+
   CollectionReference _reservationColRef =
       _firestore.collection('reservation').withConverter<ReservationModel>(
             fromFirestore: ReservationModel.fromFirestore,
@@ -65,11 +68,20 @@ class CalendarAppointment extends State<Calendar> {
     });
   }
 
+  void getUserName() async {
+    try {
+      var userSnap = await _firestore.collection('users').doc(_user!.uid).get();
+
+      userData = userSnap.data()!;
+      nickName = userData['nickname'];
+    } catch (e) {}
+  }
+
   @override
   void initState() {
     super.initState();
     //user model 써서 바꿔야합니다!
-
+    getUserName();
     _dataSource = _DataSource(appointments);
     _reservationColRef
         .where('startTime', isGreaterThan: Timestamp.fromDate(DateTime.now()))
@@ -97,7 +109,7 @@ class CalendarAppointment extends State<Calendar> {
             endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
             subject: reservation.user2Name == null
                 ? reservation.user1Name!
-                : reservation.user2Name == name
+                : reservation.user2Name == nickName
                     ? reservation.user2Name!
                     : reservation.user1Name!,
             color: Colors.teal,
@@ -154,7 +166,7 @@ class CalendarAppointment extends State<Calendar> {
                 return Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: meeting.subject.contains(name.toString())
+                        color: meeting.subject.contains(nickName.toString())
                             ? purple200
                             : Colors.white,
                         boxShadow: [
@@ -179,7 +191,7 @@ class CalendarAppointment extends State<Calendar> {
                                       fontSize: 12,
                                       fontFamily: 'poppins',
                                       color: meeting.subject
-                                              .contains(name.toString())
+                                              .contains(nickName.toString())
                                           ? Colors.white
                                           : Colors.black),
                                   overflow: TextOverflow.ellipsis,
@@ -208,7 +220,7 @@ class CalendarAppointment extends State<Calendar> {
 
     //이미 예약이 있는 공간에 클릭했을 때
     else {
-      if (appointment.subject == name) {
+      if (appointment.subject == nickName) {
         //내가 넣은거에 다시 클릭할때
         docId = await appointment.id.toString();
         await _reservationColRef
