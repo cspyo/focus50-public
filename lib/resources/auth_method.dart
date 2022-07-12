@@ -96,19 +96,22 @@ class AuthMethods {
     required String username,
     required String nickname,
     required String job,
-    required Uint8List file,
+    required Uint8List? file,
   }) async {
     String res = ERROR;
     try {
-      if (username.isNotEmpty ||
-          job.isNotEmpty ||
-          nickname.isNotEmpty ||
-          file != null) {
+      if (username.isNotEmpty || job.isNotEmpty || nickname.isNotEmpty) {
         String uid = _auth.currentUser!.uid;
         String? email = _auth.currentUser!.email;
+        String photoUrl;
 
-        String photoUrl =
-            await StorageMethods().uploadImageToStorage('profilePics', file);
+        if (file == null) {
+          photoUrl =
+              'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3';
+        } else {
+          photoUrl =
+              await StorageMethods().uploadImageToStorage('profilePics', file);
+        }
 
         CollectionReference userColRef = getUserColRef();
 

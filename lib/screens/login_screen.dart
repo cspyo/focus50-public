@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     } else {
-      Get.rootDelegate.offNamed(Routes.PROFILE);
+      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     }
 
     setState(() {
@@ -171,6 +171,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ? null
                                     : "Please enter a valid email",
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                loginUser();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
@@ -197,6 +202,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                loginUser();
+                              }
+                            },
                             maxLines: 1,
                             obscureText: true,
                             keyboardType: TextInputType.text,
@@ -217,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 450,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 loginUser();
                               }
