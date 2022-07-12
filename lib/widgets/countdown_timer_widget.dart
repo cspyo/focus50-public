@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 class CountDownTimer extends StatefulWidget {
   final Duration duration;
@@ -25,6 +26,7 @@ class _CountDownTimerState extends State<CountDownTimer>
   late AnimationController controller;
   final Duration duration;
   final DateTime startTime;
+  late Duration diff;
   Timer? _timer;
 
   String get timerString {
@@ -56,8 +58,7 @@ class _CountDownTimerState extends State<CountDownTimer>
     // ..addStatusListener((status) { })
     // TODO: timer 끝났을 때 event 걸기
 
-    Duration diff = startTime.difference(DateTime.now());
-    // TODO: timer duration argument firebase 데이터 포맷 맞추기
+    diff = startTime.difference(DateTime.now());
     _timer = Timer(diff, startTimer);
   }
 
@@ -76,87 +77,121 @@ class _CountDownTimerState extends State<CountDownTimer>
         body: AnimatedBuilder(
             animation: controller,
             builder: (context, child) {
-              return Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          child: Align(
-                            alignment: FractionalOffset.center,
-                            child: AspectRatio(
-                              aspectRatio: 1.0,
-                              child: Stack(
-                                children: <Widget>[
-                                  Positioned.fill(
-                                    child: CustomPaint(
-                                        painter: CustomTimerPainter(
-                                            animation: controller,
-                                            backgroundColor: Colors.red,
-                                            color: themeData.canvasColor)),
-                                  ),
-                                  Align(
-                                    alignment: FractionalOffset.center,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                          "남은 시간",
-                                          style: TextStyle(
-                                              fontSize: 20.0,
-                                              color: themeData.primaryColor),
-                                        ),
-                                        Text(
-                                          timerString,
-                                          style: TextStyle(
-                                              fontSize: 80.0,
-                                              color: themeData.primaryColor),
-                                        ),
-                                        // AnimatedBuilder(
-                                        //     animation: controller,
-                                        //     builder: (context, child) {
-                                        //       return FloatingActionButton
-                                        //           .extended(
-                                        //               onPressed: () {
-                                        //                 if (controller
-                                        //                     .isAnimating) {
-                                        //                   controller.stop();
-                                        //                 } else {
-                                        //                   controller.reverse(
-                                        //                       from: controller
-                                        //                                   .value ==
-                                        //                               0.0
-                                        //                           ? 1.0
-                                        //                           : controller
-                                        //                               .value);
-                                        //                 }
-                                        //               },
-                                        //               icon: Icon(controller
-                                        //                       .isAnimating
-                                        //                   ? Icons.pause
-                                        //                   : Icons.play_arrow),
-                                        //               label: Text(
-                                        //                   controller.isAnimating
-                                        //                       ? "Pause"
-                                        //                       : "Play"));
-                                        //     }),
-                                      ],
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Stack(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            child: Align(
+                              alignment: FractionalOffset.center,
+                              child: AspectRatio(
+                                aspectRatio: 1.0,
+                                child: Stack(
+                                  children: <Widget>[
+                                    Positioned.fill(
+                                      child: CustomPaint(
+                                          painter: CustomTimerPainter(
+                                              animation: controller,
+                                              backgroundColor: Colors.red,
+                                              color: themeData.canvasColor)),
                                     ),
-                                  ),
-                                ],
+                                    Align(
+                                      alignment: FractionalOffset.center,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: (controller.isAnimating)
+                                            ? <Widget>[
+                                                Text(
+                                                  "남은 시간",
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 20.0,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  timerString,
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 80.0,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ]
+                                            : [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text('시작까지 ',
+                                                        // textAlign: TextAlign.center,
+                                                        style: const TextStyle(
+                                                          height: 1.0,
+                                                          fontFamily: 'poppins',
+                                                          fontSize: 26,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        )),
+                                                    TimerCountdown(
+                                                      format:
+                                                          CountDownTimerFormat
+                                                              .minutesSeconds,
+                                                      endTime:
+                                                          DateTime.now().add(
+                                                        diff,
+                                                      ),
+                                                      enableDescriptions: false,
+                                                      timeTextStyle: TextStyle(
+                                                        height: 1.0,
+                                                        fontFamily: 'poppins',
+                                                        fontSize: 26,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                      colonsTextStyle:
+                                                          TextStyle(
+                                                        height: 1.0,
+                                                        fontFamily: 'poppins',
+                                                        fontSize: 26,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                      spacerWidth: 0,
+                                                    ),
+                                                    Text(' 남았습니다',
+                                                        // textAlign: TextAlign.center,
+                                                        style: const TextStyle(
+                                                          height: 1.0,
+                                                          fontFamily: 'poppins',
+                                                          fontSize: 26,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        )),
+                                                  ],
+                                                )
+                                              ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }));
   }

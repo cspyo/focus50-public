@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:get/get.dart';
+import 'package:webviewx/webviewx.dart';
 
 import '../consts/routes.dart';
 import '../widgets/line.dart';
@@ -13,6 +14,7 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late WebViewXController webviewController;
 
   @override
   void initState() {
@@ -121,9 +123,21 @@ class _AboutScreenState extends State<AboutScreen> {
         ),
       ), //header
       const Line(),
-      Container(
-        child: Text('about'),
-      )
+      Expanded(
+        child: WebViewX(
+          initialContent: 'https://focus50-8b405.web.app',
+          initialSourceType: SourceType.url,
+          onWebViewCreated: (controller) {
+            webviewController = controller;
+            // webviewController.loadContent(
+            //   '/about/index.html',
+            //   SourceType.url,
+            // );
+          },
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+        ),
+      ),
     ]));
   }
 }

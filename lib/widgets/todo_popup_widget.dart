@@ -1,22 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/models/reservation_model.dart';
 import 'package:logger/logger.dart';
 
 import '../consts/colors.dart';
 import '../models/todo_model.dart';
-import '../widgets/todo_ui.dart';
 
 // import 'package:focus42/consts/colors.dart';
 // import 'package:todo/todo.dart';
 
 // ignore: camel_case_types
-class Todo extends StatefulWidget {
+
+class TodoPopup extends StatefulWidget {
+  final ReservationModel session;
+  TodoPopup({required this.session});
   @override
-  TodoState createState() => TodoState();
+  TodoPopupState createState() => TodoPopupState(session: session);
 }
 
-class TodoState extends State<Todo> {
+class TodoPopupState extends State<TodoPopup> {
+  final ReservationModel session;
   final _user = FirebaseAuth.instance;
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
@@ -25,12 +29,15 @@ class TodoState extends State<Todo> {
           );
   late final Stream<QuerySnapshot> _myTodoColRef;
   List<TodoModel> myTodo = [];
-  bool isTodoCompleted = false;
+  bool isEditing = false;
+
+  TodoPopupState({required this.session});
 
   @override
   void initState() {
     _myTodoColRef = _todoColRef
         .where('userUid', isEqualTo: _user.currentUser?.uid)
+        .where('isComplete', isEqualTo: false)
         .orderBy('completedDate')
         .orderBy('modifiedDate', descending: true)
         .orderBy('createdDate', descending: true)
@@ -49,10 +56,10 @@ class TodoState extends State<Todo> {
           return Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Text("");
         }
-        var logger = Logger();
-        logger.d("updated");
+        // var logger = Logger();
+        // logger.d("updated");
         myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
           // TODO: 효율적으로 todo list 보여주기
@@ -70,22 +77,22 @@ class TodoState extends State<Todo> {
                 children: [
                   Container(
                       margin: EdgeInsets.only(left: 10),
-                      child: Text('Todo',
+                      child: Text('이번 세션에서 할 일을 선택해주세요 (최대 3개)',
                           style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 32,
+                              fontSize: 15,
                               fontWeight: FontWeight.w600))),
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          isTodoCompleted = !isTodoCompleted;
+                          isEditing = !isEditing;
                         });
                         // print(plus);
                       },
                       iconSize: 30,
                       splashColor: Colors.transparent,
                       hoverColor: Colors.transparent,
-                      icon: isTodoCompleted == false
+                      icon: isEditing == false
                           ? Icon(
                               Icons.add,
                               color: Colors.black,
@@ -97,7 +104,7 @@ class TodoState extends State<Todo> {
                 ],
               ),
             ),
-            isTodoCompleted == true
+            isEditing == true
                 ? Container(
                     margin: EdgeInsets.only(top: 9),
                     width: 360,
@@ -113,7 +120,7 @@ class TodoState extends State<Todo> {
                           DateTime now = DateTime.now();
                           // ?(질문): setState 하는게 맞나?
                           setState(() {
-                            isTodoCompleted = !isTodoCompleted;
+                            isEditing = !isEditing;
                             TodoModel todo = TodoModel(
                               userUid: _user.currentUser!.uid,
                               task: value,
@@ -141,50 +148,135 @@ class TodoState extends State<Todo> {
                 : Text(''),
             for (var i = 0; i < myTodo.length; i++)
               // ?(질문): for 문 사용법 모르겠어요
-              myTodo.length == 0
-                  ? Container(
-                      margin: EdgeInsets.only(top: 32),
-                      padding: EdgeInsets.all(15),
-                      width: 380,
-                      height: 120,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(width: 1.5, color: border100),
-                          borderRadius: BorderRadius.all(Radius.circular(32)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.25),
-                              spreadRadius: 0,
-                              blurRadius: 4,
-                              offset: Offset(0, 6),
-                            ),
-                          ]),
-                      child: Center(
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                            Text('투두가 없습니다',
-                                style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromARGB(255, 24, 24, 24))),
-                            Text('해야할 일을 정해 입력해보세요!',
-                                style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color.fromARGB(105, 105, 105, 100))),
-                          ])))
-                  : TodoUi(
-                      task: myTodo[i].task!,
-                      isComplete: myTodo[i].isComplete!,
-                      createdDate: Timestamp.fromDate(myTodo[i].createdDate!),
-                      userUid: myTodo[i].userUid!,
-                      docId: myTodo[i].pk!)
+              TodoPopupUi(
+                task: myTodo[i].task!,
+                isComplete: myTodo[i].isComplete!,
+                createdDate: Timestamp.fromDate(myTodo[i].createdDate!),
+                userUid: myTodo[i].userUid!,
+                docId: myTodo[i].pk!,
+                currentSessionId: session.pk!,
+                assignedSessionId: myTodo[i].assignedSessionId,
+              )
           ]),
         );
       },
     );
+  }
+}
+
+class TodoPopupUi extends StatefulWidget {
+  final String task;
+  final bool isComplete;
+  final Timestamp createdDate;
+  final String userUid;
+  final String docId;
+
+  final String? currentSessionId;
+  final String? assignedSessionId;
+
+  const TodoPopupUi({
+    Key? Key,
+    required this.task,
+    required this.isComplete,
+    required this.createdDate,
+    required this.userUid,
+    required this.docId,
+    this.currentSessionId,
+    this.assignedSessionId,
+  }) : super(key: Key);
+  @override
+  State<TodoPopupUi> createState() => TodoPopupUiState(
+      assignedSessionId: assignedSessionId, currentSessionId: currentSessionId);
+}
+
+class TodoPopupUiState extends State<TodoPopupUi> {
+  final _todoColRef =
+      FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
+            fromFirestore: TodoModel.fromFirestore,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+          );
+  final _user = FirebaseAuth.instance;
+  bool isHover = false;
+  bool isEdit = false;
+  String? assignedSessionId;
+  final String? currentSessionId;
+  void onHover(PointerEvent details) {
+    // print('hovered');
+    setState(() {
+      isHover = true;
+    });
+  }
+
+  void onExit(PointerEvent details) {
+    // print('nothovered');
+    setState(() {
+      isHover = false;
+    });
+  }
+
+  TodoPopupUiState({
+    required this.assignedSessionId,
+    required this.currentSessionId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    String task = widget.task;
+    bool isComplete = widget.isComplete;
+
+    return Container(
+        margin: EdgeInsets.only(top: 9),
+        width: 380,
+        height: 60,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.25),
+                spreadRadius: 0,
+                blurRadius: 4,
+                offset: Offset(0, 6),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              width: 1.5,
+              color: border100,
+            )),
+        child: MouseRegion(
+            onEnter: onHover,
+            onExit: onExit,
+            child: Container(
+              child: Row(
+                children: [
+                  TextButton(
+                      onPressed: () {
+                        setState(() {
+                          TodoModel newTodo;
+                          if (assignedSessionId != currentSessionId) {
+                            newTodo = TodoModel(
+                              assignedSessionId: currentSessionId,
+                            );
+                            assignedSessionId = currentSessionId;
+                          } else {
+                            newTodo = TodoModel(
+                              assignedSessionId: null,
+                            );
+                            assignedSessionId = null;
+                          }
+                          _todoColRef
+                              .doc(widget.docId)
+                              .update(newTodo.toUpdateFirestore());
+                        });
+                      },
+                      child: assignedSessionId != null &&
+                              assignedSessionId == currentSessionId
+                          ? Icon(Icons.check, color: Colors.black)
+                          : Icon(Icons.check_box_outline_blank_outlined,
+                              color: Colors.black)),
+                  Container(width: 235, child: Text(task)),
+                ],
+              ),
+            )));
   }
 }
