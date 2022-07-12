@@ -1,9 +1,12 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/utils/utils.dart';
+import 'package:get/get.dart';
 
 import '../consts/colors.dart';
+import '../consts/routes.dart';
 import '../resources/auth_method.dart';
 import '../widgets/line.dart';
 
@@ -18,18 +21,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  // ignore: unused_field
   bool _isLoading_email = false;
   bool _isLoading_google = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -45,11 +47,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       password: _passwordController.text,
     );
 
-    if (res == 'email-already-in-use') {
+    if (res == EMAIL_ALREADY_IN_USE) {
       showSnackBar("이미 존재하는 이메일입니다.", context);
-    } else if (res == 'success') {
-      Navigator.pushNamed(context, '/addProfile');
-    } else {}
+    } else if (res == SUCCESS) {
+      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+    } else {
+      showSnackBar(res, context);
+    }
 
     setState(() {
       _isLoading_email = false;
@@ -65,9 +69,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-      Navigator.pushNamed(context, '/calendar');
+      Get.rootDelegate.toNamed(Routes.CALENDAR);
     } else {
-      Navigator.pushNamed(context, '/addProfile');
+      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     }
     setState(() {
       _isLoading_google = false;
@@ -116,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/login');
+                          Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
                           '    Log In    ',

@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/utils/signaling.dart';
+import 'package:focus42/widgets/todo_popup_widget.dart';
+import 'package:focus42/widgets/todo_ui.dart';
+import 'package:logger/logger.dart';
 
 import '../models/reservation_model.dart';
 import '../resources/matching_methods.dart';
@@ -29,12 +35,24 @@ class SessionPage extends StatefulWidget {
 }
 
 class _SessionPageState extends State<SessionPage> {
+  final _formKey = GlobalKey<FormState>();
   Signaling signaling = Signaling();
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
   String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
   final ReservationModel session;
+  bool isMicOn = true;
+  bool isCamOn = true;
+
+  final _user = FirebaseAuth.instance;
+  final _todoColRef =
+      FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
+            fromFirestore: TodoModel.fromFirestore,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+          );
+  late final Stream<QuerySnapshot> _myTodoColRef;
+  List<TodoModel> myTodo = [];
 
   _SessionPageState({required this.session}) : super();
 
@@ -50,183 +68,330 @@ class _SessionPageState extends State<SessionPage> {
     super.initState();
     MatchingMethods()
         .enterRoom(session.pk!, signaling, _localRenderer, _remoteRenderer);
+
+    // myTodoColRef
+    _myTodoColRef = _todoColRef
+        .where('userUid', isEqualTo: _user.currentUser?.uid)
+        .where('assignedSessionId', isEqualTo: session.pk!)
+        .orderBy('completedDate')
+        .orderBy('modifiedDate', descending: true)
+        .orderBy('createdDate', descending: true)
+        .snapshots();
   }
 
   @override
   void dispose() {
-    _localRenderer.dispose();
-    _remoteRenderer.dispose();
+    signaling.hangUp(_localRenderer);
+    // _localRenderer.dispose();
+    // _remoteRenderer.dispose();
+    var logger = Logger();
+    logger.d("disposed");
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return StreamBuilder<QuerySnapshot>(
+      stream: _myTodoColRef,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          var logger = Logger();
+          logger.e(snapshot.error);
+          return Text('Something went wrong');
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("");
+        }
+        myTodo.clear();
+        snapshot.data!.docs.forEach((doc) {
+          // TODO: 효율적으로 todo list 보여주기
+          final TodoModel todo = doc.data() as TodoModel;
+          todo.pk = doc.id;
+          myTodo.add(todo);
+        });
+        return Scaffold(
+          body: Column(
             children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: purple300,
-                ),
-                onPressed: () {
-                  signaling.openUserMedia(_localRenderer, _remoteRenderer);
-                },
-                child: Text("Open camera & microphone"),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: purple300,
-                ),
-                onPressed: () {
-                  signaling.toggleUserCamera(_localRenderer, _remoteRenderer);
-                },
-                child: Text("toggle camera"),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: purple300,
-                ),
-                onPressed: () {
-                  signaling.toggleUserMic(_localRenderer, _remoteRenderer);
-                },
-                child: Text("toggle microphone"),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: purple300,
-                ),
-                onPressed: () async {
-                  roomId = await signaling.createRoom(_remoteRenderer);
-                  textEditingController.text = roomId!;
-                  setState(() {});
-                },
-                child: Text("Create room"),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: purple300,
-                ),
-                onPressed: () {
-                  // Add roomId
-                  signaling.peerClose();
-                  signaling.joinRoom(
-                    textEditingController.text,
-                    _remoteRenderer,
-                  );
-                },
-                child: Text("Join room"),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: purple300,
-                ),
-                onPressed: () {
-                  signaling.hangUp(_localRenderer);
-                },
-                child: Text("Hangup"),
-              )
+              SizedBox(height: 8),
+              Expanded(
+                  child: Row(
+                children: [
+                  Flexible(
+                    flex: 1,
+                    fit: FlexFit.tight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1.5, color: border100),
+                                    // borderRadius:
+                                    //     BorderRadius.all(Radius.circular(32)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.25),
+                                        spreadRadius: 0,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 6),
+                                      ),
+                                    ]),
+                                child: RTCVideoView(
+                                  _localRenderer,
+                                  mirror: true,
+                                  objectFit: RTCVideoViewObjectFit
+                                      .RTCVideoViewObjectFitCover,
+                                )),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              (isCamOn)
+                                  ? CircleAvatar(
+                                      backgroundColor: purple200,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.videocam),
+                                        color: Colors.white,
+                                        tooltip: 'turn off camera',
+                                        onPressed: () {
+                                          // Cam Off 하려고 클릭
+                                          signaling.turnOffUserCamera(
+                                              _localRenderer, _remoteRenderer);
+                                          setState(() {
+                                            isCamOn = false;
+                                          });
+                                        },
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: purple200,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.videocam_off),
+                                        color: Colors.white,
+                                        tooltip: 'turn on camera',
+                                        onPressed: () {
+                                          // Cam On 하려고 클릭
+                                          signaling.turnOnUserCamera(
+                                              _localRenderer, _remoteRenderer);
+                                          setState(() {
+                                            isCamOn = true;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              (isMicOn)
+                                  ? CircleAvatar(
+                                      backgroundColor: purple200,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.mic),
+                                        color: Colors.white,
+                                        tooltip: 'turn off mic',
+                                        onPressed: () {
+                                          // Mic Off 하려고 클릭
+                                          signaling.turnOffUserMic(
+                                              _localRenderer, _remoteRenderer);
+                                          setState(() {
+                                            isMicOn = false;
+                                          });
+                                        },
+                                      ),
+                                    )
+                                  : CircleAvatar(
+                                      backgroundColor: purple200,
+                                      child: IconButton(
+                                        icon: const Icon(Icons.mic_off),
+                                        color: Colors.white,
+                                        tooltip: 'turn on mic',
+                                        onPressed: () {
+                                          // Mic On 하려고 클릭
+                                          signaling.turnOnUserMic(
+                                              _localRenderer, _remoteRenderer);
+                                          setState(() {
+                                            isMicOn = true;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Expanded(
+                            child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                        width: 1.5, color: border100),
+                                    // borderRadius:
+                                    //     BorderRadius.all(Radius.circular(32)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.25),
+                                        spreadRadius: 0,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 6),
+                                      ),
+                                    ]),
+                                child: RTCVideoView(
+                                  _remoteRenderer,
+                                  objectFit: RTCVideoViewObjectFit
+                                      .RTCVideoViewObjectFitCover,
+                                )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        Flexible(
+                          fit: FlexFit.tight,
+                          child: _todoCurrent(context),
+                        ),
+                        Flexible(
+                            fit: FlexFit.tight,
+                            child: Container(
+                              // decoration: BoxDecoration(
+                              //     borderRadius: BorderRadius.circular(10),
+                              //     border: Border.all(
+                              //       color: blackCustomized,
+                              //       width: 0.5,
+                              //     )),
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: CountDownTimer(
+                                  duration: Duration(minutes: 50),
+                                  startTime: session.startTime!,
+                                ),
+                              ),
+                            ))
+                      ],
+                    ),
+                  )
+                ],
+              )),
             ],
           ),
-          SizedBox(height: 8),
-          Expanded(
-              child: Row(
+        );
+      },
+    );
+  }
+
+  Widget _todoCurrent(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 27),
+      child: Column(children: [
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
-                fit: FlexFit.tight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: blackCustomized,
-                                  width: 0.5,
-                                )),
-                            child: RTCVideoView(_localRenderer, mirror: true)),
-                      ),
-                      Expanded(
-                        child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: blackCustomized,
-                                  width: 0.5,
-                                )),
-                            child: RTCVideoView(_remoteRenderer)),
-                      ),
-                    ],
+              Expanded(
+                child: Center(
+                    child: ElevatedButton(
+                  onPressed: () {},
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                            side: BorderSide(color: Colors.transparent))),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(purple200),
                   ),
-                ),
+                  child: Text(
+                    '이번 세션 할 일',
+                    style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal),
+                    textAlign: TextAlign.center,
+                  ),
+                )),
               ),
-              Flexible(
-                child: Column(
-                  children: [
-                    Flexible(
-                        fit: FlexFit.tight,
-                        child: Text(
-                          "TODO",
-                          textAlign: TextAlign.center,
-                        )),
-                    Flexible(
-                        fit: FlexFit.tight,
-                        child: Container(
-                          // decoration: BoxDecoration(
-                          //     borderRadius: BorderRadius.circular(10),
-                          //     border: Border.all(
-                          //       color: blackCustomized,
-                          //       width: 0.5,
-                          //     )),
-                          alignment: Alignment.center,
-                          child: CountDownTimer(
-                            duration: Duration(minutes: 50),
-                            startTime: session.startTime!,
-                          ),
-                        ))
-                  ],
-                ),
-              )
             ],
-          )),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("Join the following Room: "),
-                Flexible(
-                  child: TextFormField(
-                    controller: textEditingController,
-                  ),
-                )
-              ],
+          ),
+        ),
+        for (var i = 0; i < myTodo.length; i++)
+          // ?(질문): for 문 사용법 모르겠어요
+          Expanded(
+            child: TodoUi(
+              task: myTodo[i].task!,
+              isComplete: myTodo[i].isComplete!,
+              createdDate: Timestamp.fromDate(myTodo[i].createdDate!),
+              userUid: myTodo[i].userUid!,
+              docId: myTodo[i].pk!,
+              assignedSessionId: session.pk!,
             ),
           ),
-          SizedBox(height: 8)
-        ],
-      ),
+        Container(
+          width: 380,
+          height: 80,
+          // margin: EdgeInsets.only(top: 32),
+          padding: EdgeInsets.only(top: 15),
+          child: TextButton(
+              onPressed: () => {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Stack(
+                              clipBehavior: Clip.none,
+                              children: <Widget>[
+                                Positioned(
+                                  right: -40.0,
+                                  top: -40.0,
+                                  child: InkResponse(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: CircleAvatar(
+                                      child: Icon(Icons.close),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                                TodoPopup(
+                                  session: session,
+                                ),
+                              ],
+                            ),
+                          );
+                        })
+                  },
+              style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
+                        side: BorderSide(color: Colors.transparent))),
+                backgroundColor: MaterialStateProperty.all<Color>(purple300),
+              ),
+              child: Text('전체목록',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ))),
+        ),
+      ]),
     );
   }
 }

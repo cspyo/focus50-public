@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:get/get.dart';
+import 'package:webviewx/webviewx.dart';
 
+import '../consts/routes.dart';
 import '../widgets/line.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -11,10 +14,10 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late WebViewXController webviewController;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -49,7 +52,7 @@ class _AboutScreenState extends State<AboutScreen> {
               children: <Widget>[
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/');
+                      Get.rootDelegate.toNamed(Routes.ABOUT);
                     },
                     child: const Text('About',
                         style: TextStyle(
@@ -60,7 +63,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 SizedBox(width: 10),
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/calendar');
+                      Get.rootDelegate.toNamed(Routes.CALENDAR);
                     },
                     child: const Text('Calendar',
                         style: TextStyle(
@@ -71,7 +74,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 SizedBox(width: 10),
                 TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/profile');
+                      Get.rootDelegate.toNamed(Routes.PROFILE);
                     },
                     child: const Text('Profile',
                         style: TextStyle(
@@ -89,8 +92,8 @@ class _AboutScreenState extends State<AboutScreen> {
                           setState(() {
                             _auth.signOut();
                           });
-                          print(_auth.currentUser);
-                          Navigator.pushNamed(context, '/login');
+
+                          Get.rootDelegate.toNamed(Routes.LOGIN);
                         },
                         child: const Text('  Logout  '),
                       )
@@ -99,7 +102,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/signup');
+                          Get.rootDelegate.toNamed(Routes.SIGNUP);
                         },
                         child: const Text('Sign Up')),
                 (_auth.currentUser != null) ? Container() : SizedBox(width: 20),
@@ -110,7 +113,7 @@ class _AboutScreenState extends State<AboutScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/login');
+                          Get.rootDelegate.toNamed(Routes.LOGIN);
                         },
                         child: const Text('  Log In  '),
                       ),
@@ -118,11 +121,23 @@ class _AboutScreenState extends State<AboutScreen> {
             ),
           ],
         ),
-      ), //header, //header
+      ), //header
       const Line(),
-      Container(
-        child: Text('about'),
-      )
+      Expanded(
+        child: WebViewX(
+          initialContent: 'https://focus50-8b405.web.app',
+          initialSourceType: SourceType.url,
+          onWebViewCreated: (controller) {
+            webviewController = controller;
+            // webviewController.loadContent(
+            //   '/about/index.html',
+            //   SourceType.url,
+            // );
+          },
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+        ),
+      ),
     ]));
   }
 }

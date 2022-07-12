@@ -1,8 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/consts/error_message.dart';
+import 'package:get/get.dart';
 
 import '../consts/colors.dart';
+import '../consts/routes.dart';
 import '../resources/auth_method.dart';
 import '../utils/utils.dart';
 import '../widgets/line.dart';
@@ -23,13 +26,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _emailController.dispose();
     _passwordController.dispose();
 
@@ -47,12 +48,14 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
 
-    if (res == 'user-not-found') {
+    if (res == USER_NOT_FOUND) {
       showSnackBar("회원으로 등록되어있지 않습니다.", context);
-    } else if (res == 'wrong-password') {
+    } else if (res == WRONG_PASSWORD) {
       showSnackBar("비밀번호가 틀렸습니다.", context);
+    } else if (res == NOT_SIGNED_UP) {
+      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
-      Navigator.pushNamed(context, '/calendar');
+      Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
     setState(() {
@@ -69,9 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-      Navigator.pushNamed(context, '/calendar');
+      Get.rootDelegate.offNamed(Routes.CALENDAR);
     } else {
-      Navigator.pushNamed(context, '/addProfile');
+      Get.rootDelegate.offNamed(Routes.PROFILE);
     }
 
     setState(() {
@@ -121,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/signup');
+                          Get.rootDelegate.toNamed(Routes.SIGNUP);
                         },
                         child: const Text(
                           '    Sign up    ',
