@@ -242,12 +242,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             _image != null
                                 ? CircleAvatar(
                                     radius: 64,
-                                    backgroundColor: Colors.red,
+                                    backgroundColor: Colors.black38,
                                     backgroundImage: MemoryImage(_image!),
                                   )
                                 : CircleAvatar(
                                     radius: 64,
-                                    backgroundColor: Colors.grey,
+                                    backgroundColor: Colors.black38,
                                     backgroundImage: NetworkImage(
                                       userData['photoUrl'],
                                     ),
@@ -302,6 +302,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         return null;
                                       },
                                       onSaved: (val) {},
+                                      onFieldSubmitted: (text) async {
+                                        final username = _nameController.text;
+                                        final nickname =
+                                            _nicknameController.text;
+                                        final job = _jobController.text;
+
+                                        updateProfile(
+                                          userData['uid'],
+                                          userData['email'],
+                                          username,
+                                          nickname,
+                                          job,
+                                        );
+                                      },
                                       maxLines: 1,
                                       keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
@@ -346,6 +360,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         return null;
                                       },
                                       onSaved: (val) {},
+                                      onFieldSubmitted: (text) async {
+                                        final username = _nameController.text;
+                                        final nickname =
+                                            _nicknameController.text;
+                                        final job = _jobController.text;
+
+                                        updateProfile(
+                                          userData['uid'],
+                                          userData['email'],
+                                          username,
+                                          nickname,
+                                          job,
+                                        );
+                                      },
                                       maxLines: 1,
                                       keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
@@ -392,6 +420,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         return null;
                                       },
                                       onSaved: (val) {},
+                                      onFieldSubmitted: (text) async {
+                                        final username = _nameController.text;
+                                        final nickname =
+                                            _nicknameController.text;
+                                        final job = _jobController.text;
+
+                                        updateProfile(
+                                          userData['uid'],
+                                          userData['email'],
+                                          username,
+                                          nickname,
+                                          job,
+                                        );
+                                      },
                                       maxLines: 1,
                                       keyboardType: TextInputType.text,
                                       decoration: InputDecoration(

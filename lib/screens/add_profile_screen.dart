@@ -48,7 +48,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
         username: _nameController.text,
         nickname: _nicknameController.text,
         job: _jobController.text,
-        file: _image!);
+        file: _image);
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
 
@@ -144,14 +144,14 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                       _image != null
                           ? CircleAvatar(
                               radius: 64,
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.black38,
                               backgroundImage: MemoryImage(_image!),
                             )
                           : CircleAvatar(
                               radius: 64,
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.black38,
                               backgroundImage: NetworkImage(
-                                  'https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg'),
+                                  'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'),
                             ),
                       Positioned(
                         bottom: -10,
@@ -184,6 +184,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                               return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                saveUserProfile();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -210,6 +215,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                               return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                saveUserProfile();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -230,14 +240,17 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           child: TextFormField(
                             controller: _jobController,
                             validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your job';
+                              }
                               return null;
-
-                              // if (value == null || value.isEmpty) {
-                              //   return 'Please enter your job';
-                              // }
-                              // return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                saveUserProfile();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
@@ -257,7 +270,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           width: 450,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }

@@ -167,6 +167,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ? null
                                     : "Please enter a valid email",
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                signUpWithEmail();
+                              } else {
+                                print("[DEBUG] _formkey error");
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
@@ -193,6 +200,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                signUpWithEmail();
+                              } else {
+                                print("[DEBUG] _formkey error");
+                              }
+                            },
                             maxLines: 1,
                             obscureText: true,
                             keyboardType: TextInputType.text,
@@ -208,7 +222,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        // 로그인 버튼
+                        // 다음 버튼
                         Row(
                           //mainAxisAlignment: MainAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -222,20 +236,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               width: 150,
                               height: 40,
                               child: ElevatedButton(
-                                onPressed: () async {
+                                onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     signUpWithEmail();
+                                  } else {
+                                    print("[DEBUG] _formkey error");
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   primary: purple300,
                                 ),
-                                child: const Text(
-                                  'Next',
-                                  style: TextStyle(
-                                    fontFamily: 'poppins',
-                                  ),
-                                ),
+                                child: _isLoading_email
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Next',
+                                        style: TextStyle(
+                                          fontFamily: 'poppins',
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
@@ -256,7 +278,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           width: 450,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: () {
                               signUpWithGoogle();
                             },
                             style: ElevatedButton.styleFrom(),
