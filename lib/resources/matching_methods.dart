@@ -33,6 +33,7 @@ class MatchingMethods {
      * 2-2. 없다
      * 3-2. 만든다.
     */
+    print("DEBUG matchroom");
     String docId = '';
     _firestore.runTransaction((transaction) async {
       await _reservationColRef

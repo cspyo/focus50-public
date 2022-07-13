@@ -130,13 +130,15 @@ class CalendarAppointment extends State<Calendar> {
               viewHeaderStyle: ViewHeaderStyle(
                   backgroundColor: Colors.white,
                   dateTextStyle: TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 26,
                       color: Colors.black,
-                      fontWeight: FontWeight.normal),
+                      fontWeight: FontWeight.w400),
                   dayTextStyle: TextStyle(
+                      fontFamily: 'Poppins',
                       fontSize: 15,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400)),
+                      fontWeight: FontWeight.w300)),
               onTap: calendarTapped,
               view: CalendarView.week,
               monthViewSettings: MonthViewSettings(showAgenda: true),
@@ -168,8 +170,9 @@ class CalendarAppointment extends State<Calendar> {
                                 child: Text(
                                   meeting.subject,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.normal,
+                                      fontWeight: FontWeight.w500,
                                       fontSize: 12,
+                                      fontFamily: 'poppins',
                                       color: meeting.subject
                                               .contains(name.toString())
                                           ? Colors.white
@@ -188,7 +191,6 @@ class CalendarAppointment extends State<Calendar> {
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     final appointment = calendarTapDetails.appointments?[0];
-
     //이미 예약이 있는 공간에 클릭했을 때
     if (appointment != null && appointment.subject == name) {
       docId = await appointment.id.toString();
@@ -198,7 +200,6 @@ class CalendarAppointment extends State<Calendar> {
           .then((value) => print("DEBUG : calendar appointment deleted!"));
       return;
     }
-
     //빈 공간에 클릭 했을 때
     if (_user != null &&
         countAppointmentOverlap(_dataSource, calendarTapDetails) < 2 &&

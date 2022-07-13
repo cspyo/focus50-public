@@ -93,19 +93,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       children: const <Widget>[
                         Text('Focus',
                             style: TextStyle(
-                                fontFamily: 'Okddung',
+                                fontFamily: 'poppins',
+                                fontWeight: FontWeight.w600,
                                 fontSize: 30,
                                 color: Colors.black)),
                         Text('50',
                             style: TextStyle(
-                                fontFamily: 'Okddung',
+                                fontFamily: 'poppins',
+                                fontWeight: FontWeight.w900,
                                 fontSize: 30,
                                 color: purple300)),
                       ],
                     ),
                     Row(children: <Widget>[
                       Text(
-                        "이미 계정이 있나요?",
+                        "Already have an account?",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
@@ -121,7 +123,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
-                          '    로그인    ',
+                          '    Log In    ',
                           style: TextStyle(),
                         ),
                       )
@@ -140,8 +142,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 80,
                   ),
                   Text(
-                    '회원가입',
+                    'Sign Up',
                     style: TextStyle(
+                      fontFamily: 'poppins',
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: purple300,
@@ -162,17 +165,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             validator: (value) =>
                                 EmailValidator.validate(value!)
                                     ? null
-                                    : "이메일을 입력해주세요",
+                                    : "Please enter a valid email",
                             onSaved: (val) {},
                             onFieldSubmitted: (text) {
                               if (_formKey.currentState!.validate()) {
                                 signUpWithEmail();
+                              } else {
+                                print("[DEBUG] _formkey error");
                               }
                             },
                             maxLines: 1,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
-                              hintText: '이메일',
+                              hintText: 'Email',
                               prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -190,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: _passwordController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '비밀번호를 입력해주세요';
+                                return 'Please enter your password';
                               }
                               return null;
                             },
@@ -198,13 +203,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             onFieldSubmitted: (text) {
                               if (_formKey.currentState!.validate()) {
                                 signUpWithEmail();
+                              } else {
+                                print("[DEBUG] _formkey error");
                               }
                             },
                             maxLines: 1,
                             obscureText: true,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: '비밀번호',
+                              hintText: 'Password',
                               prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -217,20 +224,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                         // 다음 버튼
                         Row(
+                          //mainAxisAlignment: MainAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 250,
+                              width: 300,
                               height: 40,
                             ),
                             SizedBox(
-                              width: 200,
+                              width: 150,
                               height: 40,
                               child: ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     signUpWithEmail();
+                                  } else {
+                                    print("[DEBUG] _formkey error");
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -243,8 +253,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         ),
                                       )
                                     : const Text(
-                                        '다음',
-                                        style: TextStyle(),
+                                        'Next',
+                                        style: TextStyle(
+                                          fontFamily: 'poppins',
+                                        ),
                                       ),
                               ),
                             ),
@@ -262,7 +274,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(
                           height: 20,
                         ),
-                        // 구글 로그인 버튼
                         SizedBox(
                           width: 450,
                           height: 40,
@@ -277,53 +288,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       color: Colors.white,
                                     ),
                                   )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 100,
-                                      ),
-                                      Image.asset(
-                                        "assets/images/google_icon.png",
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                      SizedBox(
-                                        width: 30,
-                                      ),
-                                      const Text(
-                                        '구글 계정으로 회원가입',
-                                        style: TextStyle(),
-                                      ),
-                                    ],
+                                : const Text(
+                                    'Sign up with Google',
+                                    style: TextStyle(
+                                      fontFamily: 'poppins',
+                                    ),
                                   ),
-                          ),
-                        ),
-                        // 구글 로그인 버튼
-                        SizedBox(
-                          height: 20,
-                        ),
-                        // 이미 계정 있나요?
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("이미 계정이 있나요?"),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Get.rootDelegate.toNamed(Routes.LOGIN);
-                                },
-                                child: Text(
-                                  "로그인",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ],

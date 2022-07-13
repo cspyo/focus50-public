@@ -97,19 +97,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: const <Widget>[
                         Text('Focus',
                             style: TextStyle(
-                                fontFamily: 'Okddung',
+                                fontFamily: 'poppins',
+                                fontWeight: FontWeight.w600,
                                 fontSize: 30,
                                 color: Colors.black)),
                         Text('50',
                             style: TextStyle(
-                                fontFamily: 'Okddung',
+                                fontFamily: 'poppins',
+                                fontWeight: FontWeight.w900,
                                 fontSize: 30,
                                 color: purple300)),
                       ],
                     ),
                     Row(children: <Widget>[
                       Text(
-                        "계정이 없나요?",
+                        "Don't have an account?",
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
@@ -125,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Get.rootDelegate.toNamed(Routes.SIGNUP);
                         },
                         child: const Text(
-                          '   회원가입   ',
+                          '    Sign up    ',
                           style: TextStyle(),
                         ),
                       )
@@ -143,66 +145,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: 80,
                   ),
-                  // 로그인 텍스트
                   Text(
-                    '로 그 인',
+                    'Log In',
                     style: TextStyle(
+                      fontFamily: 'poppins',
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: purple300,
                     ),
                   ),
-                  // 구글로 로그인하기
                   SizedBox(
                     height: 30,
-                  ),
-                  SizedBox(
-                    width: 450,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        signInWithGoogle();
-                      },
-                      style: ElevatedButton.styleFrom(),
-                      child: _isLoading_google
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: 100,
-                                ),
-                                Image.asset(
-                                  "assets/images/google_icon.png",
-                                  width: 30,
-                                  height: 30,
-                                ),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                const Text(
-                                  '구글 계정으로 로그인',
-                                  style: TextStyle(),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-                  // 줄 그리기
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    height: 2.0,
-                    width: 440.0,
-                    color: Colors.grey.shade400,
-                  ),
-                  SizedBox(
-                    height: 40,
                   ),
                   Form(
                     key: _formKey,
@@ -216,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             validator: (value) =>
                                 EmailValidator.validate(value!)
                                     ? null
-                                    : "이메일을 입력해주세요",
+                                    : "Please enter a valid email",
                             onSaved: (val) {},
                             onFieldSubmitted: (text) {
                               if (_formKey.currentState!.validate()) {
@@ -226,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             maxLines: 1,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
-                              hintText: '이메일',
+                              hintText: 'Email',
                               prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -244,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _passwordController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return '비밀번호를 입력해주세요';
+                                return 'Please enter your password';
                               }
                               return null;
                             },
@@ -258,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: true,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: '비밀번호',
+                              hintText: 'Password',
                               prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -267,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(
-                          height: 30,
+                          height: 20,
                         ),
                         // 로그인 버튼
                         SizedBox(
@@ -289,37 +242,48 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    '이메일로 로그인',
-                                    style: TextStyle(),
+                                    'Sign in with Email',
+                                    style: TextStyle(
+                                      fontFamily: 'poppins',
+                                    ),
                                   ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("계정이 아직 없나요?"),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Get.rootDelegate.toNamed(Routes.SIGNUP);
-                                },
-                                child: Text(
-                                  "회원가입",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ],
+                    ),
+                  ),
+                  // 줄 그리기
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    height: 2.0,
+                    width: 440.0,
+                    color: Colors.grey.shade400,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    width: 450,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        signInWithGoogle();
+                      },
+                      style: ElevatedButton.styleFrom(),
+                      child: _isLoading_google
+                          ? const Center(
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Sign in with Google',
+                              style: TextStyle(
+                                fontFamily: 'poppins',
+                              ),
+                            ),
                     ),
                   ),
                 ],
