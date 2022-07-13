@@ -23,7 +23,10 @@ class CalendarAppointment extends State<Calendar> {
   bool isHover = false;
   bool isEdit = false;
   String docId = '';
-  String? name = _user?.displayName;
+
+  var userData = {};
+  String nickName = "";
+
   CollectionReference _reservationColRef =
       _firestore.collection('reservation').withConverter<ReservationModel>(
             fromFirestore: ReservationModel.fromFirestore,
@@ -64,13 +67,25 @@ class CalendarAppointment extends State<Calendar> {
       isHover = false;
     });
   }
+// *첫번째 받아올 때(init) 모든게 docChange 로 인식된다
+  // 1번의 경우는 add
+  // 어떤 게 변화되었다 a.type = add / a의 변경사항을 dataSource 에 넣으면 된다.
+  // -> doc change 에서 가져오면 된다
 
-  @override
-  void initState() {
-    super.initState();
-    //user model 써서 바꿔야합니다!
+  // 2번의 경우는 delete modify
+  // -> a.type = delete / a 의 변경사항을 반영하려면 리스트에서 찾아야 한다.
+  // 찾으려면 결국 list traverse 를 해야한다.
+  // dictionary(hash table) dic(docId) -> remove 를 하면 되지 않을까
+  // dict -> list
+  // dart에도 있을까?
+  Future<void> putCalendarData() async {
+    // uid 있을때만 nickname 가져오고 없으면 nickname에는 ''가 들어감
+    if (_user?.uid != null) {
+      var userSnap = await _firestore.collection('users').doc(_user?.uid).get();
+      userData = userSnap.data()!;
+      nickName = userData['nickname'];
+    }
 
-    _dataSource = _DataSource(appointments);
     _reservationColRef
         .where('startTime', isGreaterThan: Timestamp.fromDate(DateTime.now()))
         .snapshots()
@@ -79,45 +94,123 @@ class CalendarAppointment extends State<Calendar> {
 
       _dataSource.appointments!.clear();
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        // *첫번째 받아올 때(init) 모든게 docChange 로 인식된다
-        // 1번의 경우는 add
-        // 어떤 게 변화되었다 a.type = add / a의 변경사항을 dataSource 에 넣으면 된다.
-        // -> doc change 에서 가져오면 된다
-
-        // 2번의 경우는 delete modify
-        // -> a.type = delete / a 의 변경사항을 반영하려면 리스트에서 찾아야 한다.
-        // 찾으려면 결국 list traverse 를 해야한다.
-        // dictionary(hash table) dic(docId) -> remove 를 하면 되지 않을까
-        // dict -> list
-        // dart에도 있을까?
-
         ReservationModel reservation = doc.data() as ReservationModel;
-        Appointment app = Appointment(
-            startTime: reservation.startTime!,
-            endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
-            subject: reservation.user1Name!,
-            color: Colors.teal,
-            id: doc.id);
-        _dataSource.appointments!.add(app);
+        if ((reservation.user2Name == null ||
+            reservation.user1Name == nickName ||
+            reservation.user2Name == nickName)) {
+          Appointment app = Appointment(
+              startTime: reservation.startTime!,
+              endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
+              subject: reservation.user2Name == null
+                  ? reservation.user1Name!
+                  : (reservation.user1Name == nickName ||
+                          reservation.user2Name == nickName)
+                      ? nickName
+                      : '',
+              color: Colors.teal,
+              id: doc.id);
+          _dataSource.appointments!.add(app);
+        }
       }
       _dataSource.notifyListeners(
           CalendarDataSourceAction.reset, _dataSource.appointments!);
     });
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dataSource = _DataSource(appointments);
+    putCalendarData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: 856,
-        height: 1100,
-        child: Stack(
-          children: [
-            Positioned(
-              left: getCurrentDayPosition().toDouble(),
-              top: 100,
-              child: CurrentTimeIndicator(),
-            ),
-            SfCalendar(
+    double screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth >= 1276
+        ? Container(
+            width: 856,
+            child: Stack(
+              children: [
+                Positioned(
+                  left: getCurrentDayPosition().toDouble(),
+                  top: 100,
+                  child: CurrentTimeIndicator(),
+                ),
+                SfCalendar(
+                  dataSource: _dataSource,
+                  firstDayOfWeek: 1,
+                  viewHeaderHeight: 100,
+                  headerHeight: 0,
+                  timeSlotViewSettings: TimeSlotViewSettings(
+                      dayFormat: 'EEE',
+                      timeIntervalHeight: 50,
+                      timeInterval: Duration(hours: 1),
+                      timeFormat: 'h:mm'),
+                  viewHeaderStyle: ViewHeaderStyle(
+                      backgroundColor: Colors.white,
+                      dateTextStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 26,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400),
+                      dayTextStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w300)),
+                  onTap: calendarTapped,
+                  view: CalendarView.week,
+                  monthViewSettings: MonthViewSettings(showAgenda: true),
+                  todayHighlightColor: purple300,
+                  appointmentBuilder: (BuildContext context,
+                      CalendarAppointmentDetails details) {
+                    final Appointment meeting = details.appointments.first;
+                    return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: meeting.subject.contains(nickName)
+                                ? purple200
+                                : Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                  spreadRadius: 2,
+                                  color: Colors.black.withOpacity(0.25))
+                            ]),
+                        child: MouseRegion(
+                            onEnter: onHover,
+                            onExit: onExit,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    width: 53,
+                                    child: Text(
+                                      meeting.subject,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 12,
+                                          fontFamily: 'poppins',
+                                          color:
+                                              meeting.subject.contains(nickName)
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                    ))
+                              ],
+                            )));
+                  },
+                ),
+              ],
+            ))
+        : Container(
+            width: screenWidth - 420,
+            child: SfCalendar(
               dataSource: _dataSource,
               firstDayOfWeek: 1,
               viewHeaderHeight: 100,
@@ -138,7 +231,7 @@ class CalendarAppointment extends State<Calendar> {
                       color: Colors.black,
                       fontWeight: FontWeight.w400)),
               onTap: calendarTapped,
-              view: CalendarView.week,
+              view: CalendarView.day,
               monthViewSettings: MonthViewSettings(showAgenda: true),
               todayHighlightColor: purple300,
               appointmentBuilder:
@@ -147,7 +240,7 @@ class CalendarAppointment extends State<Calendar> {
                 return Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: meeting.subject.contains(name.toString())
+                        color: meeting.subject.contains(nickName)
                             ? purple200
                             : Colors.white,
                         boxShadow: [
@@ -170,8 +263,7 @@ class CalendarAppointment extends State<Calendar> {
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       fontSize: 12,
-                                      color: meeting.subject
-                                              .contains(name.toString())
+                                      color: meeting.subject.contains(nickName)
                                           ? Colors.white
                                           : Colors.black),
                                   overflow: TextOverflow.ellipsis,
@@ -181,32 +273,51 @@ class CalendarAppointment extends State<Calendar> {
                           ],
                         )));
               },
-            ),
-          ],
-        ));
+            ));
   }
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     final appointment = calendarTapDetails.appointments?[0];
 
-    //이미 예약이 있는 공간에 클릭했을 때
-    if (appointment != null && appointment.subject == name) {
-      docId = await appointment.id.toString();
-      await _reservationColRef
-          .doc(docId)
-          .delete()
-          .then((value) => print("DEBUG : calendar appointment deleted!"));
-      return;
-    }
-
-    //빈 공간에 클릭 했을 때
-    if (_user != null &&
-        countAppointmentOverlap(_dataSource, calendarTapDetails) < 2 &&
-        (appointment == null || appointment?.subject != name)) {
+    // 빈 공간에 클릭 했을 때
+    if (appointment == null) {
+      var datasource = _dataSource.appointments!.where((element) =>
+          (element.startTime == calendarTapDetails.date &&
+              element.subject == nickName));
+      // 여백에 클릭했을 때 datasource appoitnemnts 배열과 현재 클릭한 calendartapdetails 및 useruid 비교
+      if (datasource.isNotEmpty) {
+        return;
+      }
+      // 정상적으로 빈공간에 클릭했을 때
       await MatchingMethods().matchRoom(
         startTime: calendarTapDetails.date!,
         endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
       );
+    }
+
+    // 이미 예약이 있는 공간에 클릭했을 때
+    else {
+      if (appointment.subject == nickName) {
+        // 내가 넣은거에 다시 클릭할때
+        docId = await appointment.id.toString();
+        var reservationSnap =
+            await _firestore.collection('reservation').doc(docId).get();
+        var event = reservationSnap.data()!;
+        if (event['user2Name'] != null) {
+          // user2에 데이터가 있으면
+          await MatchingMethods().cancelRoom(docId);
+        } else {
+          // user2에 없다면
+          _reservationColRef.doc(docId).delete();
+        }
+      } else {
+        // 상대방이 넣은거에 다시 클릭할때
+        await MatchingMethods().matchRoom(
+          startTime: calendarTapDetails.date!,
+          endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
+        );
+      }
+      return;
     }
   }
 }
@@ -217,12 +328,12 @@ class _DataSource extends CalendarDataSource {
   }
 }
 
-int countAppointmentOverlap(_dataSource, calendarTapDetails) {
-  int count = 0;
-  for (var i = 0; i < _dataSource.appointments.length; i++) {
-    if (calendarTapDetails.date! == _dataSource.appointments[i].startTime) {
-      count++;
-    }
-  }
-  return count;
-}
+// int countAppointmentOverlap(_dataSource, calendarTapDetails) {
+//   int count = 0;
+//   for (var i = 0; i < _dataSource.appointments.length; i++) {
+//     if (calendarTapDetails.date! == _dataSource.appointments[i].startTime) {
+//       count++;
+//     }
+//   }
+//   return count;
+// }

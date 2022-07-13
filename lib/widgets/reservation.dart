@@ -18,7 +18,7 @@ class Reservation extends StatefulWidget {
 }
 
 class _ReservationState extends State<Reservation> {
-  String? partnerName = '';
+  String? partnerName = null;
   String reservationTime = '10시';
   int remainingTime = 0;
   bool isTenMinutesLeft = true;
@@ -228,7 +228,6 @@ class _ReservationState extends State<Reservation> {
                   reservationModel.toFirestore(),
             );
     getNextSession();
-
   }
 
   @override
@@ -292,7 +291,7 @@ class _ReservationState extends State<Reservation> {
                             )),
                       ],
                     ),
-                    partnerName != ''
+                    partnerName != null
                         ? Container(
                             margin: EdgeInsets.only(top: 12),
                             child: Row(

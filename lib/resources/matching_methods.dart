@@ -6,14 +6,31 @@ import 'package:focus42/utils/signaling.dart';
 
 class MatchingMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _user = FirebaseAuth.instance;
+
   late String userId;
   late String? userName;
   late CollectionReference _reservationColRef;
+  final FirebaseAuth _user = FirebaseAuth.instance;
+  var userData = {};
+  String? nickName;
+
+  Future<void> getUserName() async {
+    try {
+      var userSnap = await _firestore
+          .collection('users')
+          .doc(_user.currentUser!.uid)
+          .get();
+
+      userData = userSnap.data()!;
+      nickName = userData['nickname'];
+    } catch (e) {
+      print("getUserName catch:$e");
+    }
+  }
 
   MatchingMethods() {
     this.userId = _user.currentUser!.uid;
-    this.userName = _user.currentUser?.displayName;
+    this.userName = nickName;
     this._reservationColRef =
         _firestore.collection('reservation').withConverter<ReservationModel>(
               fromFirestore: ReservationModel.fromFirestore,
@@ -33,6 +50,8 @@ class MatchingMethods {
      * 2-2. 없다
      * 3-2. 만든다.
     */
+    await getUserName();
+    this.userName = nickName;
     String docId = '';
     _firestore.runTransaction((transaction) async {
       await _reservationColRef
@@ -91,14 +110,13 @@ class MatchingMethods {
         }
       });
     });
-    // return docId;
   }
 
   Future<void> cancelRoom(String _docId) async {
     DocumentReference reservationRef = _reservationColRef.doc(_docId);
     DocumentSnapshot reservationSnap = await reservationRef.get();
-    final ReservationModel reservation = ReservationModel.fromFirestore(
-        reservationSnap as DocumentSnapshot<Map<String, dynamic>>, null);
+    final ReservationModel reservation =
+        reservationSnap.data() as ReservationModel;
     if (reservation.isInUser1(userId)) {
       ReservationModel newReservation = ReservationModel(
         startTime: reservation.startTime,
