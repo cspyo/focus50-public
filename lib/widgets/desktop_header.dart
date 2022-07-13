@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/consts/routes.dart';
+import 'package:get/get.dart';
 
 class DesktopHeader extends StatefulWidget {
   DesktopHeader({Key? key}) : super(key: key);
@@ -22,54 +24,48 @@ class _DesktopHeaderState extends State<DesktopHeader> {
         children: <Widget>[
           Row(
             children: const <Widget>[
-              Text('Focus',
-                  style: TextStyle(
-                      fontFamily: 'poppins',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 30,
-                      color: Colors.black)),
-              Text('50',
-                  style: TextStyle(
-                      fontFamily: 'poppins',
-                      fontWeight: FontWeight.w900,
-                      fontSize: 30,
-                      color: purple300)),
+              Text(
+                'Focus',
+                style: TextStyle(
+                  fontFamily: 'Okddung',
+                  fontSize: 30,
+                  color: Colors.black,
+                ),
+              ),
+              Text(
+                '50',
+                style: TextStyle(
+                  fontFamily: 'Okddung',
+                  fontSize: 30,
+                  color: purple300,
+                ),
+              ),
             ],
           ),
           Row(
             children: <Widget>[
               TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/');
+                    Get.rootDelegate.toNamed(Routes.ABOUT);
                   },
-                  child: const Text('About',
-                      style: TextStyle(
-                          fontFamily: 'poppins',
-                          fontWeight: FontWeight.w300,
-                          fontSize: 17,
-                          color: Colors.black))),
+                  child: const Text('소개',
+                      style: TextStyle(fontSize: 17, color: Colors.black))),
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/calendar');
+                    Get.rootDelegate.toNamed(Routes.CALENDAR);
                   },
-                  child: const Text('Calendar',
-                      style: TextStyle(
-                          fontFamily: 'poppins',
-                          fontWeight: FontWeight.w300,
-                          fontSize: 17,
-                          color: Colors.black))),
+                  child: const Text('캘린더',
+                      style: TextStyle(fontSize: 17, color: Colors.black))),
               SizedBox(width: 10),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
-                  child: const Text('Profile',
-                      style: TextStyle(
-                          fontFamily: 'poppins',
-                          fontWeight: FontWeight.w300,
-                          fontSize: 17,
-                          color: Colors.black))),
+              (_auth.currentUser != null)
+                  ? TextButton(
+                      onPressed: () {
+                        Get.rootDelegate.toNamed(Routes.PROFILE);
+                      },
+                      child: const Text('마이페이지',
+                          style: TextStyle(fontSize: 17, color: Colors.black)))
+                  : Container(),
               SizedBox(width: 10),
               (_auth.currentUser != null)
                   ? ElevatedButton(
@@ -80,19 +76,29 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                         setState(() {
                           _auth.signOut();
                         });
-                        print(_auth.currentUser);
-                        Navigator.pushNamed(context, '/login');
+
+                        Get.rootDelegate.toNamed(Routes.LOGIN);
                       },
-                      child: const Text('  Logout  '),
+                      child: const Text(
+                        '  로그아웃  ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     )
                   : OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         primary: purple300,
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/signup');
+                        Get.rootDelegate.toNamed(Routes.SIGNUP);
                       },
-                      child: const Text('Sign Up')),
+                      child: const Text(
+                        '회원가입',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
               (_auth.currentUser != null) ? Container() : SizedBox(width: 20),
               (_auth.currentUser != null)
                   ? Container()
@@ -101,14 +107,20 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                         primary: purple300,
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/login');
+                        Get.rootDelegate.toNamed(Routes.LOGIN);
                       },
-                      child: const Text('  Log In  '),
+                      child: const Text(
+                        '  로그인  ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
             ],
           ),
         ],
       ),
-    ); //header
+    );
+    //header
   }
 }

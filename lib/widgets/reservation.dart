@@ -48,12 +48,9 @@ class _ReservationState extends State<Reservation> {
         .orderBy('startTime')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) async {
-      // print("[DEBUG] getNextSession1");
       ReservationModel? nextReservation_origin;
       querySnapshot.docChanges.forEach((element) {
-        // print("[DEBUG] getNextSession1/forEach/");
         if (element.type == DocumentChangeType.added) {
-          // print("[DEBUG] getNextSession1/forEach-added/");
           DocumentSnapshot reservationSnap = element.doc;
           ReservationModel tempReservation =
               reservationSnap.data() as ReservationModel;
@@ -71,7 +68,6 @@ class _ReservationState extends State<Reservation> {
           }
           if (nextReservation != nextReservation_origin) {
             if (nextReservation != null) {
-              // print("[DEBUG] next time is ${nextReservation!.startTime}");
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
                 remainingTime =
@@ -89,7 +85,6 @@ class _ReservationState extends State<Reservation> {
           }
         } else {
           if (querySnapshot.size > 0) {
-            // print("[DEBUG] getNextSession1/forEach-not added/");
             nextReservation = null;
             querySnapshot.docs.forEach((element) {
               ReservationModel tempReservation =
@@ -109,7 +104,6 @@ class _ReservationState extends State<Reservation> {
             });
           }
           if (nextReservation != null) {
-            // print("[DEBUG] next time is ${nextReservation!.startTime}");
             setState(() {
               nextReservationStartTime = nextReservation!.startTime!;
               remainingTime =
@@ -140,12 +134,9 @@ class _ReservationState extends State<Reservation> {
         .orderBy('startTime')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) async {
-      // print("[DEBUG] getNextSession1");
       ReservationModel? nextReservation_origin;
       querySnapshot.docChanges.forEach((element) {
-        // print("[DEBUG] getNextSession1/forEach/");
         if (element.type == DocumentChangeType.added) {
-          // print("[DEBUG] getNextSession1/forEach-added/");
           DocumentSnapshot reservationSnap = element.doc;
           ReservationModel tempReservation =
               reservationSnap.data() as ReservationModel;
@@ -163,7 +154,6 @@ class _ReservationState extends State<Reservation> {
           }
           if (nextReservation != nextReservation_origin) {
             if (nextReservation != null) {
-              // print("[DEBUG] next time is ${nextReservation!.startTime}");
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
                 remainingTime =
@@ -181,7 +171,6 @@ class _ReservationState extends State<Reservation> {
           }
         } else {
           if (querySnapshot.size > 0) {
-            // print("[DEBUG] getNextSession1/forEach-not added/");
             nextReservation = null;
             querySnapshot.docs.forEach((element) {
               ReservationModel tempReservation =
@@ -201,7 +190,6 @@ class _ReservationState extends State<Reservation> {
             });
           }
           if (nextReservation != null) {
-            // print("[DEBUG] next time is ${nextReservation!.startTime}");
             setState(() {
               nextReservationStartTime = nextReservation!.startTime!;
               remainingTime =
@@ -238,7 +226,6 @@ class _ReservationState extends State<Reservation> {
                   reservationModel.toFirestore(),
             );
     getNextSession();
-    print("[DEBUG] initState: next reservation: ${nextReservation?.startTime}");
   }
 
   @override
@@ -283,13 +270,11 @@ class _ReservationState extends State<Reservation> {
                           },
                           timeTextStyle: TextStyle(
                             height: 1.0,
-                            fontFamily: 'poppins',
                             fontSize: 26,
                             fontWeight: FontWeight.w600,
                           ),
                           colonsTextStyle: TextStyle(
                             height: 1.0,
-                            fontFamily: 'poppins',
                             fontSize: 26,
                             fontWeight: FontWeight.w600,
                           ),
@@ -299,7 +284,6 @@ class _ReservationState extends State<Reservation> {
                             // textAlign: TextAlign.center,
                             style: const TextStyle(
                               height: 1.0,
-                              fontFamily: 'poppins',
                               fontSize: 26,
                               fontWeight: FontWeight.w600,
                             )),
@@ -314,18 +298,16 @@ class _ReservationState extends State<Reservation> {
                                 Text('$partnerName',
                                     style: const TextStyle(
                                       height: 1.0,
-                                      fontFamily: 'poppins',
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.normal,
                                       color: purple300,
                                     )),
                                 Text(
                                   '님과의 세션이 $reservationTime시에 예약되었어요!',
                                   style: TextStyle(
                                     height: 1.0,
-                                    fontFamily: 'Poppins',
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.normal,
                                     color: black100,
                                   ),
                                 )
@@ -339,18 +321,16 @@ class _ReservationState extends State<Reservation> {
                                 Text('$reservationTime',
                                     style: const TextStyle(
                                       height: 1.0,
-                                      fontFamily: 'poppins',
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.normal,
                                       color: purple300,
                                     )),
                                 Text(
                                   '시에 예약되었어요!',
                                   style: TextStyle(
                                     height: 1.0,
-                                    fontFamily: 'Poppins',
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.normal,
                                     color: black100,
                                   ),
                                 )
@@ -359,7 +339,7 @@ class _ReservationState extends State<Reservation> {
                     Stack(
                       children: [
                         Image.asset(
-                          'meet.png',
+                          'assets/images/meet.png',
                           height: 200,
                         ),
                         Positioned(
@@ -393,7 +373,6 @@ class _ReservationState extends State<Reservation> {
                                             ),
                                             child: Text('입장하기',
                                                 style: TextStyle(
-                                                  fontFamily: 'Poppins',
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600,
                                                   color: Colors.white,
@@ -418,7 +397,6 @@ class _ReservationState extends State<Reservation> {
                                             ),
                                             child: Text('입장하기',
                                                 style: TextStyle(
-                                                  fontFamily: 'Poppins',
                                                   fontSize: 20,
                                                   fontWeight: FontWeight.w600,
                                                   color: Colors.white,
@@ -453,15 +431,13 @@ class _ReservationState extends State<Reservation> {
                     children: [
                   Text('예약이 없습니다',
                       style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
                           color: Color.fromARGB(255, 24, 24, 24))),
                   Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
                       style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.normal,
                           color: Color.fromARGB(105, 105, 105, 100))),
                 ])));
   }

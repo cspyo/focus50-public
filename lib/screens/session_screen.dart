@@ -82,8 +82,6 @@ class _SessionPageState extends State<SessionPage> {
   @override
   void dispose() {
     signaling.hangUp(_localRenderer);
-    // _localRenderer.dispose();
-    // _remoteRenderer.dispose();
     var logger = Logger();
     logger.d("disposed");
     super.dispose();
@@ -97,14 +95,13 @@ class _SessionPageState extends State<SessionPage> {
         if (snapshot.hasError) {
           var logger = Logger();
           logger.e(snapshot.error);
-          return Text('Something went wrong');
+          return Text('오류가 났어요 ㅠㅠ');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Text("");
         }
         myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
-          // TODO: 효율적으로 todo list 보여주기
           final TodoModel todo = doc.data() as TodoModel;
           todo.pk = doc.id;
           myTodo.add(todo);
@@ -131,8 +128,6 @@ class _SessionPageState extends State<SessionPage> {
                                     color: Colors.white,
                                     border: Border.all(
                                         width: 1.5, color: border100),
-                                    // borderRadius:
-                                    //     BorderRadius.all(Radius.circular(32)),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.25),
@@ -160,7 +155,7 @@ class _SessionPageState extends State<SessionPage> {
                                       child: IconButton(
                                         icon: const Icon(Icons.videocam),
                                         color: Colors.white,
-                                        tooltip: 'turn off camera',
+                                        tooltip: '카메라 끄기',
                                         onPressed: () {
                                           // Cam Off 하려고 클릭
                                           signaling.turnOffUserCamera(
@@ -176,7 +171,7 @@ class _SessionPageState extends State<SessionPage> {
                                       child: IconButton(
                                         icon: const Icon(Icons.videocam_off),
                                         color: Colors.white,
-                                        tooltip: 'turn on camera',
+                                        tooltip: '카메라 켜기',
                                         onPressed: () {
                                           // Cam On 하려고 클릭
                                           signaling.turnOnUserCamera(
@@ -196,7 +191,7 @@ class _SessionPageState extends State<SessionPage> {
                                       child: IconButton(
                                         icon: const Icon(Icons.mic),
                                         color: Colors.white,
-                                        tooltip: 'turn off mic',
+                                        tooltip: '마이크 끄기',
                                         onPressed: () {
                                           // Mic Off 하려고 클릭
                                           signaling.turnOffUserMic(
@@ -212,7 +207,7 @@ class _SessionPageState extends State<SessionPage> {
                                       child: IconButton(
                                         icon: const Icon(Icons.mic_off),
                                         color: Colors.white,
-                                        tooltip: 'turn on mic',
+                                        tooltip: '마이크 켜기',
                                         onPressed: () {
                                           // Mic On 하려고 클릭
                                           signaling.turnOnUserMic(
@@ -238,8 +233,6 @@ class _SessionPageState extends State<SessionPage> {
                                     color: Colors.white,
                                     border: Border.all(
                                         width: 1.5, color: border100),
-                                    // borderRadius:
-                                    //     BorderRadius.all(Radius.circular(32)),
                                     boxShadow: [
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.25),
@@ -269,12 +262,6 @@ class _SessionPageState extends State<SessionPage> {
                         Flexible(
                             fit: FlexFit.tight,
                             child: Container(
-                              // decoration: BoxDecoration(
-                              //     borderRadius: BorderRadius.circular(10),
-                              //     border: Border.all(
-                              //       color: blackCustomized,
-                              //       width: 0.5,
-                              //     )),
                               alignment: Alignment.center,
                               child: Padding(
                                 padding: EdgeInsets.all(10),
@@ -319,9 +306,9 @@ class _SessionPageState extends State<SessionPage> {
                   child: Text(
                     '이번 세션 할 일',
                     style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 20,
-                        fontWeight: FontWeight.normal),
+                      fontSize: 17,
+                      fontWeight: FontWeight.normal,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 )),
@@ -330,7 +317,6 @@ class _SessionPageState extends State<SessionPage> {
           ),
         ),
         for (var i = 0; i < myTodo.length; i++)
-          // ?(질문): for 문 사용법 모르겠어요
           Expanded(
             child: TodoUi(
               task: myTodo[i].task!,
@@ -385,9 +371,8 @@ class _SessionPageState extends State<SessionPage> {
               ),
               child: Text('전체목록',
                   style: TextStyle(
-                    fontFamily: 'Poppins',
                     fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ))),
         ),
