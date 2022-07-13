@@ -19,7 +19,6 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final _auth = FirebaseAuth.instance;
   int remainingTime = 0;
 
   DateTime now = new DateTime.now();
@@ -40,6 +39,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // FirebaseAuth.instance.idTokenChanges().listen((event) {
+    //   user = auth.currentUser!;
+    //   print("On Data: ${event}");
+    //   user = event;
+    // });
+
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(//페이지 전체 구성
@@ -53,22 +58,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
             children: <Widget>[
               Row(
                 children: const <Widget>[
-                  Text(
-                    'Focus',
-                    style: TextStyle(
-                      fontFamily: 'Okddung',
-                      fontSize: 30,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    '50',
-                    style: TextStyle(
-                      fontFamily: 'Okddung',
-                      fontSize: 30,
-                      color: purple300,
-                    ),
-                  ),
+                  Text('Focus',
+                      style: TextStyle(
+                          fontFamily: 'poppins',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 30,
+                          color: Colors.black)),
+                  Text('50',
+                      style: TextStyle(
+                          fontFamily: 'poppins',
+                          fontWeight: FontWeight.w900,
+                          fontSize: 30,
+                          color: purple300)),
                 ],
               ),
               Row(
@@ -77,44 +78,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       onPressed: () {
                         Get.rootDelegate.toNamed(Routes.ABOUT);
                       },
-                      child: const Text('소개',
-                          style: TextStyle(fontSize: 17, color: Colors.black))),
+                      child: const Text('About',
+                          style: TextStyle(
+                              fontFamily: 'poppins',
+                              fontWeight: FontWeight.w300,
+                              fontSize: 17,
+                              color: Colors.black))),
                   SizedBox(width: 10),
                   TextButton(
                       onPressed: () {
                         Get.rootDelegate.toNamed(Routes.CALENDAR);
                       },
-                      child: const Text('캘린더',
-                          style: TextStyle(fontSize: 17, color: Colors.black))),
+                      child: const Text('Calendar',
+                          style: TextStyle(
+                              fontFamily: 'poppins',
+                              fontWeight: FontWeight.w300,
+                              fontSize: 17,
+                              color: Colors.black))),
                   SizedBox(width: 10),
-                  (_auth.currentUser != null)
-                      ? TextButton(
-                          onPressed: () {
-                            Get.rootDelegate.toNamed(Routes.PROFILE);
-                          },
-                          child: const Text('마이페이지',
-                              style:
-                                  TextStyle(fontSize: 17, color: Colors.black)))
-                      : Container(),
+                  TextButton(
+                      onPressed: () {
+                        Get.rootDelegate.toNamed(Routes.PROFILE);
+                      },
+                      child: const Text('Profile',
+                          style: TextStyle(
+                              fontFamily: 'poppins',
+                              fontWeight: FontWeight.w300,
+                              fontSize: 17,
+                              color: Colors.black))),
                   SizedBox(width: 10),
-                  (_auth.currentUser != null)
+                  (user != null)
                       ? ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             primary: purple300,
                           ),
                           onPressed: () {
                             setState(() {
-                              _auth.signOut();
+                              auth.signOut();
                             });
 
                             Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
-                          child: const Text(
-                            '  로그아웃  ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: const Text('  Logout  '),
                         )
                       : OutlinedButton(
                           style: OutlinedButton.styleFrom(
@@ -123,16 +128,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           onPressed: () {
                             Get.rootDelegate.toNamed(Routes.SIGNUP);
                           },
-                          child: const Text(
-                            '회원가입',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
-                  (_auth.currentUser != null)
-                      ? Container()
-                      : SizedBox(width: 20),
-                  (_auth.currentUser != null)
+                          child: const Text('Sign Up')),
+                  (user != null) ? Container() : SizedBox(width: 20),
+                  (user != null)
                       ? Container()
                       : ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -141,12 +139,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           onPressed: () {
                             Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
-                          child: const Text(
-                            '  로그인  ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: const Text('  Log In  '),
                         ),
                 ],
               ),

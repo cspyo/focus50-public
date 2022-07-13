@@ -43,10 +43,6 @@ class TodoState extends State<Todo> {
     return StreamBuilder<QuerySnapshot>(
       stream: _myTodoColRef,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return Text("로그인 부탁두려용");
-        }
-
         if (snapshot.hasError) {
           var logger = Logger();
           logger.e(snapshot.error);
@@ -55,6 +51,8 @@ class TodoState extends State<Todo> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Text("Loading");
         }
+        // var logger = Logger();
+        // logger.d("updated");
         myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
           // TODO: 효율적으로 todo list 보여주기
@@ -75,6 +73,7 @@ class TodoState extends State<Todo> {
                         margin: EdgeInsets.only(left: 10),
                         child: Text('Todo',
                             style: TextStyle(
+                                fontFamily: 'Poppins',
                                 fontSize: 32,
                                 fontWeight: FontWeight.w600))),
                     IconButton(
@@ -174,12 +173,14 @@ class TodoState extends State<Todo> {
                                         children: [
                                       Text('투두가 없습니다',
                                           style: TextStyle(
+                                              fontFamily: 'Poppins',
                                               fontSize: 20,
                                               fontWeight: FontWeight.w600,
                                               color: Color.fromARGB(
                                                   255, 24, 24, 24))),
                                       Text('해야할 일을 정해 입력해보세요!',
                                           style: TextStyle(
+                                              fontFamily: 'Poppins',
                                               fontSize: 16,
                                               fontWeight: FontWeight.w500,
                                               color: Color.fromARGB(

@@ -27,10 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'IBMPlexSans',
-      ),
+      theme: new ThemeData(scaffoldBackgroundColor: Colors.white),
       defaultTransition: Transition.fade,
       getPages: AppPages.pages,
       routerDelegate: AppRouterDelegate(),
