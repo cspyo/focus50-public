@@ -240,7 +240,7 @@ class _ReservationState extends State<Reservation> {
                   reservationModel.toFirestore(),
             );
     getNextSession();
-    print("[DEBUG] initState: next reservation: ${nextReservation?.startTime}");
+    // print("[DEBUG] initState: next reservation: ${nextReservation?.startTime}");
   }
 
   @override
