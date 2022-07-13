@@ -162,6 +162,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w600,
+                                                          color: Colors.white,
                                                         )),
                                                     TimerCountdown(
                                                       format:
@@ -177,6 +178,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         fontSize: 26,
                                                         fontWeight:
                                                             FontWeight.w600,
+                                                        color: Colors.white,
                                                       ),
                                                       colonsTextStyle:
                                                           TextStyle(
@@ -184,6 +186,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         fontSize: 26,
                                                         fontWeight:
                                                             FontWeight.w600,
+                                                        color: Colors.white,
                                                       ),
                                                       spacerWidth: 0,
                                                     ),
@@ -194,6 +197,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w600,
+                                                          color: Colors.white,
                                                         )),
                                                   ],
                                                 )

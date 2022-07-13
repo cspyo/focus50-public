@@ -159,26 +159,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
         // ignore: avoid_unnecessary_containers
         Container(
             height: screenHeight - 70,
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width: 420,
-                    height: screenHeight - 70,
-                    decoration: BoxDecoration(
-                        border: Border(
-                            right: BorderSide(color: border100, width: 1.5))),
-                    child: SingleChildScrollView(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Reservation(),
-                            Todo(),
-                          ]),
-                    ),
-                  ),
-                  Container(child: Calendar())
-                ])), //reservation, todo, calendar
+            child: Row(children: <Widget>[
+              Container(
+                width: 420,
+                height: screenHeight - 70,
+                decoration: BoxDecoration(
+                    border: Border(
+                        right: BorderSide(color: border100, width: 1.5))),
+                child: Column(children: <Widget>[
+                  Reservation(),
+                  Todo(),
+                ]),
+              ),
+              Container(
+                child: Calendar(),
+              ),
+            ])),
       ]),
     ));
   }
