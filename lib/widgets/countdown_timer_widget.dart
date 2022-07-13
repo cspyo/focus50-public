@@ -135,7 +135,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                 Text(
                                                   "남은 시간",
                                                   style: TextStyle(
-                                                    fontFamily: 'Poppins',
                                                     fontSize: 20.0,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.black,
@@ -144,7 +143,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                 Text(
                                                   timerString,
                                                   style: TextStyle(
-                                                    fontFamily: 'Poppins',
                                                     fontSize: 80.0,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.black,
@@ -160,7 +158,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         // textAlign: TextAlign.center,
                                                         style: const TextStyle(
                                                           height: 1.0,
-                                                          fontFamily: 'poppins',
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w600,
@@ -176,7 +173,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                       enableDescriptions: false,
                                                       timeTextStyle: TextStyle(
                                                         height: 1.0,
-                                                        fontFamily: 'poppins',
                                                         fontSize: 26,
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -184,7 +180,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                       colonsTextStyle:
                                                           TextStyle(
                                                         height: 1.0,
-                                                        fontFamily: 'poppins',
                                                         fontSize: 26,
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -195,7 +190,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         // textAlign: TextAlign.center,
                                                         style: const TextStyle(
                                                           height: 1.0,
-                                                          fontFamily: 'poppins',
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w600,
