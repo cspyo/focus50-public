@@ -95,7 +95,8 @@ class CalendarAppointment extends State<Calendar> {
       _dataSource.appointments!.clear();
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         ReservationModel reservation = doc.data() as ReservationModel;
-        if ((reservation.user2Name == null ||
+        if ((reservation.user1Name == null ||
+            reservation.user2Name == null ||
             reservation.user1Name == nickName ||
             reservation.user2Name == nickName)) {
           Appointment app = Appointment(
@@ -106,7 +107,7 @@ class CalendarAppointment extends State<Calendar> {
                   : (reservation.user1Name == nickName ||
                           reservation.user2Name == nickName)
                       ? nickName
-                      : '',
+                      : reservation.user2Name!,
               color: Colors.teal,
               id: doc.id);
           _dataSource.appointments!.add(app);
