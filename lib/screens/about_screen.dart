@@ -125,7 +125,7 @@ class _AboutScreenState extends State<AboutScreen> {
       const Line(),
       Expanded(
         child: WebViewX(
-          initialContent: 'https://focus50-8b405.web.app',
+          initialContent: Uri.base.origin + "/about",
           initialSourceType: SourceType.url,
           onWebViewCreated: (controller) {
             webviewController = controller;
