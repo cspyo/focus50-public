@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:focus42/consts/colors.dart';
 
 class CountDownTimer extends StatefulWidget {
   final Duration duration;
@@ -73,7 +74,7 @@ class _CountDownTimerState extends State<CountDownTimer>
     // TODO: themedata 색상 설정
     ThemeData themeData = Theme.of(context);
     return Scaffold(
-        backgroundColor: Colors.white10,
+        backgroundColor: blackSession,
         body: AnimatedBuilder(
             animation: controller,
             builder: (context, child) {
@@ -115,7 +116,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                     fontFamily: 'Poppins',
                                                     fontSize: 20.0,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.black,
+                                                    color: Colors.white,
                                                   ),
                                                 ),
                                                 Text(
@@ -124,7 +125,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                     fontFamily: 'Poppins',
                                                     fontSize: 80.0,
                                                     fontWeight: FontWeight.w600,
-                                                    color: Colors.black,
+                                                    color: Colors.white,
                                                   ),
                                                 ),
                                               ]

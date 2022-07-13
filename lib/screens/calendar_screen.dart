@@ -33,18 +33,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   void initState() {
-  
     user = auth.currentUser;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // FirebaseAuth.instance.idTokenChanges().listen((event) {
-    //   user = auth.currentUser!;
-    //   print("On Data: ${event}");
-    //   user = event;
-    // });
+    double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
         body: SingleChildScrollView(
@@ -150,25 +145,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
         const Line(),
         // ignore: avoid_unnecessary_containers
         Container(
-            child: Row(children: <Widget>[
-          Container(
-            width: 420,
-            height: 1100,
-            decoration: BoxDecoration(
-                border:
-                    Border(right: BorderSide(color: border100, width: 1.5))),
-            child: Column(children: <Widget>[
-              Reservation(
-                  // remainingTime: remainingTime,
-                  // now: now,
-                  // fastReservation: fastReservation,
-                  // fastestReservation: fastestReservation,
+            height: screenHeight - 70,
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 420,
+                    height: screenHeight - 70,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(color: border100, width: 1.5))),
+                    child: SingleChildScrollView(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Reservation(),
+                            Todo(),
+                          ]),
+                    ),
                   ),
-              Todo(),
-            ]),
-          ),
-          Container(child: Calendar())
-        ])), //reservation, todo, calendar
+                  Container(child: Calendar())
+                ])), //reservation, todo, calendar
       ]),
     ));
   }
