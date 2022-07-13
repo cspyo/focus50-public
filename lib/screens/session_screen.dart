@@ -84,8 +84,8 @@ class _SessionPageState extends State<SessionPage> {
     signaling.hangUp(_localRenderer);
     // _localRenderer.dispose();
     // _remoteRenderer.dispose();
-    var logger = Logger();
-    logger.d("disposed");
+    // var logger = Logger();
+    // logger.d("disposed");
     super.dispose();
   }
 
@@ -269,12 +269,6 @@ class _SessionPageState extends State<SessionPage> {
                         Flexible(
                             fit: FlexFit.tight,
                             child: Container(
-                              // decoration: BoxDecoration(
-                              //     borderRadius: BorderRadius.circular(10),
-                              //     border: Border.all(
-                              //       color: blackCustomized,
-                              //       width: 0.5,
-                              //     )),
                               alignment: Alignment.center,
                               child: Padding(
                                 padding: EdgeInsets.all(10),
