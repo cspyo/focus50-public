@@ -10,7 +10,7 @@ pickImage(ImageSource source) async {
   if (file != null) {
     return await file.readAsBytes();
   }
-  print("No image selected");
+  //print("No image selected");
 }
 
 // 스낵바 보여주기

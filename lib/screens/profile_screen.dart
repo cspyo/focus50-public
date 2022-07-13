@@ -132,18 +132,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: <Widget>[
                 Row(
                   children: const <Widget>[
-                    Text('Focus',
-                        style: TextStyle(
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w600,
-                            fontSize: 30,
-                            color: Colors.black)),
-                    Text('50',
-                        style: TextStyle(
-                            fontFamily: 'poppins',
-                            fontWeight: FontWeight.w900,
-                            fontSize: 30,
-                            color: purple300)),
+                    Text(
+                      'Focus',
+                      style: TextStyle(
+                        fontFamily: 'Okddung',
+                        fontSize: 30,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Text(
+                      '50',
+                      style: TextStyle(
+                        fontFamily: 'Okddung',
+                        fontSize: 30,
+                        color: purple300,
+                      ),
+                    ),
                   ],
                 ),
                 Row(
@@ -152,34 +156,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onPressed: () {
                           Get.rootDelegate.toNamed(Routes.ABOUT);
                         },
-                        child: const Text('About',
-                            style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w300,
-                                fontSize: 17,
-                                color: Colors.black))),
+                        child: const Text('소개',
+                            style:
+                                TextStyle(fontSize: 17, color: Colors.black))),
                     SizedBox(width: 10),
                     TextButton(
                         onPressed: () {
                           Get.rootDelegate.toNamed(Routes.CALENDAR);
                         },
-                        child: const Text('Calendar',
-                            style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w300,
-                                fontSize: 17,
-                                color: Colors.black))),
+                        child: const Text('캘린더',
+                            style:
+                                TextStyle(fontSize: 17, color: Colors.black))),
                     SizedBox(width: 10),
-                    TextButton(
-                        onPressed: () {
-                          Get.rootDelegate.toNamed(Routes.PROFILE);
-                        },
-                        child: const Text('Profile',
-                            style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w300,
-                                fontSize: 17,
-                                color: Colors.black))),
+                    (_auth.currentUser != null)
+                        ? TextButton(
+                            onPressed: () {
+                              Get.rootDelegate.toNamed(Routes.PROFILE);
+                            },
+                            child: const Text('마이페이지',
+                                style: TextStyle(
+                                    fontSize: 17, color: Colors.black)))
+                        : Container(),
                     SizedBox(width: 10),
                     (_auth.currentUser != null)
                         ? ElevatedButton(
@@ -190,9 +187,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               setState(() {
                                 _auth.signOut();
                               });
+
                               Get.rootDelegate.toNamed(Routes.LOGIN);
                             },
-                            child: const Text('  Logout  '),
+                            child: const Text(
+                              '  로그아웃  ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           )
                         : OutlinedButton(
                             style: OutlinedButton.styleFrom(
@@ -201,7 +204,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Get.rootDelegate.toNamed(Routes.SIGNUP);
                             },
-                            child: const Text('Sign Up')),
+                            child: const Text(
+                              '회원가입',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )),
                     (_auth.currentUser != null)
                         ? Container()
                         : SizedBox(width: 20),
@@ -214,7 +222,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               Get.rootDelegate.toNamed(Routes.LOGIN);
                             },
-                            child: const Text('  Log In  '),
+                            child: const Text(
+                              '  로그인  ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                   ],
                 ),
@@ -287,7 +300,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fontSize: 17,
                                         fontWeight: FontWeight.bold,
                                         color: purple300,
-                                        fontFamily: 'poppins',
                                       ),
                                     ),
                                   ),
@@ -297,7 +309,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       controller: _nameController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter your name';
+                                          return '이름을 입력해주세요';
                                         }
                                         return null;
                                       },
@@ -345,7 +357,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fontSize: 17,
                                         fontWeight: FontWeight.bold,
                                         color: purple300,
-                                        fontFamily: 'poppins',
                                       ),
                                     ),
                                   ),
@@ -355,7 +366,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       controller: _nicknameController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter your nickname';
+                                          return '닉네임을 입력해주세요';
                                         }
                                         return null;
                                       },
@@ -377,7 +388,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       maxLines: 1,
                                       keyboardType: TextInputType.text,
                                       decoration: InputDecoration(
-                                        //labelText: "닉네임",
                                         prefixIcon: const Icon(
                                             Icons.co_present_rounded),
                                         border: OutlineInputBorder(
@@ -405,7 +415,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fontSize: 17,
                                         fontWeight: FontWeight.bold,
                                         color: purple300,
-                                        fontFamily: 'poppins',
                                       ),
                                     ),
                                   ),
@@ -415,7 +424,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       controller: _jobController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter your job';
+                                          return '직업을 입력해주세요';
                                         }
                                         return null;
                                       },
@@ -480,10 +489,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Submit',
-                                    style: TextStyle(
-                                      fontFamily: 'poppins',
-                                    ),
+                                    '업데이트',
+                                    style: TextStyle(),
                                   ),
                           ),
                         ),

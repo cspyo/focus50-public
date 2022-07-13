@@ -60,7 +60,7 @@ class AuthMethods {
           res = NOT_SIGNED_UP;
         }
       } else {
-        res = "Pleas enter all the fields";
+        res = "모든 필드를 작성해주세요";
       }
     } on FirebaseAuthException catch (err) {
       res = err.code;
