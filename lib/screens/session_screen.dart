@@ -58,16 +58,18 @@ class _SessionPageState extends State<SessionPage> {
 
   @override
   void initState() {
-    _localRenderer.initialize();
-    _remoteRenderer.initialize();
+    _localRenderer.initialize().then((value) {
+      _remoteRenderer.initialize().then((value) {
+        MatchingMethods()
+            .enterRoom(session.pk!, signaling, _localRenderer, _remoteRenderer);
+      });
+    });
 
     signaling.onAddRemoteStream = ((stream) {
       _remoteRenderer.srcObject = stream;
       setState(() {});
     });
     super.initState();
-    MatchingMethods()
-        .enterRoom(session.pk!, signaling, _localRenderer, _remoteRenderer);
 
     // myTodoColRef
     _myTodoColRef = _todoColRef
