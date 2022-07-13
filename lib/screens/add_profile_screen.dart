@@ -48,7 +48,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
         username: _nameController.text,
         nickname: _nicknameController.text,
         job: _jobController.text,
-        file: _image!);
+        file: _image);
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
 
@@ -69,6 +69,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
     return Scaffold(
       body: Column(
         children: [
+          // 데스크탑 헤더
           Container(
               padding: const EdgeInsets.only(
                   top: 15, bottom: 15, left: 25, right: 25),
@@ -79,24 +80,21 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                       children: const <Widget>[
                         Text('Focus',
                             style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Okddung',
                                 fontSize: 30,
                                 color: Colors.black)),
                         Text('50',
                             style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w900,
+                                fontFamily: 'Okddung',
                                 fontSize: 30,
                                 color: purple300)),
                       ],
                     ),
                     Row(children: <Widget>[
                       Text(
-                        "Do you have an account?",
+                        "이미 계정이 있나요?",
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w300,
                           color: Colors.grey,
                         ),
                       ),
@@ -109,7 +107,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
-                          '    Login    ',
+                          '    로그인    ',
                           style: TextStyle(),
                         ),
                       )
@@ -125,12 +123,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 80,
+                    height: 50,
                   ),
                   Text(
-                    'Create Profile',
+                    '프로필 작성',
                     style: TextStyle(
-                      fontFamily: 'poppins',
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: purple300,
@@ -144,14 +141,14 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                       _image != null
                           ? CircleAvatar(
                               radius: 64,
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.black38,
                               backgroundImage: MemoryImage(_image!),
                             )
                           : CircleAvatar(
                               radius: 64,
-                              backgroundColor: Colors.red,
+                              backgroundColor: Colors.black38,
                               backgroundImage: NetworkImage(
-                                  'https://thumbs.dreamstime.com/b/default-profile-picture-avatar-photo-placeholder-vector-illustration-default-profile-picture-avatar-photo-placeholder-vector-189495158.jpg'),
+                                  'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'),
                             ),
                       Positioned(
                         bottom: -10,
@@ -179,15 +176,20 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             controller: _nameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your name';
+                                return '이름은 필수사항입니다';
                               }
                               return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                saveUserProfile();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: 'Name',
+                              hintText: '이름',
                               prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -205,15 +207,20 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             controller: _nicknameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your nickname';
+                                return '닉네임은 필수사항입니다';
                               }
                               return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                saveUserProfile();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: 'Nickname',
+                              hintText: '닉네임',
                               prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -230,18 +237,21 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           child: TextFormField(
                             controller: _jobController,
                             validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return '직업은 필수사항입니다';
+                              }
                               return null;
-
-                              // if (value == null || value.isEmpty) {
-                              //   return 'Please enter your job';
-                              // }
-                              // return null;
                             },
                             onSaved: (val) {},
+                            onFieldSubmitted: (text) {
+                              if (_formKey.currentState!.validate()) {
+                                saveUserProfile();
+                              }
+                            },
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: 'Job',
+                              hintText: '직업',
                               prefixIcon: const Icon(Icons.article),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -257,7 +267,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           width: 450,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -272,10 +282,9 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Get started',
-                                    style: TextStyle(
-                                      fontFamily: 'poppins',
-                                    ),
+                                    '시작하기',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),

@@ -52,7 +52,6 @@ class MatchingMethods {
     */
     await getUserName();
     this.userName = nickName;
-    print("DEBUG matchroom");
     String docId = '';
     _firestore.runTransaction((transaction) async {
       await _reservationColRef

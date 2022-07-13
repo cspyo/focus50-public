@@ -223,15 +223,13 @@ class CalendarAppointment extends State<Calendar> {
               viewHeaderStyle: ViewHeaderStyle(
                   backgroundColor: Colors.white,
                   dateTextStyle: TextStyle(
-                      fontFamily: 'Poppins',
                       fontSize: 26,
                       color: Colors.black,
-                      fontWeight: FontWeight.w400),
+                      fontWeight: FontWeight.normal),
                   dayTextStyle: TextStyle(
-                      fontFamily: 'Poppins',
                       fontSize: 15,
                       color: Colors.black,
-                      fontWeight: FontWeight.w300)),
+                      fontWeight: FontWeight.w400)),
               onTap: calendarTapped,
               view: CalendarView.day,
               monthViewSettings: MonthViewSettings(showAgenda: true),
@@ -263,9 +261,8 @@ class CalendarAppointment extends State<Calendar> {
                                 child: Text(
                                   meeting.subject,
                                   style: TextStyle(
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: FontWeight.normal,
                                       fontSize: 12,
-                                      fontFamily: 'poppins',
                                       color: meeting.subject.contains(nickName)
                                           ? Colors.white
                                           : Colors.black),

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:video_player/video_player.dart';
 
 class CountDownTimer extends StatefulWidget {
   final Duration duration;
@@ -29,12 +30,17 @@ class _CountDownTimerState extends State<CountDownTimer>
   late Duration diff;
   Timer? _timer;
 
+  late VideoPlayerController _startSoundController;
+  late VideoPlayerController _finishSoundController;
+
   String get timerString {
     Duration duration = controller.duration! * controller.value;
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
   void startTimer() {
+    _startSoundController.play();
+
     if (!controller.isAnimating) {
       controller.reverse(
           from: controller.value == 0.0 ? 1.0 : controller.value);
@@ -50,13 +56,26 @@ class _CountDownTimerState extends State<CountDownTimer>
   @override
   void initState() {
     super.initState();
+
+    _startSoundController = VideoPlayerController.network(
+      'https://www.mboxdrive.com/start_sound.mp3',
+    );
+    _finishSoundController = VideoPlayerController.network(
+      'https://www.mboxdrive.com/finish_sound.mp3',
+    );
+    _startSoundController.initialize();
+    _finishSoundController.initialize();
     // TODO: duration 무조건 50분 아니고 만약에 시작 시간 이후에 들어오면 50분 보다 적음
     controller = AnimationController(
       vsync: this,
       duration: duration,
     );
-    // ..addStatusListener((status) { })
-    // TODO: timer 끝났을 때 event 걸기
+    controller.addStatusListener((status) {
+      // TODO(DONE): timer 끝났을 때 event 걸기
+      if (status == AnimationStatus.dismissed) {
+        _finishSoundController.play();
+      }
+    });
 
     diff = startTime.difference(DateTime.now());
     _timer = Timer(diff, startTimer);
@@ -65,6 +84,10 @@ class _CountDownTimerState extends State<CountDownTimer>
   @override
   void dispose() {
     _timer?.cancel();
+    _startSoundController.pause();
+    _startSoundController.dispose();
+    _finishSoundController.pause();
+    _finishSoundController.dispose();
     super.dispose();
   }
 
@@ -112,7 +135,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                 Text(
                                                   "남은 시간",
                                                   style: TextStyle(
-                                                    fontFamily: 'Poppins',
                                                     fontSize: 20.0,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.black,
@@ -121,7 +143,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                 Text(
                                                   timerString,
                                                   style: TextStyle(
-                                                    fontFamily: 'Poppins',
                                                     fontSize: 80.0,
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.black,
@@ -137,7 +158,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         // textAlign: TextAlign.center,
                                                         style: const TextStyle(
                                                           height: 1.0,
-                                                          fontFamily: 'poppins',
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w600,
@@ -153,7 +173,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                       enableDescriptions: false,
                                                       timeTextStyle: TextStyle(
                                                         height: 1.0,
-                                                        fontFamily: 'poppins',
                                                         fontSize: 26,
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -161,7 +180,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                       colonsTextStyle:
                                                           TextStyle(
                                                         height: 1.0,
-                                                        fontFamily: 'poppins',
                                                         fontSize: 26,
                                                         fontWeight:
                                                             FontWeight.w600,
@@ -172,7 +190,6 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         // textAlign: TextAlign.center,
                                                         style: const TextStyle(
                                                           height: 1.0,
-                                                          fontFamily: 'poppins',
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w600,
