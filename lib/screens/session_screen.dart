@@ -82,8 +82,6 @@ class _SessionPageState extends State<SessionPage> {
   @override
   void dispose() {
     signaling.hangUp(_localRenderer);
-    var logger = Logger();
-    logger.d("disposed");
     super.dispose();
   }
 

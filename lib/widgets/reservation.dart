@@ -45,6 +45,7 @@ class _ReservationState extends State<Reservation> {
   void getNextSession() async {
     await _reservationColRef
         .where('user1Uid', isEqualTo: _user.currentUser!.uid)
+        .where('startTime', isGreaterThan: DateTime.now())
         .orderBy('startTime')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) async {
@@ -131,6 +132,7 @@ class _ReservationState extends State<Reservation> {
 
     await _reservationColRef
         .where('user2Uid', isEqualTo: _user.currentUser!.uid)
+        .where('startTime', isGreaterThan: DateTime.now())
         .orderBy('startTime')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) async {
@@ -226,6 +228,7 @@ class _ReservationState extends State<Reservation> {
                   reservationModel.toFirestore(),
             );
     getNextSession();
+
   }
 
   @override

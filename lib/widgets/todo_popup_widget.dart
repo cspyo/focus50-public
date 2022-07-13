@@ -67,94 +67,105 @@ class TodoPopupState extends State<TodoPopup> {
           todo.pk = doc.id;
           myTodo.add(todo);
         });
-        return Container(
-          margin: EdgeInsets.only(top: 27),
-          width: 380,
-          child: Column(children: [
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                      margin: EdgeInsets.only(left: 10),
-                      child: Text('이번 세션에서 할 일을 선택해주세요 (최대 3개)',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w600))),
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isEditing = !isEditing;
-                        });
-                      },
-                      iconSize: 30,
-                      splashColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      icon: isEditing == false
-                          ? Icon(
-                              Icons.add,
-                              color: Colors.black,
-                            )
-                          : Icon(
-                              Icons.close,
-                              color: Colors.black,
-                            )),
-                ],
-              ),
-            ),
-            isEditing == true
-                ? Container(
-                    margin: EdgeInsets.only(top: 9),
-                    width: 360,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: TextField(
-                        autofocus: true,
-                        textInputAction: TextInputAction.go,
-                        onSubmitted: (value) {
-                          DateTime now = DateTime.now();
-                          // ?(질문): setState 하는게 맞나?
+        return Expanded(
+          child: Container(
+            margin: EdgeInsets.only(top: 27),
+            width: 380,
+            child: Column(children: [
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                        margin: EdgeInsets.only(left: 10),
+                        child: Text('이번 세션에서 할 일을 선택해주세요 (최대 3개)',
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600))),
+                    IconButton(
+                        onPressed: () {
                           setState(() {
                             isEditing = !isEditing;
-                            TodoModel todo = TodoModel(
-                              userUid: _user.currentUser!.uid,
-                              task: value,
-                              createdDate: now,
-                              modifiedDate: now,
-                              completedDate:
-                                  DateTime.fromMicrosecondsSinceEpoch(0),
-                              isComplete: false,
-                            );
-                            _todoColRef.add(todo);
                           });
+                          // print(plus);
                         },
-                        decoration: InputDecoration(
-                          hintText: '할 일을 적어주세요',
-                          fillColor: Colors.white,
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Colors.black, width: 2.0),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Colors.black, width: 2.0),
-                          ),
-                        )))
-                : Text(''),
-            for (var i = 0; i < myTodo.length; i++)
-              // ?(질문): for 문 사용법 모르겠어요
-              TodoPopupUi(
-                task: myTodo[i].task!,
-                isComplete: myTodo[i].isComplete!,
-                createdDate: Timestamp.fromDate(myTodo[i].createdDate!),
-                userUid: myTodo[i].userUid!,
-                docId: myTodo[i].pk!,
-                currentSessionId: session.pk!,
-                assignedSessionId: myTodo[i].assignedSessionId,
+                        iconSize: 30,
+                        splashColor: Colors.transparent,
+                        hoverColor: Colors.transparent,
+                        icon: isEditing == false
+                            ? Icon(
+                                Icons.add,
+                                color: Colors.black,
+                              )
+                            : Icon(
+                                Icons.close,
+                                color: Colors.black,
+                              )),
+                  ],
+                ),
+              ),
+              isEditing == true
+                  ? Container(
+                      margin: EdgeInsets.only(top: 9),
+                      width: 360,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextField(
+                          autofocus: true,
+                          textInputAction: TextInputAction.go,
+                          onSubmitted: (value) {
+                            DateTime now = DateTime.now();
+                            setState(() {
+                              isEditing = !isEditing;
+                              TodoModel todo = TodoModel(
+                                userUid: _user.currentUser!.uid,
+                                task: value,
+                                createdDate: now,
+                                modifiedDate: now,
+                                completedDate:
+                                    DateTime.fromMicrosecondsSinceEpoch(0),
+                                isComplete: false,
+                              );
+                              _todoColRef.add(todo);
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: '할 일을 적어주세요',
+                            fillColor: Colors.white,
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 2.0),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: const BorderSide(
+                                  color: Colors.black, width: 2.0),
+                            ),
+                          )))
+                  : Text(''),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      for (var i = 0; i < myTodo.length; i++)
+                        TodoPopupUi(
+                          task: myTodo[i].task!,
+                          isComplete: myTodo[i].isComplete!,
+                          createdDate:
+                              Timestamp.fromDate(myTodo[i].createdDate!),
+                          userUid: myTodo[i].userUid!,
+                          docId: myTodo[i].pk!,
+                          currentSessionId: session.pk!,
+                          assignedSessionId: myTodo[i].assignedSessionId,
+                        )
+                    ],
+                  ),
+                ),
               )
-          ]),
+            ]),
+          ),
         );
       },
     );

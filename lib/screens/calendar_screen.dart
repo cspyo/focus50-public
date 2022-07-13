@@ -173,7 +173,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
               Todo(),
             ]),
           ),
-          Container(child: Calendar())
+          // Container(
+          //   clipBehavior: Clip.
+          //   height: 400,
+          //   width: 400,
+          //   child: Calendar(),
+          // ),
+          Container(
+            child: Calendar(),
+          ),
         ])), //reservation, todo, calendar
       ]),
     ));
