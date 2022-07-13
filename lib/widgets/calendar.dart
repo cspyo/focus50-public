@@ -79,9 +79,12 @@ class CalendarAppointment extends State<Calendar> {
   // dict -> list
   // dart에도 있을까?
   Future<void> putCalendarData() async {
-    var userSnap = await _firestore.collection('users').doc(_user!.uid).get();
-    userData = userSnap.data()!;
-    nickName = userData['nickname'];
+    // uid 있을때만 nickname 가져오고 없으면 nickname에는 ''가 들어감
+    if (_user?.uid != null) {
+      var userSnap = await _firestore.collection('users').doc(_user?.uid).get();
+      userData = userSnap.data()!;
+      nickName = userData['nickname'];
+    }
 
     _reservationColRef
         .where('startTime', isGreaterThan: Timestamp.fromDate(DateTime.now()))
@@ -95,8 +98,6 @@ class CalendarAppointment extends State<Calendar> {
         if ((reservation.user2Name == null ||
             reservation.user1Name == nickName ||
             reservation.user2Name == nickName)) {
-          print(
-              '${reservation.startTime}, ${reservation.endTime}, ${reservation.user2Name}, ${reservation.user1Name}, ${nickName}');
           Appointment app = Appointment(
               startTime: reservation.startTime!,
               endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
@@ -111,7 +112,6 @@ class CalendarAppointment extends State<Calendar> {
           _dataSource.appointments!.add(app);
         }
       }
-      print("one cycle");
       _dataSource.notifyListeners(
           CalendarDataSourceAction.reset, _dataSource.appointments!);
     });
@@ -127,17 +127,90 @@ class CalendarAppointment extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: 856,
-        height: 1100,
-        child: Stack(
-          children: [
-            Positioned(
-              left: getCurrentDayPosition().toDouble(),
-              top: 100,
-              child: CurrentTimeIndicator(),
-            ),
-            SfCalendar(
+    double screenWidth = MediaQuery.of(context).size.width;
+    return screenWidth >= 1276
+        ? Container(
+            width: 856,
+            child: Stack(
+              children: [
+                Positioned(
+                  left: getCurrentDayPosition().toDouble(),
+                  top: 100,
+                  child: CurrentTimeIndicator(),
+                ),
+                SfCalendar(
+                  dataSource: _dataSource,
+                  firstDayOfWeek: 1,
+                  viewHeaderHeight: 100,
+                  headerHeight: 0,
+                  timeSlotViewSettings: TimeSlotViewSettings(
+                      dayFormat: 'EEE',
+                      timeIntervalHeight: 50,
+                      timeInterval: Duration(hours: 1),
+                      timeFormat: 'h:mm'),
+                  viewHeaderStyle: ViewHeaderStyle(
+                      backgroundColor: Colors.white,
+                      dateTextStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 26,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400),
+                      dayTextStyle: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 15,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w300)),
+                  onTap: calendarTapped,
+                  view: CalendarView.week,
+                  monthViewSettings: MonthViewSettings(showAgenda: true),
+                  todayHighlightColor: purple300,
+                  appointmentBuilder: (BuildContext context,
+                      CalendarAppointmentDetails details) {
+                    final Appointment meeting = details.appointments.first;
+                    return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: meeting.subject.contains(nickName)
+                                ? purple200
+                                : Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                  spreadRadius: 2,
+                                  color: Colors.black.withOpacity(0.25))
+                            ]),
+                        child: MouseRegion(
+                            onEnter: onHover,
+                            onExit: onExit,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    width: 53,
+                                    child: Text(
+                                      meeting.subject,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 12,
+                                          fontFamily: 'poppins',
+                                          color:
+                                              meeting.subject.contains(nickName)
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                    ))
+                              ],
+                            )));
+                  },
+                ),
+              ],
+            ))
+        : Container(
+            width: screenWidth - 420,
+            child: SfCalendar(
               dataSource: _dataSource,
               firstDayOfWeek: 1,
               viewHeaderHeight: 100,
@@ -160,7 +233,7 @@ class CalendarAppointment extends State<Calendar> {
                       color: Colors.black,
                       fontWeight: FontWeight.w300)),
               onTap: calendarTapped,
-              view: CalendarView.week,
+              view: CalendarView.day,
               monthViewSettings: MonthViewSettings(showAgenda: true),
               todayHighlightColor: purple300,
               appointmentBuilder:
@@ -203,9 +276,7 @@ class CalendarAppointment extends State<Calendar> {
                           ],
                         )));
               },
-            ),
-          ],
-        ));
+            ));
   }
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
@@ -218,7 +289,6 @@ class CalendarAppointment extends State<Calendar> {
               element.subject == nickName));
       // 여백에 클릭했을 때 datasource appoitnemnts 배열과 현재 클릭한 calendartapdetails 및 useruid 비교
       if (datasource.isNotEmpty) {
-        print('[DEBUG] 감히 여백에 클릭해?! 치사하네');
         return;
       }
       // 정상적으로 빈공간에 클릭했을 때
@@ -241,10 +311,7 @@ class CalendarAppointment extends State<Calendar> {
           await MatchingMethods().cancelRoom(docId);
         } else {
           // user2에 없다면
-          _reservationColRef
-              .doc(docId)
-              .delete()
-              .then((value) => print("DEBUG : calendar appointment deleted!"));
+          _reservationColRef.doc(docId).delete();
         }
       } else {
         // 상대방이 넣은거에 다시 클릭할때
