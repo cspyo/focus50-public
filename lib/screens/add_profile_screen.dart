@@ -69,6 +69,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
     return Scaffold(
       body: Column(
         children: [
+          // 데스크탑 헤더
           Container(
               padding: const EdgeInsets.only(
                   top: 15, bottom: 15, left: 25, right: 25),
@@ -79,24 +80,21 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                       children: const <Widget>[
                         Text('Focus',
                             style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Okddung',
                                 fontSize: 30,
                                 color: Colors.black)),
                         Text('50',
                             style: TextStyle(
-                                fontFamily: 'poppins',
-                                fontWeight: FontWeight.w900,
+                                fontFamily: 'Okddung',
                                 fontSize: 30,
                                 color: purple300)),
                       ],
                     ),
                     Row(children: <Widget>[
                       Text(
-                        "Do you have an account?",
+                        "이미 계정이 있나요?",
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w300,
                           color: Colors.grey,
                         ),
                       ),
@@ -109,7 +107,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
-                          '    Login    ',
+                          '    로그인    ',
                           style: TextStyle(),
                         ),
                       )
@@ -125,12 +123,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 80,
+                    height: 50,
                   ),
                   Text(
-                    'Create Profile',
+                    '프로필 작성',
                     style: TextStyle(
-                      fontFamily: 'poppins',
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: purple300,
@@ -179,7 +176,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             controller: _nameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your name';
+                                return '이름은 필수사항입니다';
                               }
                               return null;
                             },
@@ -192,7 +189,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: 'Name',
+                              hintText: '이름',
                               prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -210,7 +207,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             controller: _nicknameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your nickname';
+                                return '닉네임은 필수사항입니다';
                               }
                               return null;
                             },
@@ -223,7 +220,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: 'Nickname',
+                              hintText: '닉네임',
                               prefixIcon: const Icon(Icons.person),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -241,7 +238,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             controller: _jobController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Please enter your job';
+                                return '직업은 필수사항입니다';
                               }
                               return null;
                             },
@@ -254,7 +251,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             maxLines: 1,
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
-                              hintText: 'Job',
+                              hintText: '직업',
                               prefixIcon: const Icon(Icons.article),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -285,10 +282,9 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                                     ),
                                   )
                                 : const Text(
-                                    'Get started',
-                                    style: TextStyle(
-                                      fontFamily: 'poppins',
-                                    ),
+                                    '시작하기',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                   ),
                           ),
                         ),

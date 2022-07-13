@@ -80,7 +80,6 @@ class TodoPopupState extends State<TodoPopup> {
                         margin: EdgeInsets.only(left: 10),
                         child: Text('이번 세션에서 할 일을 선택해주세요 (최대 3개)',
                             style: TextStyle(
-                                fontFamily: 'Poppins',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600))),
                     IconButton(
@@ -119,7 +118,6 @@ class TodoPopupState extends State<TodoPopup> {
                           textInputAction: TextInputAction.go,
                           onSubmitted: (value) {
                             DateTime now = DateTime.now();
-                            // ?(질문): setState 하는게 맞나?
                             setState(() {
                               isEditing = !isEditing;
                               TodoModel todo = TodoModel(
@@ -152,7 +150,6 @@ class TodoPopupState extends State<TodoPopup> {
                   child: Column(
                     children: [
                       for (var i = 0; i < myTodo.length; i++)
-                        // ?(질문): for 문 사용법 모르겠어요
                         TodoPopupUi(
                           task: myTodo[i].task!,
                           isComplete: myTodo[i].isComplete!,
@@ -212,14 +209,12 @@ class TodoPopupUiState extends State<TodoPopupUi> {
   String? assignedSessionId;
   final String? currentSessionId;
   void onHover(PointerEvent details) {
-    // print('hovered');
     setState(() {
       isHover = true;
     });
   }
 
   void onExit(PointerEvent details) {
-    // print('nothovered');
     setState(() {
       isHover = false;
     });
