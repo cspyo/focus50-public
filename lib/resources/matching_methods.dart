@@ -14,7 +14,7 @@ class MatchingMethods {
   var userData = {};
   String? nickName;
 
-  void getUserName() async {
+  Future<void> getUserName() async {
     try {
       var userSnap = await _firestore
           .collection('users')
@@ -23,11 +23,12 @@ class MatchingMethods {
 
       userData = userSnap.data()!;
       nickName = userData['nickname'];
-    } catch (e) {}
+    } catch (e) {
+      print("getUserName catch:$e");
+    }
   }
 
   MatchingMethods() {
-    getUserName();
     this.userId = _user.currentUser!.uid;
     this.userName = nickName;
     this._reservationColRef =
@@ -49,6 +50,8 @@ class MatchingMethods {
      * 2-2. 없다
      * 3-2. 만든다.
     */
+    await getUserName();
+    this.userName = nickName;
     print("DEBUG matchroom");
     String docId = '';
     _firestore.runTransaction((transaction) async {
@@ -71,10 +74,6 @@ class MatchingMethods {
           final ReservationModel reservation = ReservationModel.fromFirestore(
               reservationSnap as DocumentSnapshot<Map<String, dynamic>>, null);
           ReservationModel newReservation;
-          if (userId == reservation.user2Uid ||
-              userId == reservation.user1Uid) {
-            throw Exception('reservation two same user!');
-          }
           if (reservation.isEmptyUser1()) {
             newReservation = ReservationModel(
                 startTime: reservation.startTime,
@@ -117,8 +116,8 @@ class MatchingMethods {
   Future<void> cancelRoom(String _docId) async {
     DocumentReference reservationRef = _reservationColRef.doc(_docId);
     DocumentSnapshot reservationSnap = await reservationRef.get();
-    final ReservationModel reservation = ReservationModel.fromFirestore(
-        reservationSnap as DocumentSnapshot<Map<String, dynamic>>, null);
+    final ReservationModel reservation =
+        reservationSnap.data() as ReservationModel;
     if (reservation.isInUser1(userId)) {
       ReservationModel newReservation = ReservationModel(
         startTime: reservation.startTime,

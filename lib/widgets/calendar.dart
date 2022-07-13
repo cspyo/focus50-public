@@ -25,7 +25,7 @@ class CalendarAppointment extends State<Calendar> {
   String docId = '';
 
   var userData = {};
-  String? nickName;
+  String nickName = "";
 
   CollectionReference _reservationColRef =
       _firestore.collection('reservation').withConverter<ReservationModel>(
@@ -67,22 +67,22 @@ class CalendarAppointment extends State<Calendar> {
       isHover = false;
     });
   }
+// *첫번째 받아올 때(init) 모든게 docChange 로 인식된다
+  // 1번의 경우는 add
+  // 어떤 게 변화되었다 a.type = add / a의 변경사항을 dataSource 에 넣으면 된다.
+  // -> doc change 에서 가져오면 된다
 
-  void getUserName() async {
-    try {
-      var userSnap = await _firestore.collection('users').doc(_user!.uid).get();
+  // 2번의 경우는 delete modify
+  // -> a.type = delete / a 의 변경사항을 반영하려면 리스트에서 찾아야 한다.
+  // 찾으려면 결국 list traverse 를 해야한다.
+  // dictionary(hash table) dic(docId) -> remove 를 하면 되지 않을까
+  // dict -> list
+  // dart에도 있을까?
+  Future<void> putCalendarData() async {
+    var userSnap = await _firestore.collection('users').doc(_user!.uid).get();
+    userData = userSnap.data()!;
+    nickName = userData['nickname'];
 
-      userData = userSnap.data()!;
-      nickName = userData['nickname'];
-    } catch (e) {}
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    //user model 써서 바꿔야합니다!
-    getUserName();
-    _dataSource = _DataSource(appointments);
     _reservationColRef
         .where('startTime', isGreaterThan: Timestamp.fromDate(DateTime.now()))
         .snapshots()
@@ -91,35 +91,38 @@ class CalendarAppointment extends State<Calendar> {
 
       _dataSource.appointments!.clear();
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        // *첫번째 받아올 때(init) 모든게 docChange 로 인식된다
-        // 1번의 경우는 add
-        // 어떤 게 변화되었다 a.type = add / a의 변경사항을 dataSource 에 넣으면 된다.
-        // -> doc change 에서 가져오면 된다
-
-        // 2번의 경우는 delete modify
-        // -> a.type = delete / a 의 변경사항을 반영하려면 리스트에서 찾아야 한다.
-        // 찾으려면 결국 list traverse 를 해야한다.
-        // dictionary(hash table) dic(docId) -> remove 를 하면 되지 않을까
-        // dict -> list
-        // dart에도 있을까?
-
         ReservationModel reservation = doc.data() as ReservationModel;
-        Appointment app = Appointment(
-            startTime: reservation.startTime!,
-            endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
-            subject: reservation.user2Name == null
-                ? reservation.user1Name!
-                : reservation.user2Name == nickName
-                    ? reservation.user2Name!
-                    : reservation.user1Name!,
-            color: Colors.teal,
-            id: doc.id);
-
-        _dataSource.appointments!.add(app);
+        if ((reservation.user2Name == null ||
+            reservation.user1Name == nickName ||
+            reservation.user2Name == nickName)) {
+          print(
+              '${reservation.startTime}, ${reservation.endTime}, ${reservation.user2Name}, ${reservation.user1Name}, ${nickName}');
+          Appointment app = Appointment(
+              startTime: reservation.startTime!,
+              endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
+              subject: reservation.user2Name == null
+                  ? reservation.user1Name!
+                  : (reservation.user1Name == nickName ||
+                          reservation.user2Name == nickName)
+                      ? nickName
+                      : '',
+              color: Colors.teal,
+              id: doc.id);
+          _dataSource.appointments!.add(app);
+        }
       }
+      print("one cycle");
       _dataSource.notifyListeners(
           CalendarDataSourceAction.reset, _dataSource.appointments!);
     });
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _dataSource = _DataSource(appointments);
+    putCalendarData();
   }
 
   @override
@@ -166,7 +169,7 @@ class CalendarAppointment extends State<Calendar> {
                 return Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: meeting.subject.contains(nickName.toString())
+                        color: meeting.subject.contains(nickName)
                             ? purple200
                             : Colors.white,
                         boxShadow: [
@@ -190,8 +193,7 @@ class CalendarAppointment extends State<Calendar> {
                                       fontWeight: FontWeight.w500,
                                       fontSize: 12,
                                       fontFamily: 'poppins',
-                                      color: meeting.subject
-                                              .contains(nickName.toString())
+                                      color: meeting.subject.contains(nickName)
                                           ? Colors.white
                                           : Colors.black),
                                   overflow: TextOverflow.ellipsis,
@@ -207,29 +209,45 @@ class CalendarAppointment extends State<Calendar> {
   }
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
-    // print(
-    // "[DEBUG] in calendartap appoitments: ${calendarTapDetails.appointments}");
     final appointment = calendarTapDetails.appointments?[0];
-    //빈 공간에 클릭 했을 때
+
+    // 빈 공간에 클릭 했을 때
     if (appointment == null) {
+      var datasource = _dataSource.appointments!.where((element) =>
+          (element.startTime == calendarTapDetails.date &&
+              element.subject == nickName));
+      // 여백에 클릭했을 때 datasource appoitnemnts 배열과 현재 클릭한 calendartapdetails 및 useruid 비교
+      if (datasource.isNotEmpty) {
+        print('[DEBUG] 감히 여백에 클릭해?! 치사하네');
+        return;
+      }
+      // 정상적으로 빈공간에 클릭했을 때
       await MatchingMethods().matchRoom(
         startTime: calendarTapDetails.date!,
         endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
       );
     }
 
-    //이미 예약이 있는 공간에 클릭했을 때
+    // 이미 예약이 있는 공간에 클릭했을 때
     else {
       if (appointment.subject == nickName) {
-        //내가 넣은거에 다시 클릭할때
+        // 내가 넣은거에 다시 클릭할때
         docId = await appointment.id.toString();
-        await _reservationColRef
-            .doc(docId)
-            .delete()
-            .then((value) => print("DEBUG : calendar appointment deleted!"));
+        var reservationSnap =
+            await _firestore.collection('reservation').doc(docId).get();
+        var event = reservationSnap.data()!;
+        if (event['user2Name'] != null) {
+          // user2에 데이터가 있으면
+          await MatchingMethods().cancelRoom(docId);
+        } else {
+          // user2에 없다면
+          _reservationColRef
+              .doc(docId)
+              .delete()
+              .then((value) => print("DEBUG : calendar appointment deleted!"));
+        }
       } else {
-        //상대방이 넣은거에 다시 클릭할때
-        print('상대방이 넣은 거에 다시 클릭');
+        // 상대방이 넣은거에 다시 클릭할때
         await MatchingMethods().matchRoom(
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
@@ -246,12 +264,12 @@ class _DataSource extends CalendarDataSource {
   }
 }
 
-int countAppointmentOverlap(_dataSource, calendarTapDetails) {
-  int count = 0;
-  for (var i = 0; i < _dataSource.appointments.length; i++) {
-    if (calendarTapDetails.date! == _dataSource.appointments[i].startTime) {
-      count++;
-    }
-  }
-  return count;
-}
+// int countAppointmentOverlap(_dataSource, calendarTapDetails) {
+//   int count = 0;
+//   for (var i = 0; i < _dataSource.appointments.length; i++) {
+//     if (calendarTapDetails.date! == _dataSource.appointments[i].startTime) {
+//       count++;
+//     }
+//   }
+//   return count;
+// }
