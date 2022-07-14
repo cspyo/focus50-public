@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/consts/routes.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -171,9 +173,11 @@ class CalendarAppointment extends State<Calendar> {
                     return Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: meeting.subject.contains(nickName)
+                            color: meeting.subject.contains(nickName) &&
+                                    _user?.uid != null
                                 ? purple200
                                 : Colors.white,
+                            //user_uid null 체크는 로그인 안했을 때를 위해 추가함
                             boxShadow: [
                               BoxShadow(
                                   blurRadius: 4,
@@ -195,10 +199,11 @@ class CalendarAppointment extends State<Calendar> {
                                           fontWeight: FontWeight.w500,
                                           fontSize: 12,
                                           fontFamily: 'poppins',
-                                          color:
-                                              meeting.subject.contains(nickName)
-                                                  ? Colors.white
-                                                  : Colors.black),
+                                          color: meeting.subject
+                                                      .contains(nickName) &&
+                                                  _user?.uid != null
+                                              ? Colors.white
+                                              : Colors.black),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
                                       textAlign: TextAlign.center,
@@ -279,46 +284,50 @@ class CalendarAppointment extends State<Calendar> {
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     final appointment = calendarTapDetails.appointments?[0];
-
-    // 빈 공간에 클릭 했을 때
-    if (appointment == null) {
-      var datasource = _dataSource.appointments!.where((element) =>
-          (element.startTime == calendarTapDetails.date &&
-              element.subject == nickName));
-      // 여백에 클릭했을 때 datasource appoitnemnts 배열과 현재 클릭한 calendartapdetails 및 useruid 비교
-      if (datasource.isNotEmpty) {
-        return;
-      }
-      // 정상적으로 빈공간에 클릭했을 때
-      await MatchingMethods().matchRoom(
-        startTime: calendarTapDetails.date!,
-        endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
-      );
-    }
-
-    // 이미 예약이 있는 공간에 클릭했을 때
-    else {
-      if (appointment.subject == nickName) {
-        // 내가 넣은거에 다시 클릭할때
-        docId = await appointment.id.toString();
-        var reservationSnap =
-            await _firestore.collection('reservation').doc(docId).get();
-        var event = reservationSnap.data()!;
-        if (event['user2Name'] != null) {
-          // user2에 데이터가 있으면
-          await MatchingMethods().cancelRoom(docId);
-        } else {
-          // user2에 없다면
-          _reservationColRef.doc(docId).delete();
+    print(_user?.uid);
+    if (_user?.uid != null) {
+      // 빈 공간에 클릭 했을 때
+      if (appointment == null) {
+        var datasource = _dataSource.appointments!.where((element) =>
+            (element.startTime == calendarTapDetails.date &&
+                element.subject == nickName));
+        // 여백에 클릭했을 때 datasource appoitnemnts 배열과 현재 클릭한 calendartapdetails 및 useruid 비교
+        if (datasource.isNotEmpty) {
+          return;
         }
-      } else {
-        // 상대방이 넣은거에 다시 클릭할때
+        // 정상적으로 빈공간에 클릭했을 때
         await MatchingMethods().matchRoom(
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
         );
       }
-      return;
+
+      // 이미 예약이 있는 공간에 클릭했을 때
+      else {
+        if (appointment.subject == nickName) {
+          // 내가 넣은거에 다시 클릭할때
+          docId = await appointment.id.toString();
+          var reservationSnap =
+              await _firestore.collection('reservation').doc(docId).get();
+          var event = reservationSnap.data()!;
+          if (event['user2Name'] != null) {
+            // user2에 데이터가 있으면
+            await MatchingMethods().cancelRoom(docId);
+          } else {
+            // user2에 없다면
+            _reservationColRef.doc(docId).delete();
+          }
+        } else {
+          // 상대방이 넣은거에 다시 클릭할때
+          await MatchingMethods().matchRoom(
+            startTime: calendarTapDetails.date!,
+            endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
+          );
+        }
+        return;
+      }
+    } else {
+      Get.rootDelegate.toNamed(Routes.LOGIN);
     }
   }
 }
