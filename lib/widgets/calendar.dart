@@ -36,25 +36,26 @@ class CalendarAppointment extends State<Calendar> {
                 reservationModel.toFirestore(),
           );
 
-  int getCurrentDayPosition() {
+  int getCurrentDayPosition(screenwidth) {
     String currentDay = DateFormat('E').format(DateTime.now());
+    int oneBoxWidth = ((screenwidth - 470) / 7).round();
     switch (currentDay) {
       case 'Mon':
-        return 50;
+        return 40;
       case 'Tue':
-        return 50 + 115;
+        return 40 + oneBoxWidth;
       case 'Wed':
-        return 50 + 115 * 2;
+        return 40 + oneBoxWidth * 2;
       case 'Thu':
-        return 50 + 115 * 3;
+        return 40 + oneBoxWidth * 3;
       case 'Fri':
-        return 50 + 115 * 4;
+        return 40 + oneBoxWidth * 4;
       case 'Sat':
-        return 50 + 115 * 5;
+        return 40 + oneBoxWidth * 5;
       case 'Sun':
-        return 50 + 115 * 6;
+        return 40 + oneBoxWidth * 6;
       default:
-        return 50;
+        return 40;
     }
   }
 
@@ -133,11 +134,11 @@ class CalendarAppointment extends State<Calendar> {
     double screenWidth = MediaQuery.of(context).size.width;
     return screenWidth >= 1276
         ? Container(
-            width: 856,
+            width: screenWidth - 440,
             child: Stack(
               children: [
                 Positioned(
-                  left: getCurrentDayPosition().toDouble(),
+                  left: getCurrentDayPosition(screenWidth).toDouble(),
                   top: 100,
                   child: CurrentTimeIndicator(),
                 ),

@@ -10,10 +10,12 @@ class CurrentTimeIndicator extends StatefulWidget {
 
 class _CurrentTimeIndicatorState extends State<CurrentTimeIndicator> {
   final curretTime = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: 115,
+      width: ((screenWidth - 470) / 7),
       height: 1000,
       decoration: new BoxDecoration(color: purple100.withOpacity(0.5)),
       child: Text(''),
