@@ -133,21 +133,21 @@ class _AboutScreenState extends State<AboutScreen> {
         ),
       ), //header
       const Line(),
-      // Expanded(
-      //   child: WebViewX(
-      //     initialContent: Uri.base.origin + "/about",
-      //     initialSourceType: SourceType.url,
-      //     onWebViewCreated: (controller) {
-      //       webviewController = controller;
-      //       // webviewController.loadContent(
-      //       //   '/about/index.html',
-      //       //   SourceType.url,
-      //       // );
-      //     },
-      //     height: MediaQuery.of(context).size.height,
-      //     width: MediaQuery.of(context).size.width,
-      //   ),
-      // ),
+      Expanded(
+        child: WebViewX(
+          initialContent: Uri.base.origin + "/about",
+          initialSourceType: SourceType.url,
+          onWebViewCreated: (controller) {
+            webviewController = controller;
+            // webviewController.loadContent(
+            //   '/about/index.html',
+            //   SourceType.url,
+            // );
+          },
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+        ),
+      ),
     ]));
   }
 }

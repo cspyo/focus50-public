@@ -21,28 +21,26 @@ environment:
   sdk: '>=2.16.0 <3.0.0'
 
 dependencies:
-  cupertino_icons: ^1.0.2
-  date_format: ^2.0.6
-  email_validator: ^2.0.1
   cloud_firestore: ^3.3.0
   firebase_auth: ^3.4.2
   firebase_core: ^1.19.2
   firebase_remote_config: ^2.0.12
   firebase_storage: ^10.3.2
-  flutter:
-    sdk: flutter
+  date_format: ^2.0.6
+  email_validator: ^2.0.1
   flutter_timer_countdown: ^1.0.3
-  flutter_webrtc: ^0.8.9
   get: ^4.6.5
-  getxbottombar: ^0.0.1
   image_picker: ^0.8.5+3
   intl: ^0.17.0
   logger: ^1.1.0
-  syncfusion_flutter_calendar: ^20.1.61
   url_strategy: ^0.2.0
   uuid: ^3.0.6
   webviewx: ^0.2.1
   video_player: ^2.4.5
+  flutter:
+    sdk: flutter
+  flutter_webrtc: ^0.8.9
+  syncfusion_flutter_calendar: ^20.1.61
 
 dev_dependencies:
   flutter_test:
