@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
+import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../consts/colors.dart';
@@ -17,6 +19,8 @@ class Reservation extends StatefulWidget {
   _ReservationState createState() => _ReservationState();
 }
 
+final FirebaseAuth _user = FirebaseAuth.instance;
+
 class _ReservationState extends State<Reservation> {
   String? partnerName = null;
   String reservationTime = '10시';
@@ -29,7 +33,8 @@ class _ReservationState extends State<Reservation> {
   String? nextReservationId;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _user = FirebaseAuth.instance;
+
+  String? userUid = _user.currentUser?.uid;
   late CollectionReference _reservationColRef;
 
   void enterReservation() {
@@ -43,31 +48,68 @@ class _ReservationState extends State<Reservation> {
   }
 
   void getNextSession() async {
-    await _reservationColRef
-        .where('user1Uid', isEqualTo: _user.currentUser!.uid)
-        .where('startTime', isGreaterThan: DateTime.now())
-        .orderBy('startTime')
-        .snapshots()
-        .listen((QuerySnapshot querySnapshot) async {
-      ReservationModel? nextReservation_origin;
-      querySnapshot.docChanges.forEach((element) {
-        if (element.type == DocumentChangeType.added) {
-          DocumentSnapshot reservationSnap = element.doc;
-          ReservationModel tempReservation =
-              reservationSnap.data() as ReservationModel;
-          tempReservation.pk = reservationSnap.id;
-          if (nextReservation != null) {
-            nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                    nextReservation!.startTime!
-                        .isBefore(tempReservation.startTime!))
-                ? nextReservation
-                : tempReservation;
+    if (userUid != null) {
+      await _reservationColRef
+          .where('user1Uid', isEqualTo: userUid)
+          .where('startTime', isGreaterThan: DateTime.now())
+          .orderBy('startTime')
+          .snapshots()
+          .listen((QuerySnapshot querySnapshot) async {
+        ReservationModel? nextReservation_origin;
+        querySnapshot.docChanges.forEach((element) {
+          if (element.type == DocumentChangeType.added) {
+            DocumentSnapshot reservationSnap = element.doc;
+            ReservationModel tempReservation =
+                reservationSnap.data() as ReservationModel;
+            tempReservation.pk = reservationSnap.id;
+            if (nextReservation != null) {
+              nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                      nextReservation!.startTime!
+                          .isBefore(tempReservation.startTime!))
+                  ? nextReservation
+                  : tempReservation;
+            } else {
+              nextReservation = (now.isBefore(tempReservation.startTime!))
+                  ? tempReservation
+                  : nextReservation;
+            }
+            if (nextReservation != nextReservation_origin) {
+              if (nextReservation != null) {
+                setState(() {
+                  nextReservationStartTime = nextReservation!.startTime!;
+                  remainingTime =
+                      Timestamp.fromDate(nextReservationStartTime!).seconds -
+                          Timestamp.fromDate(now).seconds;
+                  reservationTime =
+                      DateFormat('H').format(nextReservationStartTime!);
+                  if (nextReservation!.isInUser1(userUid!)) {
+                    partnerName = nextReservation!.user2Name;
+                  } else {
+                    partnerName = nextReservation!.user1Name;
+                  }
+                });
+              }
+            }
           } else {
-            nextReservation = (now.isBefore(tempReservation.startTime!))
-                ? tempReservation
-                : nextReservation;
-          }
-          if (nextReservation != nextReservation_origin) {
+            if (querySnapshot.size > 0) {
+              nextReservation = null;
+              querySnapshot.docs.forEach((element) {
+                ReservationModel tempReservation =
+                    element.data() as ReservationModel;
+                tempReservation.pk = element.id;
+                if (nextReservation != null) {
+                  nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                          nextReservation!.startTime!
+                              .isBefore(tempReservation.startTime!))
+                      ? nextReservation
+                      : tempReservation;
+                } else {
+                  nextReservation = (now.isBefore(tempReservation.startTime!))
+                      ? tempReservation
+                      : nextReservation;
+                }
+              });
+            }
             if (nextReservation != null) {
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
@@ -76,85 +118,85 @@ class _ReservationState extends State<Reservation> {
                         Timestamp.fromDate(now).seconds;
                 reservationTime =
                     DateFormat('H').format(nextReservationStartTime!);
-                if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+                if (nextReservation!.isInUser1(userUid!)) {
                   partnerName = nextReservation!.user2Name;
                 } else {
                   partnerName = nextReservation!.user1Name;
                 }
               });
+            } else {
+              setState(() {
+                nextReservationStartTime = null;
+                partnerName = '';
+                remainingTime = 0;
+                reservationTime = '';
+              });
             }
           }
-        } else {
-          if (querySnapshot.size > 0) {
-            nextReservation = null;
-            querySnapshot.docs.forEach((element) {
-              ReservationModel tempReservation =
-                  element.data() as ReservationModel;
-              tempReservation.pk = element.id;
-              if (nextReservation != null) {
-                nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                        nextReservation!.startTime!
-                            .isBefore(tempReservation.startTime!))
-                    ? nextReservation
-                    : tempReservation;
-              } else {
-                nextReservation = (now.isBefore(tempReservation.startTime!))
-                    ? tempReservation
-                    : nextReservation;
-              }
-            });
-          }
-          if (nextReservation != null) {
-            setState(() {
-              nextReservationStartTime = nextReservation!.startTime!;
-              remainingTime =
-                  Timestamp.fromDate(nextReservationStartTime!).seconds -
-                      Timestamp.fromDate(now).seconds;
-              reservationTime =
-                  DateFormat('H').format(nextReservationStartTime!);
-              if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
-                partnerName = nextReservation!.user2Name;
-              } else {
-                partnerName = nextReservation!.user1Name;
-              }
-            });
-          } else {
-            setState(() {
-              nextReservationStartTime = null;
-              partnerName = '';
-              remainingTime = 0;
-              reservationTime = '';
-            });
-          }
-        }
+        });
       });
-    });
 
-    await _reservationColRef
-        .where('user2Uid', isEqualTo: _user.currentUser!.uid)
-        .where('startTime', isGreaterThan: DateTime.now())
-        .orderBy('startTime')
-        .snapshots()
-        .listen((QuerySnapshot querySnapshot) async {
-      ReservationModel? nextReservation_origin;
-      querySnapshot.docChanges.forEach((element) {
-        if (element.type == DocumentChangeType.added) {
-          DocumentSnapshot reservationSnap = element.doc;
-          ReservationModel tempReservation =
-              reservationSnap.data() as ReservationModel;
-          tempReservation.pk = reservationSnap.id;
-          if (nextReservation != null) {
-            nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                    nextReservation!.startTime!
-                        .isBefore(tempReservation.startTime!))
-                ? nextReservation
-                : tempReservation;
+      await _reservationColRef
+          .where('user2Uid', isEqualTo: userUid)
+          .where('startTime', isGreaterThan: DateTime.now())
+          .orderBy('startTime')
+          .snapshots()
+          .listen((QuerySnapshot querySnapshot) async {
+        ReservationModel? nextReservation_origin;
+        querySnapshot.docChanges.forEach((element) {
+          if (element.type == DocumentChangeType.added) {
+            DocumentSnapshot reservationSnap = element.doc;
+            ReservationModel tempReservation =
+                reservationSnap.data() as ReservationModel;
+            tempReservation.pk = reservationSnap.id;
+            if (nextReservation != null) {
+              nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                      nextReservation!.startTime!
+                          .isBefore(tempReservation.startTime!))
+                  ? nextReservation
+                  : tempReservation;
+            } else {
+              nextReservation = (now.isBefore(tempReservation.startTime!))
+                  ? tempReservation
+                  : nextReservation;
+            }
+            if (nextReservation != nextReservation_origin) {
+              if (nextReservation != null) {
+                setState(() {
+                  nextReservationStartTime = nextReservation!.startTime!;
+                  remainingTime =
+                      Timestamp.fromDate(nextReservationStartTime!).seconds -
+                          Timestamp.fromDate(now).seconds;
+                  reservationTime =
+                      DateFormat('H').format(nextReservationStartTime!);
+                  if (nextReservation!.isInUser1(userUid!)) {
+                    partnerName = nextReservation!.user2Name;
+                  } else {
+                    partnerName = nextReservation!.user1Name;
+                  }
+                });
+              }
+            }
           } else {
-            nextReservation = (now.isBefore(tempReservation.startTime!))
-                ? tempReservation
-                : nextReservation;
-          }
-          if (nextReservation != nextReservation_origin) {
+            if (querySnapshot.size > 0) {
+              nextReservation = null;
+              querySnapshot.docs.forEach((element) {
+                ReservationModel tempReservation =
+                    element.data() as ReservationModel;
+                tempReservation.pk = element.id;
+                if (nextReservation != null) {
+                  nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                          nextReservation!.startTime!
+                              .isBefore(tempReservation.startTime!))
+                      ? nextReservation
+                      : tempReservation;
+                } else {
+                  nextReservation = (now.isBefore(tempReservation.startTime!))
+                      ? tempReservation
+                      : nextReservation;
+                }
+              });
+            }
             if (nextReservation != null) {
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
@@ -163,59 +205,26 @@ class _ReservationState extends State<Reservation> {
                         Timestamp.fromDate(now).seconds;
                 reservationTime =
                     DateFormat('H').format(nextReservationStartTime!);
-                if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
+                if (nextReservation!.isInUser1(userUid!)) {
                   partnerName = nextReservation!.user2Name;
                 } else {
                   partnerName = nextReservation!.user1Name;
                 }
               });
+            } else {
+              setState(() {
+                nextReservationStartTime = null;
+                partnerName = '';
+                remainingTime = 0;
+                reservationTime = '';
+              });
             }
           }
-        } else {
-          if (querySnapshot.size > 0) {
-            nextReservation = null;
-            querySnapshot.docs.forEach((element) {
-              ReservationModel tempReservation =
-                  element.data() as ReservationModel;
-              tempReservation.pk = element.id;
-              if (nextReservation != null) {
-                nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                        nextReservation!.startTime!
-                            .isBefore(tempReservation.startTime!))
-                    ? nextReservation
-                    : tempReservation;
-              } else {
-                nextReservation = (now.isBefore(tempReservation.startTime!))
-                    ? tempReservation
-                    : nextReservation;
-              }
-            });
-          }
-          if (nextReservation != null) {
-            setState(() {
-              nextReservationStartTime = nextReservation!.startTime!;
-              remainingTime =
-                  Timestamp.fromDate(nextReservationStartTime!).seconds -
-                      Timestamp.fromDate(now).seconds;
-              reservationTime =
-                  DateFormat('H').format(nextReservationStartTime!);
-              if (nextReservation!.isInUser1(_user.currentUser!.uid)) {
-                partnerName = nextReservation!.user2Name;
-              } else {
-                partnerName = nextReservation!.user1Name;
-              }
-            });
-          } else {
-            setState(() {
-              nextReservationStartTime = null;
-              partnerName = '';
-              remainingTime = 0;
-              reservationTime = '';
-            });
-          }
-        }
+        });
       });
-    });
+    } else {
+      await _reservationColRef.where('userUid', isEqualTo: 'none').snapshots();
+    }
   }
 
   @override
@@ -428,19 +437,33 @@ class _ReservationState extends State<Reservation> {
                   ),
                 ]),
             child: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                  Text('예약이 없습니다',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Color.fromARGB(255, 24, 24, 24))),
-                  Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.normal,
-                          color: Color.fromARGB(105, 105, 105, 100))),
-                ])));
+                child: userUid != null
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                            Text('예약이 없습니다',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromARGB(255, 24, 24, 24))),
+                            Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.normal,
+                                    color: Color.fromARGB(105, 105, 105, 100))),
+                          ])
+                    : SizedBox(
+                        height: 80,
+                        width: 250,
+                        child: TextButton(
+                          onPressed: () {
+                            Get.rootDelegate.toNamed(Routes.LOGIN);
+                          },
+                          child: Text('로그인이 필요합니다',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color.fromARGB(255, 24, 24, 24))),
+                        ))));
   }
 }

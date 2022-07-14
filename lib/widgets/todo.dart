@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:focus42/consts/routes.dart';
+import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 import '../consts/colors.dart';
@@ -16,25 +18,33 @@ class Todo extends StatefulWidget {
   TodoState createState() => TodoState();
 }
 
+final _user = FirebaseAuth.instance;
+
 class TodoState extends State<Todo> {
-  final _user = FirebaseAuth.instance;
+  String? userUid = _user.currentUser?.uid;
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
             fromFirestore: TodoModel.fromFirestore,
             toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
           );
   late final Stream<QuerySnapshot> _myTodoColRef;
+
   List<TodoModel> myTodo = [];
   bool isTodoCompleted = false;
 
   @override
   void initState() {
-    _myTodoColRef = _todoColRef
-        .where('userUid', isEqualTo: _user.currentUser?.uid)
-        .orderBy('completedDate')
-        .orderBy('modifiedDate', descending: true)
-        .orderBy('createdDate', descending: true)
-        .snapshots();
+    if (userUid != null) {
+      _myTodoColRef = _todoColRef
+          .where('userUid', isEqualTo: userUid)
+          .orderBy('completedDate')
+          .orderBy('modifiedDate', descending: true)
+          .orderBy('createdDate', descending: true)
+          .snapshots();
+    } else {
+      _myTodoColRef =
+          _todoColRef.where('userUid', isEqualTo: 'none').snapshots();
+    }
     super.initState();
   }
 
@@ -44,7 +54,7 @@ class TodoState extends State<Todo> {
       stream: _myTodoColRef,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (!snapshot.hasData) {
-          return Text("로그인 부탁두려용");
+          return Text('');
         }
 
         if (snapshot.hasError) {
@@ -53,7 +63,15 @@ class TodoState extends State<Todo> {
           return Text('Something went wrong');
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return SizedBox(
+            height: 80,
+            width: 250,
+            child: Text('Todo 로딩중입니다',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Color.fromARGB(255, 24, 24, 24))),
+          );
         }
         myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
@@ -75,8 +93,7 @@ class TodoState extends State<Todo> {
                         margin: EdgeInsets.only(left: 10),
                         child: Text('Todo',
                             style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w600))),
+                                fontSize: 32, fontWeight: FontWeight.w600))),
                     IconButton(
                         onPressed: () {
                           setState(() {
@@ -112,21 +129,24 @@ class TodoState extends State<Todo> {
                           autofocus: true,
                           textInputAction: TextInputAction.go,
                           onSubmitted: (value) {
-                            DateTime now = DateTime.now();
-                            // ?(질문): setState 하는게 맞나?
-                            setState(() {
-                              isTodoCompleted = !isTodoCompleted;
-                              TodoModel todo = TodoModel(
-                                userUid: _user.currentUser!.uid,
-                                task: value,
-                                createdDate: now,
-                                modifiedDate: now,
-                                completedDate:
-                                    DateTime.fromMicrosecondsSinceEpoch(0),
-                                isComplete: false,
-                              );
-                              _todoColRef.add(todo);
-                            });
+                            if (userUid != null) {
+                              DateTime now = DateTime.now();
+                              setState(() {
+                                isTodoCompleted = !isTodoCompleted;
+                                TodoModel todo = TodoModel(
+                                  userUid: userUid,
+                                  task: value,
+                                  createdDate: now,
+                                  modifiedDate: now,
+                                  completedDate:
+                                      DateTime.fromMicrosecondsSinceEpoch(0),
+                                  isComplete: false,
+                                );
+                                _todoColRef.add(todo);
+                              });
+                            } else {
+                              Get.rootDelegate.toNamed(Routes.LOGIN);
+                            }
                           },
                           decoration: InputDecoration(
                             hintText: '할 일을 적어주세요',
