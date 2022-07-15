@@ -9,7 +9,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../consts/colors.dart';
-import '../screens/session_screen.dart';
 
 final int maxDateTime = 10000000000000000;
 
@@ -38,13 +37,7 @@ class _ReservationState extends State<Reservation> {
   late CollectionReference _reservationColRef;
 
   void enterReservation() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => SessionScreen(
-                session: nextReservation!,
-              )),
-    );
+    Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 
   void getNextSession() async {
