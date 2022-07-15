@@ -1,8 +1,11 @@
 # Customized
-/lib/firebase_options.dart
+# /lib/firebase_options.dart
 /ios/Flutter/*.xcconfig
 pupspec.lock
 ios/Podfile
+assets/config/.env
+./**/.env
+*.env
 
 # Miscellaneous
 *.class
