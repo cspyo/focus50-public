@@ -35,9 +35,10 @@ jobs:
           echo "FIREBASE_AUTH_DOMAIN=${{ secrets.FIREBASE_AUTH_DOMAIN }}" >> ${{ github.workspace }}/assets/config/.env
           echo "FIREBASE_STORAGE_BUCKET=${{ secrets.FIREBASE_STORAGE_BUCKET }}" >> ${{ github.workspace }}/assets/config/.env
       - run: flutter pub get && flutter build web --release
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS50_8B405 }}'
-          channelId: live
-          projectId: focus50-8b405
+      - run: firebase deploy
+      # - uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     repoToken: '${{ secrets.GITHUB_TOKEN }}'
+      #     firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS50_8B405 }}'
+      #     channelId: live
+      #     projectId: focus50-8b405
