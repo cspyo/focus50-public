@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'IBMPlexSans',
       ),
-      defaultTransition: Transition.fade,
+      defaultTransition: Transition.noTransition,
       getPages: AppPages.pages,
       routerDelegate: AppRouterDelegate(),
       // routes: {

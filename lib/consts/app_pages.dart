@@ -38,7 +38,7 @@ abstract class AppPages {
     GetPage(
       name: Routes.SESSION,
       page: () => SessionScreen(
-        session: Get.arguments,
+        session: Get.rootDelegate.arguments(),
       ),
     ),
   ];
