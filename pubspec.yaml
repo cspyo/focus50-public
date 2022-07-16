@@ -43,7 +43,6 @@ dependencies:
     sdk: flutter
   flutter_webrtc: ^0.8.9
   syncfusion_flutter_calendar: ^20.1.61
-  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +61,6 @@ flutter:
   assets:
     - assets/images/meet.png
     - assets/images/google_icon.png
-    - assets/config/.env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
