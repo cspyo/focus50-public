@@ -38,24 +38,24 @@ class CalendarAppointment extends State<Calendar> {
 
   int getCurrentDayPosition(screenwidth) {
     String currentDay = DateFormat('E').format(DateTime.now());
-    int oneBoxWidth = ((screenwidth - 470) / 7).round();
+    int oneBoxWidth = ((screenwidth - 482) / 7).round();
     switch (currentDay) {
       case 'Mon':
-        return 40;
+        return 45;
       case 'Tue':
-        return 40 + oneBoxWidth;
+        return 45 + oneBoxWidth;
       case 'Wed':
-        return 40 + oneBoxWidth * 2;
+        return 45 + oneBoxWidth * 2;
       case 'Thu':
-        return 40 + oneBoxWidth * 3;
+        return 45 + oneBoxWidth * 3;
       case 'Fri':
-        return 40 + oneBoxWidth * 4;
+        return 45 + oneBoxWidth * 4;
       case 'Sat':
-        return 40 + oneBoxWidth * 5;
+        return 45 + oneBoxWidth * 5;
       case 'Sun':
-        return 40 + oneBoxWidth * 6;
+        return 45 + oneBoxWidth * 6;
       default:
-        return 40;
+        return 45;
     }
   }
 
@@ -286,6 +286,10 @@ class CalendarAppointment extends State<Calendar> {
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     final appointment = calendarTapDetails.appointments?[0];
     print(_user?.uid);
+    if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+      print('before');
+      return;
+    }
     if (_user?.uid != null) {
       // 빈 공간에 클릭 했을 때
       if (appointment == null) {

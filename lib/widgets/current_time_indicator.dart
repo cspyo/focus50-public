@@ -15,7 +15,7 @@ class _CurrentTimeIndicatorState extends State<CurrentTimeIndicator> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      width: ((screenWidth - 470) / 7),
+      width: ((screenWidth - 482) / 7),
       height: 1000,
       decoration: new BoxDecoration(color: purple100.withOpacity(0.5)),
       child: Text(''),
