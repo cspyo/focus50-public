@@ -8676,7 +8676,7 @@
             }
 
             if (shouldBrand && !isPhantom) {
-              brandElement = brandElement || createBadge();
+              brandElement = brandElement;
               ensureBrand();
               setTimeout(ensureBrand, 500);
               $(doc)
