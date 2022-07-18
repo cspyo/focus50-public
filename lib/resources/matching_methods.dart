@@ -14,6 +14,17 @@ class MatchingMethods {
   var userData = {};
   String? nickName;
 
+  MatchingMethods() {
+    this.userId = _user.currentUser!.uid;
+    this.userName = nickName;
+    this._reservationColRef =
+        _firestore.collection('reservation').withConverter<ReservationModel>(
+              fromFirestore: ReservationModel.fromFirestore,
+              toFirestore: (ReservationModel reservationModel, _) =>
+                  reservationModel.toFirestore(),
+            );
+  }
+
   Future<void> getUserName() async {
     try {
       var userSnap = await _firestore
@@ -26,17 +37,6 @@ class MatchingMethods {
     } catch (e) {
       print("getUserName catch:$e");
     }
-  }
-
-  MatchingMethods() {
-    this.userId = _user.currentUser!.uid;
-    this.userName = nickName;
-    this._reservationColRef =
-        _firestore.collection('reservation').withConverter<ReservationModel>(
-              fromFirestore: ReservationModel.fromFirestore,
-              toFirestore: (ReservationModel reservationModel, _) =>
-                  reservationModel.toFirestore(),
-            );
   }
 
   Future<void> matchRoom({
@@ -117,7 +117,7 @@ class MatchingMethods {
     DocumentSnapshot reservationSnap = await reservationRef.get();
     final ReservationModel reservation =
         reservationSnap.data() as ReservationModel;
-    if (reservation.isInUser1(userId)) {
+    if (reservation.isInUser1(userId) && reservation.user2Uid != null) {
       ReservationModel newReservation = ReservationModel(
         startTime: reservation.startTime,
         endTime: reservation.endTime,
@@ -129,7 +129,9 @@ class MatchingMethods {
         room: reservation.room,
       );
       reservationRef.set(newReservation);
-    } else if (reservation.isInUser2(userId)) {
+    } else if (reservation.isInUser1(userId) && reservation.user2Uid == null) {
+      reservationRef.delete();
+    } else if (reservation.isInUser2(userId) && reservation.user1Uid != null) {
       ReservationModel newReservation = ReservationModel(
         startTime: reservation.startTime,
         endTime: reservation.endTime,
@@ -141,6 +143,8 @@ class MatchingMethods {
         room: reservation.room,
       );
       reservationRef.set(newReservation);
+    } else if (reservation.isInUser2(userId) && reservation.user1Uid == null) {
+      reservationRef.delete();
     } else {
       throw Exception("There is not rooms for cancellation!");
     }
