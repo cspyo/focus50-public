@@ -312,16 +312,7 @@ class CalendarAppointment extends State<Calendar> {
         if (appointment.subject == nickName) {
           // 내가 넣은거에 다시 클릭할때
           docId = await appointment.id.toString();
-          var reservationSnap =
-              await _firestore.collection('reservation').doc(docId).get();
-          var event = reservationSnap.data()!;
-          if (event['user2Name'] != null) {
-            // user2에 데이터가 있으면
-            await MatchingMethods().cancelRoom(docId);
-          } else {
-            // user2에 없다면
-            _reservationColRef.doc(docId).delete();
-          }
+          await MatchingMethods().cancelRoom(docId);
         } else {
           // 상대방이 넣은거에 다시 클릭할때
           await MatchingMethods().matchRoom(
