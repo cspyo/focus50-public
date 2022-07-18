@@ -53,7 +53,7 @@ class MatchingMethods {
     await getUserName();
     this.userName = nickName;
     String docId = '';
-    _firestore.runTransaction((transaction) async {
+    return _firestore.runTransaction((transaction) async {
       await _reservationColRef
           .where('startTime', isEqualTo: Timestamp.fromDate(startTime))
           .where('isFull', isEqualTo: false)
@@ -113,41 +113,46 @@ class MatchingMethods {
   }
 
   Future<void> cancelRoom(String _docId) async {
-    DocumentReference reservationRef = _reservationColRef.doc(_docId);
-    DocumentSnapshot reservationSnap = await reservationRef.get();
-    final ReservationModel reservation =
-        reservationSnap.data() as ReservationModel;
-    if (reservation.isInUser1(userId) && reservation.user2Uid != null) {
-      ReservationModel newReservation = ReservationModel(
-        startTime: reservation.startTime,
-        endTime: reservation.endTime,
-        user1Uid: null,
-        user1Name: null,
-        user2Uid: reservation.user2Uid,
-        user2Name: reservation.user2Name,
-        isFull: false,
-        room: reservation.room,
-      );
-      reservationRef.set(newReservation);
-    } else if (reservation.isInUser1(userId) && reservation.user2Uid == null) {
-      reservationRef.delete();
-    } else if (reservation.isInUser2(userId) && reservation.user1Uid != null) {
-      ReservationModel newReservation = ReservationModel(
-        startTime: reservation.startTime,
-        endTime: reservation.endTime,
-        user1Uid: reservation.user1Uid,
-        user1Name: reservation.user1Name,
-        user2Uid: null,
-        user2Name: null,
-        isFull: false,
-        room: reservation.room,
-      );
-      reservationRef.set(newReservation);
-    } else if (reservation.isInUser2(userId) && reservation.user1Uid == null) {
-      reservationRef.delete();
-    } else {
-      throw Exception("There is not rooms for cancellation!");
-    }
+    return _firestore.runTransaction((transaction) async {
+      DocumentReference reservationRef = _reservationColRef.doc(_docId);
+      DocumentSnapshot reservationSnap = await transaction.get(reservationRef);
+      final ReservationModel reservation = ReservationModel.fromFirestore(
+          reservationSnap as DocumentSnapshot<Map<String, dynamic>>, null);
+      if (reservation.isInUser1(userId) && reservation.user2Uid != null) {
+        ReservationModel newReservation = ReservationModel(
+          startTime: reservation.startTime,
+          endTime: reservation.endTime,
+          user1Uid: null,
+          user1Name: null,
+          user2Uid: reservation.user2Uid,
+          user2Name: reservation.user2Name,
+          isFull: false,
+          room: reservation.room,
+        );
+        transaction.update(reservationRef, newReservation.toFirestore());
+      } else if (reservation.isInUser1(userId) &&
+          reservation.user2Uid == null) {
+        transaction.delete(reservationRef);
+      } else if (reservation.isInUser2(userId) &&
+          reservation.user1Uid != null) {
+        ReservationModel newReservation = ReservationModel(
+          startTime: reservation.startTime,
+          endTime: reservation.endTime,
+          user1Uid: reservation.user1Uid,
+          user1Name: reservation.user1Name,
+          user2Uid: null,
+          user2Name: null,
+          isFull: false,
+          room: reservation.room,
+        );
+        transaction.update(reservationRef, newReservation.toFirestore());
+      } else if (reservation.isInUser2(userId) &&
+          reservation.user1Uid == null) {
+        transaction.delete(reservationRef);
+      } else {
+        throw Exception("There is not rooms for cancellation!");
+      }
+    });
   }
 
   Future<void> enterRoom(
