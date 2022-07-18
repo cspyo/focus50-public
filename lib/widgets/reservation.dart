@@ -51,6 +51,7 @@ class _ReservationState extends State<Reservation> {
         ReservationModel? nextReservation_origin;
         querySnapshot.docChanges.forEach((element) {
           if (element.type == DocumentChangeType.added) {
+            print("[DEBUG] user1 / something changed added");
             DocumentSnapshot reservationSnap = element.doc;
             ReservationModel tempReservation =
                 reservationSnap.data() as ReservationModel;
@@ -84,25 +85,24 @@ class _ReservationState extends State<Reservation> {
               }
             }
           } else {
-            if (querySnapshot.size > 0) {
-              nextReservation = null;
-              querySnapshot.docs.forEach((element) {
-                ReservationModel tempReservation =
-                    element.data() as ReservationModel;
-                tempReservation.pk = element.id;
-                if (nextReservation != null) {
-                  nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                          nextReservation!.startTime!
-                              .isBefore(tempReservation.startTime!))
-                      ? nextReservation
-                      : tempReservation;
-                } else {
-                  nextReservation = (now.isBefore(tempReservation.startTime!))
-                      ? tempReservation
-                      : nextReservation;
-                }
-              });
-            }
+            print("[DEBUG] user1 / something changed ~added");
+            nextReservation = null;
+            querySnapshot.docs.forEach((element) {
+              ReservationModel tempReservation =
+                  element.data() as ReservationModel;
+              tempReservation.pk = element.id;
+              if (nextReservation != null) {
+                nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                        nextReservation!.startTime!
+                            .isBefore(tempReservation.startTime!))
+                    ? nextReservation
+                    : tempReservation;
+              } else {
+                nextReservation = (now.isBefore(tempReservation.startTime!))
+                    ? tempReservation
+                    : nextReservation;
+              }
+            });
             if (nextReservation != null) {
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
@@ -138,6 +138,7 @@ class _ReservationState extends State<Reservation> {
         ReservationModel? nextReservation_origin;
         querySnapshot.docChanges.forEach((element) {
           if (element.type == DocumentChangeType.added) {
+            print("[DEBUG] user2 / something changed added");
             DocumentSnapshot reservationSnap = element.doc;
             ReservationModel tempReservation =
                 reservationSnap.data() as ReservationModel;
@@ -171,25 +172,24 @@ class _ReservationState extends State<Reservation> {
               }
             }
           } else {
-            if (querySnapshot.size > 0) {
-              nextReservation = null;
-              querySnapshot.docs.forEach((element) {
-                ReservationModel tempReservation =
-                    element.data() as ReservationModel;
-                tempReservation.pk = element.id;
-                if (nextReservation != null) {
-                  nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                          nextReservation!.startTime!
-                              .isBefore(tempReservation.startTime!))
-                      ? nextReservation
-                      : tempReservation;
-                } else {
-                  nextReservation = (now.isBefore(tempReservation.startTime!))
-                      ? tempReservation
-                      : nextReservation;
-                }
-              });
-            }
+            print("[DEBUG] user2/ something changed ~added");
+            nextReservation = null;
+            querySnapshot.docs.forEach((element) {
+              ReservationModel tempReservation =
+                  element.data() as ReservationModel;
+              tempReservation.pk = element.id;
+              if (nextReservation != null) {
+                nextReservation = (now.isBefore(tempReservation.startTime!) &&
+                        nextReservation!.startTime!
+                            .isBefore(tempReservation.startTime!))
+                    ? nextReservation
+                    : tempReservation;
+              } else {
+                nextReservation = (now.isBefore(tempReservation.startTime!))
+                    ? tempReservation
+                    : nextReservation;
+              }
+            });
             if (nextReservation != null) {
               setState(() {
                 nextReservationStartTime = nextReservation!.startTime!;
