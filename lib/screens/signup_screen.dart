@@ -221,11 +221,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width: 250,
-                              height: 40,
-                            ),
-                            SizedBox(
-                              width: 200,
+                              width: 450,
                               height: 40,
                               child: ElevatedButton(
                                 onPressed: () {
@@ -243,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         ),
                                       )
                                     : const Text(
-                                        '다음',
+                                        '계정 생성하기',
                                         style: TextStyle(),
                                       ),
                               ),
