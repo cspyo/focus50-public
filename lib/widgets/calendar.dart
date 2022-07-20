@@ -151,7 +151,7 @@ class CalendarAppointment extends State<Calendar> {
                       dayFormat: 'EEE',
                       timeIntervalHeight: 50,
                       timeInterval: Duration(hours: 1),
-                      timeFormat: 'h:mm'),
+                      timeFormat: 'HH:mm'),
                   viewHeaderStyle: ViewHeaderStyle(
                       backgroundColor: Colors.white,
                       dateTextStyle: TextStyle(
