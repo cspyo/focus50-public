@@ -148,7 +148,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                     fontWeight: FontWeight.w600,
                                                     color: Colors.white,
                                                   ),
-                                                ),
+                                                )
                                               ]
                                             : [
                                                 Row(
@@ -161,7 +161,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                           height: 1.0,
                                                           fontSize: 26,
                                                           fontWeight:
-                                                              FontWeight.w600,
+                                                              FontWeight.w500,
                                                           color: Colors.white,
                                                         )),
                                                     TimerCountdown(
@@ -177,7 +177,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         height: 1.0,
                                                         fontSize: 26,
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                            FontWeight.w500,
                                                         color: Colors.white,
                                                       ),
                                                       colonsTextStyle:
@@ -185,7 +185,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         height: 1.0,
                                                         fontSize: 26,
                                                         fontWeight:
-                                                            FontWeight.w600,
+                                                            FontWeight.w500,
                                                         color: Colors.white,
                                                       ),
                                                       spacerWidth: 0,
@@ -196,7 +196,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                           height: 1.0,
                                                           fontSize: 26,
                                                           fontWeight:
-                                                              FontWeight.w600,
+                                                              FontWeight.w500,
                                                           color: Colors.white,
                                                         )),
                                                   ],
