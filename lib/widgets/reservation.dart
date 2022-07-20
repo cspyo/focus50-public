@@ -28,6 +28,8 @@ class _ReservationState extends State<Reservation> {
 
   DateTime now = new DateTime.now();
   ReservationModel? nextReservation = null;
+  ReservationModel? nextReservation1 = null;
+  ReservationModel? nextReservation2 = null;
   DateTime? nextReservationStartTime;
   String? nextReservationId;
 
@@ -40,7 +42,7 @@ class _ReservationState extends State<Reservation> {
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 
-  void getNextSession() async {
+  void getReservationListener() async {
     if (userUid != null) {
       await _reservationColRef
           .where('user1Uid', isEqualTo: userUid)
@@ -48,7 +50,6 @@ class _ReservationState extends State<Reservation> {
           .orderBy('startTime')
           .snapshots()
           .listen((QuerySnapshot querySnapshot) async {
-        ReservationModel? nextReservation_origin;
         querySnapshot.docChanges.forEach((element) {
           if (element.type == DocumentChangeType.added) {
             print("[DEBUG] user1 / something changed added");
@@ -56,77 +57,39 @@ class _ReservationState extends State<Reservation> {
             ReservationModel tempReservation =
                 reservationSnap.data() as ReservationModel;
             tempReservation.pk = reservationSnap.id;
-            if (nextReservation != null) {
-              nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                      nextReservation!.startTime!
+            if (nextReservation1 != null) {
+              nextReservation1 = (now.isBefore(tempReservation.startTime!) &&
+                      nextReservation1!.startTime!
                           .isBefore(tempReservation.startTime!))
-                  ? nextReservation
+                  ? nextReservation1
                   : tempReservation;
             } else {
-              nextReservation = (now.isBefore(tempReservation.startTime!))
+              nextReservation1 = (now.isBefore(tempReservation.startTime!))
                   ? tempReservation
-                  : nextReservation;
-            }
-            if (nextReservation != nextReservation_origin) {
-              if (nextReservation != null) {
-                setState(() {
-                  nextReservationStartTime = nextReservation!.startTime!;
-                  remainingTime =
-                      Timestamp.fromDate(nextReservationStartTime!).seconds -
-                          Timestamp.fromDate(now).seconds;
-                  reservationTime =
-                      DateFormat('H').format(nextReservationStartTime!);
-                  if (nextReservation!.isInUser1(userUid!)) {
-                    partnerName = nextReservation!.user2Name;
-                  } else {
-                    partnerName = nextReservation!.user1Name;
-                  }
-                });
-              }
+                  : nextReservation1;
             }
           } else {
             print("[DEBUG] user1 / something changed ~added");
-            nextReservation = null;
+            nextReservation1 = null;
             querySnapshot.docs.forEach((element) {
               ReservationModel tempReservation =
                   element.data() as ReservationModel;
               tempReservation.pk = element.id;
-              if (nextReservation != null) {
-                nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                        nextReservation!.startTime!
+              if (nextReservation1 != null) {
+                nextReservation1 = (now.isBefore(tempReservation.startTime!) &&
+                        nextReservation1!.startTime!
                             .isBefore(tempReservation.startTime!))
-                    ? nextReservation
+                    ? nextReservation1
                     : tempReservation;
               } else {
-                nextReservation = (now.isBefore(tempReservation.startTime!))
+                nextReservation1 = (now.isBefore(tempReservation.startTime!))
                     ? tempReservation
-                    : nextReservation;
+                    : nextReservation1;
               }
             });
-            if (nextReservation != null) {
-              setState(() {
-                nextReservationStartTime = nextReservation!.startTime!;
-                remainingTime =
-                    Timestamp.fromDate(nextReservationStartTime!).seconds -
-                        Timestamp.fromDate(now).seconds;
-                reservationTime =
-                    DateFormat('H').format(nextReservationStartTime!);
-                if (nextReservation!.isInUser1(userUid!)) {
-                  partnerName = nextReservation!.user2Name;
-                } else {
-                  partnerName = nextReservation!.user1Name;
-                }
-              });
-            } else {
-              setState(() {
-                nextReservationStartTime = null;
-                partnerName = '';
-                remainingTime = 0;
-                reservationTime = '';
-              });
-            }
           }
         });
+        getNextSession();
       });
 
       await _reservationColRef
@@ -135,7 +98,6 @@ class _ReservationState extends State<Reservation> {
           .orderBy('startTime')
           .snapshots()
           .listen((QuerySnapshot querySnapshot) async {
-        ReservationModel? nextReservation_origin;
         querySnapshot.docChanges.forEach((element) {
           if (element.type == DocumentChangeType.added) {
             print("[DEBUG] user2 / something changed added");
@@ -143,80 +105,80 @@ class _ReservationState extends State<Reservation> {
             ReservationModel tempReservation =
                 reservationSnap.data() as ReservationModel;
             tempReservation.pk = reservationSnap.id;
-            if (nextReservation != null) {
-              nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                      nextReservation!.startTime!
+            if (nextReservation2 != null) {
+              nextReservation2 = (now.isBefore(tempReservation.startTime!) &&
+                      nextReservation2!.startTime!
                           .isBefore(tempReservation.startTime!))
-                  ? nextReservation
+                  ? nextReservation2
                   : tempReservation;
             } else {
-              nextReservation = (now.isBefore(tempReservation.startTime!))
+              nextReservation2 = (now.isBefore(tempReservation.startTime!))
                   ? tempReservation
-                  : nextReservation;
-            }
-            if (nextReservation != nextReservation_origin) {
-              if (nextReservation != null) {
-                setState(() {
-                  nextReservationStartTime = nextReservation!.startTime!;
-                  remainingTime =
-                      Timestamp.fromDate(nextReservationStartTime!).seconds -
-                          Timestamp.fromDate(now).seconds;
-                  reservationTime =
-                      DateFormat('H').format(nextReservationStartTime!);
-                  if (nextReservation!.isInUser1(userUid!)) {
-                    partnerName = nextReservation!.user2Name;
-                  } else {
-                    partnerName = nextReservation!.user1Name;
-                  }
-                });
-              }
+                  : nextReservation2;
             }
           } else {
             print("[DEBUG] user2/ something changed ~added");
-            nextReservation = null;
+            nextReservation2 = null;
             querySnapshot.docs.forEach((element) {
               ReservationModel tempReservation =
                   element.data() as ReservationModel;
               tempReservation.pk = element.id;
-              if (nextReservation != null) {
-                nextReservation = (now.isBefore(tempReservation.startTime!) &&
-                        nextReservation!.startTime!
+              if (nextReservation2 != null) {
+                nextReservation2 = (now.isBefore(tempReservation.startTime!) &&
+                        nextReservation2!.startTime!
                             .isBefore(tempReservation.startTime!))
-                    ? nextReservation
+                    ? nextReservation2
                     : tempReservation;
               } else {
-                nextReservation = (now.isBefore(tempReservation.startTime!))
+                nextReservation2 = (now.isBefore(tempReservation.startTime!))
                     ? tempReservation
-                    : nextReservation;
+                    : nextReservation2;
               }
             });
-            if (nextReservation != null) {
-              setState(() {
-                nextReservationStartTime = nextReservation!.startTime!;
-                remainingTime =
-                    Timestamp.fromDate(nextReservationStartTime!).seconds -
-                        Timestamp.fromDate(now).seconds;
-                reservationTime =
-                    DateFormat('H').format(nextReservationStartTime!);
-                if (nextReservation!.isInUser1(userUid!)) {
-                  partnerName = nextReservation!.user2Name;
-                } else {
-                  partnerName = nextReservation!.user1Name;
-                }
-              });
-            } else {
-              setState(() {
-                nextReservationStartTime = null;
-                partnerName = '';
-                remainingTime = 0;
-                reservationTime = '';
-              });
-            }
           }
         });
+        getNextSession();
       });
     } else {
       await _reservationColRef.where('userUid', isEqualTo: 'none').snapshots();
+    }
+  }
+
+  void getNextSession() {
+    ReservationModel? nextReservation_origin = nextReservation;
+    if (nextReservation1 == null && nextReservation2 == null) {
+      nextReservation = null;
+    } else if (nextReservation1 == null && nextReservation2 != null) {
+      nextReservation = nextReservation2;
+    } else if (nextReservation1 != null && nextReservation2 == null) {
+      nextReservation = nextReservation1;
+    } else {
+      nextReservation =
+          (nextReservation1!.startTime!.isBefore(nextReservation2!.startTime!))
+              ? nextReservation1
+              : nextReservation2;
+    }
+    if (nextReservation != null) {
+      if (nextReservation != nextReservation_origin)
+        setState(() {
+          nextReservationStartTime = nextReservation!.startTime!;
+          remainingTime =
+              Timestamp.fromDate(nextReservationStartTime!).seconds -
+                  Timestamp.fromDate(now).seconds;
+          reservationTime = DateFormat('H').format(nextReservationStartTime!);
+          if (nextReservation!.isInUser1(userUid!)) {
+            partnerName = nextReservation!.user2Name;
+          } else {
+            partnerName = nextReservation!.user1Name;
+          }
+        });
+    } else {
+      setState(() {
+        nextReservationStartTime = null;
+        partnerName = '';
+        remainingTime = 0;
+        reservationTime = '';
+      });
     }
   }
 
@@ -229,7 +191,7 @@ class _ReservationState extends State<Reservation> {
               toFirestore: (ReservationModel reservationModel, _) =>
                   reservationModel.toFirestore(),
             );
-    getNextSession();
+    getReservationListener();
   }
 
   @override
