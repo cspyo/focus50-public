@@ -37,25 +37,26 @@ class CalendarAppointment extends State<Calendar> {
           );
 
   int getCurrentDayPosition(screenwidth) {
+    int default_value = 47;
     String currentDay = DateFormat('E').format(DateTime.now());
-    int oneBoxWidth = ((screenwidth - 482) / 7).round();
+    int oneBoxWidth = ((screenwidth - 478) / 7).round();
     switch (currentDay) {
       case 'Mon':
-        return 45;
+        return default_value;
       case 'Tue':
-        return 45 + oneBoxWidth;
+        return default_value + oneBoxWidth;
       case 'Wed':
-        return 45 + oneBoxWidth * 2;
+        return default_value + oneBoxWidth * 2;
       case 'Thu':
-        return 45 + oneBoxWidth * 3;
+        return default_value + oneBoxWidth * 3;
       case 'Fri':
-        return 45 + oneBoxWidth * 4;
+        return default_value + oneBoxWidth * 4;
       case 'Sat':
-        return 45 + oneBoxWidth * 5;
+        return default_value + oneBoxWidth * 5;
       case 'Sun':
-        return 45 + oneBoxWidth * 6;
+        return default_value + oneBoxWidth * 6;
       default:
-        return 45;
+        return default_value;
     }
   }
 
