@@ -37,9 +37,9 @@ class CalendarAppointment extends State<Calendar> {
           );
 
   int getCurrentDayPosition(screenwidth) {
-    int default_value = 47;
+    int default_value = 49;
     String currentDay = DateFormat('E').format(DateTime.now());
-    int oneBoxWidth = ((screenwidth - 478.5) / 7).round();
+    int oneBoxWidth = ((screenwidth - 489.5) / 7).round();
     switch (currentDay) {
       case 'Mon':
         return default_value;
