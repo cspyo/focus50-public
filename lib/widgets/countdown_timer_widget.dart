@@ -12,19 +12,15 @@ class CountDownTimer extends StatefulWidget {
   const CountDownTimer(
       {Key? key, required this.duration, required this.startTime})
       : super(key: key);
-  // const CountDownTimer({Key? key, required this.duration}) : super(key: key);
   @override
   _CountDownTimerState createState() =>
       _CountDownTimerState(duration: duration, startTime: startTime);
-  // _CountDownTimerState createState() =>
-  //     _CountDownTimerState(duration: duration);
 }
 
 class _CountDownTimerState extends State<CountDownTimer>
     with TickerProviderStateMixin {
   _CountDownTimerState({required this.duration, required this.startTime})
       : super();
-  // _CountDownTimerState({required this.duration}) : super();
   late AnimationController controller;
   final Duration duration;
   final DateTime startTime;
@@ -133,73 +129,83 @@ class _CountDownTimerState extends State<CountDownTimer>
                                             CrossAxisAlignment.center,
                                         children: (controller.isAnimating)
                                             ? <Widget>[
-                                                Text(
-                                                  "남은 시간",
-                                                  style: TextStyle(
-                                                    fontSize: 20.0,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  timerString,
-                                                  style: TextStyle(
-                                                    fontSize: 80.0,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Colors.white,
-                                                  ),
+                                                Wrap(
+                                                  children: [
+                                                    Text(
+                                                      "남은 시간",
+                                                      style: TextStyle(
+                                                        fontSize: 20.0,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      timerString,
+                                                      style: TextStyle(
+                                                        fontSize: 80.0,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 )
                                               ]
                                             : [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text('시작까지 ',
-                                                        // textAlign: TextAlign.center,
-                                                        style: const TextStyle(
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      15.0),
+                                                  child: Wrap(
+                                                    children: [
+                                                      Text('시작까지 ',
+                                                          style:
+                                                              const TextStyle(
+                                                            height: 1.0,
+                                                            fontSize: 24,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.white,
+                                                          )),
+                                                      TimerCountdown(
+                                                        format:
+                                                            CountDownTimerFormat
+                                                                .minutesSeconds,
+                                                        endTime:
+                                                            DateTime.now().add(
+                                                          diff,
+                                                        ),
+                                                        enableDescriptions:
+                                                            false,
+                                                        timeTextStyle:
+                                                            TextStyle(
                                                           height: 1.0,
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           color: Colors.white,
-                                                        )),
-                                                    TimerCountdown(
-                                                      format:
-                                                          CountDownTimerFormat
-                                                              .minutesSeconds,
-                                                      endTime:
-                                                          DateTime.now().add(
-                                                        diff,
-                                                      ),
-                                                      enableDescriptions: false,
-                                                      timeTextStyle: TextStyle(
-                                                        height: 1.0,
-                                                        fontSize: 26,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.white,
-                                                      ),
-                                                      colonsTextStyle:
-                                                          TextStyle(
-                                                        height: 1.0,
-                                                        fontSize: 26,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                        color: Colors.white,
-                                                      ),
-                                                      spacerWidth: 0,
-                                                    ),
-                                                    Text(' 남았습니다',
-                                                        // textAlign: TextAlign.center,
-                                                        style: const TextStyle(
+                                                        ),
+                                                        colonsTextStyle:
+                                                            TextStyle(
                                                           height: 1.0,
                                                           fontSize: 26,
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           color: Colors.white,
-                                                        )),
-                                                  ],
+                                                        ),
+                                                        spacerWidth: 0,
+                                                      ),
+                                                      Text(' 남았습니다',
+                                                          style:
+                                                              const TextStyle(
+                                                            height: 1.0,
+                                                            fontSize: 24,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors.white,
+                                                          )),
+                                                    ],
+                                                  ),
                                                 )
                                               ],
                                       ),
