@@ -243,15 +243,24 @@ class Signaling {
   }
 
   void registerPeerConnectionListeners() {
-    peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {};
+    peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
+      print("peerConnection?.onIceGatheringState : ${state}");
+    };
 
-    peerConnection?.onConnectionState = (RTCPeerConnectionState state) {};
+    peerConnection?.onConnectionState = (RTCPeerConnectionState state) async {
+      print("peerConnection?.onConnectionState ${state}");
+    };
 
-    peerConnection?.onSignalingState = (RTCSignalingState state) {};
+    peerConnection?.onSignalingState = (RTCSignalingState state) {
+      print("peerConnection?.onSignalingState ${state}");
+    };
 
-    peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {};
+    peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
+      print("peerConnection?.onIceGatheringState ${state}");
+    };
 
     peerConnection?.onAddStream = (MediaStream stream) {
+      print("peerConnection?.onAddStream");
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
     };
