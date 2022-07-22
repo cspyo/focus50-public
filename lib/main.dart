@@ -32,15 +32,6 @@ class MyApp extends StatelessWidget {
       defaultTransition: Transition.noTransition,
       getPages: AppPages.pages,
       routerDelegate: AppRouterDelegate(),
-      // routes: {
-      //   '/': (context) => AboutScreen(),
-      //   '/calendar': (context) => CalendarScreen(),
-      //   '/profile': (context) => ProfileScreen(),
-      //   '/login': (context) => LoginScreen(),
-      //   '/signup': (context) => SignUpScreen(),
-      //   '/addProfile': (context) => AddProfileScreen(),
-      // '/session': (context) => SessionScreen(),
-      // },
     );
   }
 }
