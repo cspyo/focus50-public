@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/utils/signaling.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
+import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 import '../models/reservation_model.dart';
@@ -83,6 +85,7 @@ class _SessionPageState extends State<SessionPage> {
 
   @override
   void dispose() {
+    print("SessionScreen disposed");
     signaling.hangUp(_localRenderer);
     super.dispose();
   }
@@ -257,6 +260,17 @@ class _SessionPageState extends State<SessionPage> {
                               SizedBox(
                                 width: 8,
                               ),
+                              CircleAvatar(
+                                backgroundColor: Colors.red[400],
+                                child: IconButton(
+                                  icon: const Icon(Icons.cancel),
+                                  color: Colors.white,
+                                  tooltip: '나가기',
+                                  onPressed: () {
+                                    Get.rootDelegate.toNamed(Routes.CALENDAR);
+                                  },
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -285,7 +299,7 @@ class _SessionPageState extends State<SessionPage> {
                                   startTime: session.startTime!,
                                 ),
                               ),
-                            ))
+                            )),
                       ],
                     ),
                   )
