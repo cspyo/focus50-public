@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/reservation.dart';
@@ -18,7 +17,6 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final _auth = FirebaseAuth.instance;
   int remainingTime = 0;
 
   DateTime now = new DateTime.now();
@@ -28,12 +26,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime fastestReservation =
       new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  User? user;
-
   @override
   void initState() {
-    user = auth.currentUser;
     super.initState();
   }
 

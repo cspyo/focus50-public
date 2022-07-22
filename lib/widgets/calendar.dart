@@ -16,25 +16,19 @@ class Calendar extends StatefulWidget {
   CalendarAppointment createState() => CalendarAppointment();
 }
 
-final _user = FirebaseAuth.instance.currentUser;
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
 class CalendarAppointment extends State<Calendar> {
   late CalendarDataSource _dataSource;
   List<Appointment> appointments = <Appointment>[];
   bool isHover = false;
   bool isEdit = false;
   String docId = '';
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   var userData = {};
   String nickName = "";
 
-  CollectionReference _reservationColRef =
-      _firestore.collection('reservation').withConverter<ReservationModel>(
-            fromFirestore: ReservationModel.fromFirestore,
-            toFirestore: (ReservationModel reservationModel, _) =>
-                reservationModel.toFirestore(),
-          );
+  late CollectionReference _reservationColRef;
 
   int getCurrentDayPosition(screenwidth) {
     int defaultPositionValue = 49;
@@ -82,10 +76,11 @@ class CalendarAppointment extends State<Calendar> {
   // dictionary(hash table) dic(docId) -> remove 를 하면 되지 않을까
   // dict -> list
   // dart에도 있을까?
-  Future<void> putCalendarData() async {
+  Future<void> putCalendarData(String? uid) async {
     // uid 있을때만 nickname 가져오고 없으면 nickname에는 ''가 들어감
-    if (_user?.uid != null) {
-      var userSnap = await _firestore.collection('users').doc(_user?.uid).get();
+
+    if (uid != null) {
+      var userSnap = await _firestore.collection('users').doc(uid).get();
       userData = userSnap.data()!;
       nickName = userData['nickname'];
     }
@@ -126,13 +121,20 @@ class CalendarAppointment extends State<Calendar> {
   @override
   void initState() {
     super.initState();
+    _reservationColRef =
+        _firestore.collection('reservation').withConverter<ReservationModel>(
+              fromFirestore: ReservationModel.fromFirestore,
+              toFirestore: (ReservationModel reservationModel, _) =>
+                  reservationModel.toFirestore(),
+            );
     _dataSource = _DataSource(appointments);
-    putCalendarData();
+    putCalendarData(auth.currentUser?.uid);
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    String? uid = auth.currentUser?.uid;
     return screenWidth >= 1276
         ? Container(
             width: screenWidth - 440,
@@ -176,7 +178,7 @@ class CalendarAppointment extends State<Calendar> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: meeting.subject.contains(nickName) &&
-                                    _user?.uid != null
+                                    uid != null
                                 ? purple200
                                 : Colors.white,
                             //user_uid null 체크는 로그인 안했을 때를 위해 추가함
@@ -203,7 +205,7 @@ class CalendarAppointment extends State<Calendar> {
                                           fontFamily: 'poppins',
                                           color: meeting.subject
                                                       .contains(nickName) &&
-                                                  _user?.uid != null
+                                                  uid != null
                                               ? Colors.white
                                               : Colors.black),
                                       overflow: TextOverflow.ellipsis,
@@ -285,13 +287,14 @@ class CalendarAppointment extends State<Calendar> {
   }
 
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
+    String? uid = auth.currentUser?.uid;
     final appointment = calendarTapDetails.appointments?[0];
-    print(_user?.uid);
+    print(uid);
     if (calendarTapDetails.date!.isBefore(DateTime.now())) {
       print('before');
       return;
     }
-    if (_user?.uid != null) {
+    if (uid != null) {
       // 빈 공간에 클릭 했을 때
       if (appointment == null) {
         var datasource = _dataSource.appointments!.where((element) =>
