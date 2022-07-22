@@ -4,16 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
+import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/utils/signaling.dart';
+import 'package:focus42/widgets/countdown_timer_widget.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
+import 'package:focus42/widgets/todo_session_ui.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-
-import 'package:focus42/models/reservation_model.dart';
-import 'package:focus42/widgets/countdown_timer_widget.dart';
-import 'package:focus42/resources/matching_methods.dart';
-import 'package:focus42/widgets/todo_session_ui.dart';
 
 class SessionScreen extends StatelessWidget {
   final ReservationModel session;
@@ -258,7 +257,7 @@ class _SessionPageState extends State<SessionPage> {
                                       ),
                                     ),
                               SizedBox(
-                                width: 8,
+                                width: 16,
                               ),
                               CircleAvatar(
                                 backgroundColor: Colors.red[400],
@@ -267,7 +266,53 @@ class _SessionPageState extends State<SessionPage> {
                                   color: Colors.white,
                                   tooltip: '나가기',
                                   onPressed: () {
-                                    Get.rootDelegate.toNamed(Routes.CALENDAR);
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            "정말 방을 나가시겠습니까?",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 17,
+                                                color: Colors.black),
+                                          ),
+                                          content: Text(
+                                            "한번 나간 방은 다시 입장하실 수 없습니다",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: Text(
+                                                "네",
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: purple300),
+                                              ),
+                                              onPressed: () {
+                                                Get.rootDelegate
+                                                    .toNamed(Routes.CALENDAR);
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: Text(
+                                                "아니요",
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: purple300),
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(context,
+                                                        rootNavigator: true)
+                                                    .pop('dialog');
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      },
+                                    );
                                   },
                                 ),
                               ),
