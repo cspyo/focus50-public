@@ -10,10 +10,10 @@ import 'package:focus42/widgets/todo_popup_widget.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
-import '../models/reservation_model.dart';
-import '../resources/matching_methods.dart';
-import '../widgets/countdown_timer_widget.dart';
-import '../widgets/todo_session_ui.dart';
+import 'package:focus42/models/reservation_model.dart';
+import 'package:focus42/widgets/countdown_timer_widget.dart';
+import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/widgets/todo_session_ui.dart';
 
 class SessionScreen extends StatelessWidget {
   final ReservationModel session;
