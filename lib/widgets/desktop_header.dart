@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
 class DesktopHeader extends StatefulWidget {
@@ -13,6 +15,7 @@ class DesktopHeader extends StatefulWidget {
 
 class _DesktopHeaderState extends State<DesktopHeader> {
   final _auth = FirebaseAuth.instance;
+  final _authMethods = new AuthMethods();
 
   @override
   Widget build(BuildContext context) {
@@ -22,26 +25,7 @@ class _DesktopHeaderState extends State<DesktopHeader> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
-            children: const <Widget>[
-              Text(
-                'Focus',
-                style: TextStyle(
-                  fontFamily: 'Okddung',
-                  fontSize: 30,
-                  color: Colors.black,
-                ),
-              ),
-              Text(
-                '50',
-                style: TextStyle(
-                  fontFamily: 'Okddung',
-                  fontSize: 30,
-                  color: purple300,
-                ),
-              ),
-            ],
-          ),
+          HeaderLogo(),
           Row(
             children: <Widget>[
               TextButton(
@@ -58,15 +42,16 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                   child: const Text('캘린더',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
               SizedBox(width: 10),
-              (_auth.currentUser != null)
-                  ? TextButton(
-                      onPressed: () {
-                        Get.rootDelegate.toNamed(Routes.PROFILE);
-                      },
-                      child: const Text('마이페이지',
-                          style: TextStyle(fontSize: 17, color: Colors.black)))
-                  : Container(),
-              SizedBox(width: 10),
+              // 마이페이지 숨기기
+              // (_auth.currentUser != null)
+              //     ? TextButton(
+              //         onPressed: () {
+              //           Get.rootDelegate.toNamed(Routes.PROFILE);
+              //         },
+              //         child: const Text('마이페이지',
+              //             style: TextStyle(fontSize: 17, color: Colors.black)))
+              //     : Container(),
+              // SizedBox(width: 10),
               (_auth.currentUser != null)
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -74,9 +59,8 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _auth.signOut();
+                          _authMethods.signOut();
                         });
-
                         Get.rootDelegate.toNamed(Routes.LOGIN);
                       },
                       child: const Text(
@@ -120,7 +104,6 @@ class _DesktopHeaderState extends State<DesktopHeader> {
           ),
         ],
       ),
-    );
-    //header
+    ); //header
   }
 }

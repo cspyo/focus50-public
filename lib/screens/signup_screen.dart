@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/utils/utils.dart';
+import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
 import '../consts/colors.dart';
@@ -89,20 +90,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Row(
-                      children: const <Widget>[
-                        Text('Focus',
-                            style: TextStyle(
-                                fontFamily: 'Okddung',
-                                fontSize: 30,
-                                color: Colors.black)),
-                        Text('50',
-                            style: TextStyle(
-                                fontFamily: 'Okddung',
-                                fontSize: 30,
-                                color: purple300)),
-                      ],
-                    ),
+                    HeaderLogo(),
                     Row(children: <Widget>[
                       Text(
                         "이미 계정이 있나요?",
