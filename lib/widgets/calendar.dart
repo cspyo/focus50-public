@@ -24,6 +24,7 @@ class CalendarAppointment extends State<Calendar> {
   String docId = '';
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  DateTime? loadingAppointmentDateTime = null;
 
   var userData = {};
   String nickName = "";
@@ -174,46 +175,54 @@ class CalendarAppointment extends State<Calendar> {
                   appointmentBuilder: (BuildContext context,
                       CalendarAppointmentDetails details) {
                     final Appointment meeting = details.appointments.first;
-                    return Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: meeting.subject.contains(nickName) &&
-                                    uid != null
-                                ? purple200
-                                : Colors.white,
-                            //user_uid null 체크는 로그인 안했을 때를 위해 추가함
-                            boxShadow: [
-                              BoxShadow(
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                  spreadRadius: 2,
-                                  color: Colors.black.withOpacity(0.25))
-                            ]),
-                        child: MouseRegion(
-                            onEnter: onHover,
-                            onExit: onExit,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                    width: 53,
-                                    child: Text(
-                                      meeting.subject,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                          fontFamily: 'poppins',
-                                          color: meeting.subject
-                                                      .contains(nickName) &&
-                                                  uid != null
-                                              ? Colors.white
-                                              : Colors.black),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
-                                    ))
-                              ],
-                            )));
+                    return meeting.startTime == loadingAppointmentDateTime
+                        ? Container(
+                            alignment: Alignment.center,
+                            width: 5,
+                            height: 5,
+                            child: CircularProgressIndicator(color: purple300),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: meeting.subject.contains(nickName) &&
+                                        uid != null
+                                    ? purple200
+                                    : Colors.white,
+                                //user_uid null 체크는 로그인 안했을 때를 위해 추가함
+                                boxShadow: [
+                                  BoxShadow(
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                      spreadRadius: 2,
+                                      color: Colors.black.withOpacity(0.25))
+                                ]),
+                            child: MouseRegion(
+                                onEnter: onHover,
+                                onExit: onExit,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 53,
+                                      child: Text(
+                                        meeting.subject,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 12,
+                                            fontFamily: 'poppins',
+                                            color: meeting.subject
+                                                        .contains(nickName) &&
+                                                    uid != null
+                                                ? Colors.white
+                                                : Colors.black),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    )
+                                  ],
+                                )));
                   },
                 ),
               ],
@@ -247,41 +256,49 @@ class CalendarAppointment extends State<Calendar> {
               appointmentBuilder:
                   (BuildContext context, CalendarAppointmentDetails details) {
                 final Appointment meeting = details.appointments.first;
-                return Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: meeting.subject.contains(nickName)
-                            ? purple200
-                            : Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                              spreadRadius: 2,
-                              color: Colors.black.withOpacity(0.25))
-                        ]),
-                    child: MouseRegion(
-                        onEnter: onHover,
-                        onExit: onExit,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                                width: 53,
-                                child: Text(
-                                  meeting.subject,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 12,
-                                      color: meeting.subject.contains(nickName)
-                                          ? Colors.white
-                                          : Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                ))
-                          ],
-                        )));
+                return meeting.startTime == loadingAppointmentDateTime
+                    ? Container(
+                        alignment: Alignment.center,
+                        width: 5,
+                        height: 5,
+                        child: CircularProgressIndicator(color: purple300),
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: meeting.subject.contains(nickName)
+                                ? purple200
+                                : Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                  spreadRadius: 2,
+                                  color: Colors.black.withOpacity(0.25))
+                            ]),
+                        child: MouseRegion(
+                            onEnter: onHover,
+                            onExit: onExit,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                    width: 53,
+                                    child: Text(
+                                      meeting.subject,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 12,
+                                          color:
+                                              meeting.subject.contains(nickName)
+                                                  ? Colors.white
+                                                  : Colors.black),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                    ))
+                              ],
+                            )));
               },
             ));
   }
@@ -289,9 +306,13 @@ class CalendarAppointment extends State<Calendar> {
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = auth.currentUser?.uid;
     final appointment = calendarTapDetails.appointments?[0];
-    print(uid);
+    setState(() {
+      loadingAppointmentDateTime = calendarTapDetails.date!;
+    });
     if (calendarTapDetails.date!.isBefore(DateTime.now())) {
-      print('before');
+      setState(() {
+        loadingAppointmentDateTime = null;
+      });
       return;
     }
     if (uid != null) {
@@ -302,13 +323,29 @@ class CalendarAppointment extends State<Calendar> {
                 element.subject == nickName));
         // 여백에 클릭했을 때 datasource appoitnemnts 배열과 현재 클릭한 calendartapdetails 및 useruid 비교
         if (datasource.isNotEmpty) {
+          setState(() {
+            loadingAppointmentDateTime = null;
+          });
           return;
         }
+        // 죄송합니다. 더티 코드 입니다. 빈공간에 클릭했을때, circularindicator가 늦게 나타나서, 임시방편으로 appointment를 하나 만들고 그 위에 circular indicator를 빌드하도록 했습니다.
+        Appointment app = Appointment(
+          startTime: calendarTapDetails.date!,
+          endTime: calendarTapDetails.date!.add(Duration(minutes: 55)),
+          subject: 'temporary',
+          color: purple100,
+        );
+        _dataSource.appointments!.add(app);
+        _dataSource.notifyListeners(
+            CalendarDataSourceAction.reset, _dataSource.appointments!);
         // 정상적으로 빈공간에 클릭했을 때
         await MatchingMethods().matchRoom(
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
         );
+        setState(() {
+          loadingAppointmentDateTime = null;
+        });
       }
 
       // 이미 예약이 있는 공간에 클릭했을 때
@@ -324,9 +361,15 @@ class CalendarAppointment extends State<Calendar> {
             endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
           );
         }
+        setState(() {
+          loadingAppointmentDateTime = null;
+        });
         return;
       }
     } else {
+      setState(() {
+        loadingAppointmentDateTime = null;
+      });
       Get.rootDelegate.toNamed(Routes.LOGIN);
     }
   }
