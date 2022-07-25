@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
 import 'package:get/get.dart';
@@ -26,7 +27,6 @@ class CalendarAppointment extends State<Calendar> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   DateTime? loadingAppointmentDateTime = null;
 
-  var userData = {};
   String nickName = "";
 
   late CollectionReference _reservationColRef;
@@ -81,9 +81,8 @@ class CalendarAppointment extends State<Calendar> {
     // uid 있을때만 nickname 가져오고 없으면 nickname에는 ''가 들어감
 
     if (uid != null) {
-      var userSnap = await _firestore.collection('users').doc(uid).get();
-      userData = userSnap.data()!;
-      nickName = userData['nickname'];
+      var user = await AuthMethods().getUserDetails();
+      nickName = user.nickname;
     }
 
     _reservationColRef
@@ -159,15 +158,13 @@ class CalendarAppointment extends State<Calendar> {
                   viewHeaderStyle: ViewHeaderStyle(
                       backgroundColor: Colors.white,
                       dateTextStyle: TextStyle(
-                          fontFamily: 'Poppins',
                           fontSize: 26,
                           color: Colors.black,
-                          fontWeight: FontWeight.w400),
+                          fontWeight: FontWeight.w500),
                       dayTextStyle: TextStyle(
-                          fontFamily: 'Poppins',
                           fontSize: 15,
                           color: Colors.black,
-                          fontWeight: FontWeight.w300)),
+                          fontWeight: FontWeight.w400)),
                   onTap: calendarTapped,
                   view: CalendarView.week,
                   monthViewSettings: MonthViewSettings(showAgenda: true),
@@ -204,13 +201,12 @@ class CalendarAppointment extends State<Calendar> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      width: 53,
+                                      width: 100,
                                       child: Text(
                                         meeting.subject,
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 12,
-                                            fontFamily: 'poppins',
                                             color: meeting.subject
                                                         .contains(nickName) &&
                                                     uid != null
@@ -288,7 +284,7 @@ class CalendarAppointment extends State<Calendar> {
                                       meeting.subject,
                                       style: TextStyle(
                                           fontWeight: FontWeight.normal,
-                                          fontSize: 12,
+                                          fontSize: 10,
                                           color:
                                               meeting.subject.contains(nickName)
                                                   ? Colors.white
@@ -306,6 +302,11 @@ class CalendarAppointment extends State<Calendar> {
   void calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = auth.currentUser?.uid;
     final appointment = calendarTapDetails.appointments?[0];
+
+    if (calendarTapDetails.date == loadingAppointmentDateTime) {
+      return;
+    }
+
     setState(() {
       loadingAppointmentDateTime = calendarTapDetails.date!;
     });
@@ -332,7 +333,7 @@ class CalendarAppointment extends State<Calendar> {
         Appointment app = Appointment(
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(minutes: 55)),
-          subject: 'temporary',
+          subject: '',
           color: purple100,
         );
         _dataSource.appointments!.add(app);
