@@ -33,7 +33,7 @@ class TodoPopupState extends State<TodoPopup> {
         .where('isComplete', isEqualTo: false)
         .orderBy('completedDate')
         .orderBy('modifiedDate', descending: true)
-        .orderBy('createdDate', descending: true)
+        .orderBy('createdDate')
         .snapshots()
         .listen((QuerySnapshot querySnapshot) {
       setState(() {
