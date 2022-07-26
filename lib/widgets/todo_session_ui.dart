@@ -65,14 +65,6 @@ class TodoSessionUiState extends State<TodoSessionUi> {
         height: 60,
         decoration: BoxDecoration(
             color: Colors.white,
-            // boxShadow: [
-            //   BoxShadow(
-            //     color: Colors.black.withOpacity(0.25),
-            //     spreadRadius: 0,
-            //     blurRadius: 4,
-            //     offset: Offset(0, 6),
-            //   ),
-            // ],
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               width: 1.5,
@@ -129,9 +121,9 @@ class TodoSessionUiState extends State<TodoSessionUi> {
                                   onFieldSubmitted: (value) {
                                     setState(() async {
                                       TodoModel newTodo = TodoModel(
-                                        task: value,
-                                        modifiedDate: DateTime.now(),
-                                      );
+                                          task: value,
+                                          modifiedDate: DateTime.now(),
+                                          assignedSessionId: assignedSessionId);
                                       _todoColRef
                                           .doc(widget.docId)
                                           .update(newTodo.toUpdateFirestore());

@@ -388,19 +388,6 @@ class _SessionPageState extends State<SessionPage> {
                             content: Stack(
                               clipBehavior: Clip.none,
                               children: <Widget>[
-                                Positioned(
-                                  right: -40.0,
-                                  top: -40.0,
-                                  child: InkResponse(
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: CircleAvatar(
-                                      child: Icon(Icons.close),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  ),
-                                ),
                                 TodoPopup(
                                   session: session,
                                 ),
