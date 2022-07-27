@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:focus42/consts/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
+import 'package:url_strategy/url_strategy.dart';
 
 import 'consts/app_router_delegate.dart';
 import 'firebase_options.dart';
@@ -22,6 +23,7 @@ void main() async {
     }
     await FirebaseAuth.instance.authStateChanges().first;
   }
+  setPathUrlStrategy();
   runApp(MyApp());
 }
 
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
+      title: "Focus50",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
