@@ -1,4 +1,6 @@
 // import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +25,8 @@ final FirebaseAuth _user = FirebaseAuth.instance;
 class _ReservationState extends State<Reservation> {
   String? partnerName = null;
   String reservationTime = '10시';
-  int remainingTime = 0;
-  bool isTenMinutesLeft = true;
+
+  bool isTenMinutesLeft = false;
 
   DateTime now = new DateTime.now();
   ReservationModel? nextReservation = null;
@@ -38,6 +40,8 @@ class _ReservationState extends State<Reservation> {
   String? userUid = _user.currentUser?.uid;
   late CollectionReference _reservationColRef;
   bool isGetReservationLoading = true;
+
+  Timer? _timer;
 
   void enterReservation() {
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
@@ -165,12 +169,25 @@ class _ReservationState extends State<Reservation> {
               : nextReservation2;
     }
     if (nextReservation != null) {
+      print("aa");
       if (nextReservation != nextReservation_origin)
         setState(() {
           nextReservationStartTime = nextReservation!.startTime!;
-          remainingTime =
-              Timestamp.fromDate(nextReservationStartTime!).seconds -
-                  Timestamp.fromDate(now).seconds;
+          _timer?.cancel();
+          if (nextReservationStartTime!
+                  .difference(DateTime.now())
+                  .compareTo(Duration(minutes: 10)) <=
+              0) {
+            print("10min");
+            enableEnter();
+          } else {
+            print("timer 10min");
+            disableEnter();
+            _timer = Timer(
+                nextReservationStartTime!.difference(DateTime.now()) -
+                    Duration(minutes: 10),
+                enableEnter);
+          }
           reservationTime = DateFormat('H').format(nextReservationStartTime!);
           if (nextReservation!.isInUser1(userUid!)) {
             partnerName = nextReservation!.user2Name;
@@ -182,10 +199,23 @@ class _ReservationState extends State<Reservation> {
       setState(() {
         nextReservationStartTime = null;
         partnerName = '';
-        remainingTime = 0;
+        _timer?.cancel();
+        disableEnter();
         reservationTime = '';
       });
     }
+  }
+
+  void enableEnter() {
+    setState(() {
+      isTenMinutesLeft = true;
+    });
+  }
+
+  void disableEnter() {
+    setState(() {
+      isTenMinutesLeft = false;
+    });
   }
 
   @override
@@ -229,7 +259,7 @@ class _ReservationState extends State<Reservation> {
                   color: Color.fromARGB(255, 24, 24, 24)),
             ),
           )
-        : remainingTime != 0
+        : nextReservationStartTime != null
             ? Stack(children: [
                 Container(
                     margin: EdgeInsets.only(top: 32),
@@ -258,17 +288,10 @@ class _ReservationState extends State<Reservation> {
                                 TimerCountdown(
                                   format:
                                       CountDownTimerFormat.hoursMinutesSeconds,
-                                  endTime: DateTime.now().add(
-                                    Duration(
-                                      seconds: remainingTime,
-                                    ),
-                                  ),
+                                  endTime: Timestamp.fromDate(
+                                          nextReservationStartTime!)
+                                      .toDate(),
                                   enableDescriptions: false,
-                                  onEnd: () {
-                                    setState(() {
-                                      isTenMinutesLeft = true;
-                                    });
-                                  },
                                   timeTextStyle: TextStyle(
                                     height: 1.0,
                                     fontSize: 26,
