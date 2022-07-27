@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/app_pages.dart';
 import 'package:get/get.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'consts/app_router_delegate.dart';
 import 'firebase_options.dart';
@@ -14,6 +15,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   if (kIsWeb) {
+    String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
+    // smartphone
+    if (userAgent.contains("iphone") || userAgent.contains("android")) {
+      html.window.open("https://m.focus50.day", "_self");
+    }
     await FirebaseAuth.instance.authStateChanges().first;
   }
   runApp(MyApp());

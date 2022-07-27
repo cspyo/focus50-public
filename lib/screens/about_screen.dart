@@ -1,9 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/widgets/desktop_header.dart';
+import 'package:focus42/widgets/line.dart';
 import 'package:webviewx/webviewx.dart';
-
-import '../widgets/line.dart';
 
 class AboutScreen extends StatefulWidget {
   @override
