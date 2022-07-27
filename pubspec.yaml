@@ -43,6 +43,8 @@ dependencies:
     sdk: flutter
   flutter_webrtc: ^0.8.9
   syncfusion_flutter_calendar: ^20.1.61
+  url_launcher:
+  universal_html: ^2.0.8
 
 dev_dependencies:
   flutter_test:
