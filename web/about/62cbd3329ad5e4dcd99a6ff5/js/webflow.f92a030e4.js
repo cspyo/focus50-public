@@ -5572,10 +5572,6 @@
         }
         var finalReducerKeys = Object.keys(finalReducers);
 
-        if (false) {
-          var unexpectedKeyCache;
-        }
-
         var sanityError;
         try {
           assertReducerSanity(finalReducers);
@@ -5589,10 +5585,6 @@
 
           if (sanityError) {
             throw sanityError;
-          }
-
-          if (false) {
-            var warningMessage;
           }
 
           var hasChanged = false;
@@ -5635,7 +5627,7 @@
       function warning(message) {
         /* eslint-disable no-console */
         if (typeof console !== 'undefined' && typeof console.error === 'function') {
-          console.error(message);
+          // console.error(message);
         }
         /* eslint-enable no-console */
         try {
@@ -7690,7 +7682,7 @@
           var logic = _IX2VanillaEvents['default'][key];
 
           if (!logic) {
-            console.warn('IX2 event type not configured: '.concat(key));
+            // console.warn('IX2 event type not configured: '.concat(key));
             return;
           }
 
@@ -9217,7 +9209,7 @@
           function success(thirdPartyCookiesSupported) {
             return function (data) {
               if (!data) {
-                console.error('Could not load editor data');
+                // console.error('Could not load editor data');
                 return;
               }
 
@@ -9240,7 +9232,7 @@
           }
 
           function error(jqXHR, textStatus, errorThrown) {
-            console.error('Could not load editor script: ' + textStatus);
+            // console.error('Could not load editor script: ' + textStatus);
             throw errorThrown;
           }
 
@@ -14521,7 +14513,7 @@
           });
         } else {
           mediaQueries = [];
-          console.warn('IX2 missing mediaQueries in site data');
+          // console.warn('IX2 missing mediaQueries in site data');
         }
 
         return {
@@ -20554,7 +20546,7 @@
                 data.success = resp.result === 'success' || /already/.test(resp.msg);
 
                 if (!data.success) {
-                  console.info('MailChimp error: ' + resp.msg);
+                  // console.info('MailChimp error: ' + resp.msg);
                 }
 
                 afterSubmit(data);

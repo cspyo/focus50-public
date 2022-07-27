@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/utils/signaling.dart';
+import 'package:logger/logger.dart';
 
 class MatchingMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,6 +14,7 @@ class MatchingMethods {
   final FirebaseAuth _user = FirebaseAuth.instance;
   var userData = {};
   String? nickName;
+  var logger = Logger();
 
   MatchingMethods() {
     this.userId = _user.currentUser!.uid;
@@ -35,7 +37,7 @@ class MatchingMethods {
       userData = userSnap.data()!;
       nickName = userData['nickname'];
     } catch (e) {
-      print("getUserName catch:$e");
+      logger.d("getUserName catch:$e");
     }
   }
 

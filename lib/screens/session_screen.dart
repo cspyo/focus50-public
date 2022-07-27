@@ -45,6 +45,7 @@ class _SessionPageState extends State<SessionPage> {
   final ReservationModel session;
   bool isMicOn = true;
   bool isCamOn = true;
+  var logger = Logger();
 
   final _user = FirebaseAuth.instance;
   final _todoColRef =
@@ -84,7 +85,7 @@ class _SessionPageState extends State<SessionPage> {
 
   @override
   void dispose() {
-    print("SessionScreen disposed");
+    logger.d("SessionScreen disposed");
     signaling.hangUp(_localRenderer);
     super.dispose();
   }

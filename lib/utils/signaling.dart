@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:logger/logger.dart';
 
 typedef void StreamStateCallback(MediaStream stream);
 
@@ -35,6 +36,7 @@ class Signaling {
   StreamStateCallback? onAddRemoteStream;
   bool _isOpenMic = false;
   bool _isOpenCamera = false;
+  var logger = Logger();
 
   Future<String> createRoom(RTCVideoRenderer remoteRenderer) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
@@ -256,23 +258,23 @@ class Signaling {
 
   void registerPeerConnectionListeners() {
     peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
-      print("peerConnection?.onIceGatheringState : ${state}");
+      logger.d("peerConnection?.onIceGatheringState : ${state}");
     };
 
     peerConnection?.onConnectionState = (RTCPeerConnectionState state) async {
-      print("peerConnection?.onConnectionState ${state}");
+      logger.d("peerConnection?.onConnectionState ${state}");
     };
 
     peerConnection?.onSignalingState = (RTCSignalingState state) {
-      print("peerConnection?.onSignalingState ${state}");
+      logger.d("peerConnection?.onSignalingState ${state}");
     };
 
     peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
-      print("peerConnection?.onIceGatheringState ${state}");
+      logger.d("peerConnection?.onIceGatheringState ${state}");
     };
 
     peerConnection?.onAddStream = (MediaStream stream) {
-      print("peerConnection?.onAddStream");
+      logger.d("peerConnection?.onAddStream");
       onAddRemoteStream?.call(stream);
       remoteStream = stream;
     };
