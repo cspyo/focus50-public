@@ -99,7 +99,6 @@ class TodoState extends State<Todo> {
                           setState(() {
                             isTodoCompleted = !isTodoCompleted;
                           });
-                          // print(plus);
                         },
                         iconSize: 30,
                         splashColor: Colors.transparent,

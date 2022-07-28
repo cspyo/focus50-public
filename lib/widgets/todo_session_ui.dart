@@ -36,14 +36,12 @@ class TodoSessionUiState extends State<TodoSessionUi> {
   bool isEdit = false;
   final String? assignedSessionId;
   void onHover(PointerEvent details) {
-    // print('hovered');
     setState(() {
       isHover = true;
     });
   }
 
   void onExit(PointerEvent details) {
-    // print('nothovered');
     setState(() {
       isHover = false;
     });
