@@ -90,13 +90,12 @@ class CalendarAppointment extends State<Calendar> {
         .snapshots()
         .listen((snapshot) {
       var querySnapshot = snapshot;
-
+      List startTimeList = [];
       _dataSource.appointments!.clear();
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        //자기꺼
         ReservationModel reservation = doc.data() as ReservationModel;
-        if ((reservation.user1Name == null ||
-            reservation.user2Name == null ||
-            reservation.user1Name == nickName ||
+        if ((reservation.user1Name == nickName ||
             reservation.user2Name == nickName)) {
           Appointment app = Appointment(
               startTime: reservation.startTime!,
@@ -110,8 +109,31 @@ class CalendarAppointment extends State<Calendar> {
               color: Colors.teal,
               id: doc.id);
           _dataSource.appointments!.add(app);
+          startTimeList.add(reservation.startTime);
         }
       }
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        ReservationModel reservation = doc.data() as ReservationModel;
+        if (!startTimeList.contains(reservation.startTime)) {
+          print(' im in');
+          if (reservation.user1Name == null || reservation.user2Name == null) {
+            Appointment app = Appointment(
+                startTime: reservation.startTime!,
+                endTime: reservation.endTime!.subtract(Duration(minutes: 2)),
+                subject: reservation.user2Name == null
+                    ? reservation.user1Name!
+                    : (reservation.user1Name == nickName ||
+                            reservation.user2Name == nickName)
+                        ? nickName
+                        : reservation.user2Name!,
+                color: Colors.teal,
+                id: doc.id);
+            _dataSource.appointments!.add(app);
+            startTimeList.add(reservation.startTime);
+          }
+        }
+      }
+
       _dataSource.notifyListeners(
           CalendarDataSourceAction.reset, _dataSource.appointments!);
     });
