@@ -24,7 +24,6 @@ class _CountDownTimerState extends State<CountDownTimer>
   late AnimationController controller;
   final Duration duration;
   final DateTime startTime;
-  late Duration diff;
   Timer? _timer;
 
   late VideoPlayerController _startSoundController;
@@ -75,8 +74,7 @@ class _CountDownTimerState extends State<CountDownTimer>
         _finishSoundController.play();
       }
     });
-    diff = startTime.difference(DateTime.now());
-    _timer = Timer(diff, startTimer);
+    _timer = Timer(startTime.difference(DateTime.now()), startTimer);
   }
 
   @override
@@ -172,10 +170,7 @@ class _CountDownTimerState extends State<CountDownTimer>
                                                         format:
                                                             CountDownTimerFormat
                                                                 .minutesSeconds,
-                                                        endTime:
-                                                            DateTime.now().add(
-                                                          diff,
-                                                        ),
+                                                        endTime: startTime,
                                                         enableDescriptions:
                                                             false,
                                                         timeTextStyle:
