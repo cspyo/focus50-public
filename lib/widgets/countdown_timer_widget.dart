@@ -62,18 +62,19 @@ class _CountDownTimerState extends State<CountDownTimer>
     );
     _startSoundController.initialize();
     _finishSoundController.initialize();
-    // TODO: duration 무조건 50분 아니고 만약에 시작 시간 이후에 들어오면 50분 보다 적음
+
     controller = AnimationController(
       vsync: this,
-      duration: duration,
+      // duration 무조건 50분 아니고 만약에 시작 시간 이후에 들어오면 50분 보다 적음
+      duration: (DateTime.now().isBefore(startTime))
+          ? duration
+          : duration - DateTime.now().difference(startTime),
     );
     controller.addStatusListener((status) {
-      // TODO(DONE): timer 끝났을 때 event 걸기
       if (status == AnimationStatus.dismissed) {
         _finishSoundController.play();
       }
     });
-
     diff = startTime.difference(DateTime.now());
     _timer = Timer(diff, startTimer);
   }

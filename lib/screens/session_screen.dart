@@ -130,14 +130,6 @@ class _SessionPageState extends State<SessionPage> {
                                   color: Colors.white,
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(32)),
-                                  // boxShadow: [
-                                  //   BoxShadow(
-                                  //     color: Colors.black.withOpacity(0.25),
-                                  //     spreadRadius: 0,
-                                  //     blurRadius: 4,
-                                  //     offset: Offset(0, 6),
-                                  //   ),
-                                  // ]
                                 ),
                                 child: ClipRRect(
                                   borderRadius:
@@ -155,21 +147,10 @@ class _SessionPageState extends State<SessionPage> {
                           ),
                           Expanded(
                             child: Container(
-                                // padding: EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  // border: Border.all(
-                                  //     width: 1.5, color: border100),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(32)),
-                                  // boxShadow: [
-                                  //   BoxShadow(
-                                  //     color: Colors.black.withOpacity(0.25),
-                                  //     spreadRadius: 0,
-                                  //     blurRadius: 4,
-                                  //     offset: Offset(0, 6),
-                                  //   ),
-                                  // ]
                                 ),
                                 child: ClipRRect(
                                   borderRadius:
