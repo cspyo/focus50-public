@@ -110,7 +110,11 @@ class CalendarAppointment extends State<Calendar> {
               id: doc.id);
           _dataSource.appointments!.add(app);
           startTimeList.add(reservation.startTime);
-        } else if (!startTimeList.contains(reservation.startTime)) {
+        }
+      }
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        ReservationModel reservation = doc.data() as ReservationModel;
+        if (!startTimeList.contains(reservation.startTime)) {
           print(' im in');
           if (reservation.user1Name == null || reservation.user2Name == null) {
             Appointment app = Appointment(
@@ -125,6 +129,7 @@ class CalendarAppointment extends State<Calendar> {
                 color: Colors.teal,
                 id: doc.id);
             _dataSource.appointments!.add(app);
+            startTimeList.add(reservation.startTime);
           }
         }
       }
