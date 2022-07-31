@@ -1,4 +1,10 @@
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/m.screens/m.add_profile_screen.dart';
+import 'package:focus42/m.screens/m.calendar_screen.dart';
+import 'package:focus42/m.screens/m.login_screen.dart';
+// import 'package:focus42/m.screens/m.profile_screen.dart';
+import 'package:focus42/m.screens/m.session_screen.dart';
+import 'package:focus42/m.screens/m.signup_screen.dart';
 import 'package:focus42/screens/add_profile_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
 import 'package:focus42/screens/profile_screen.dart';
@@ -10,7 +16,7 @@ import '../screens/login_screen.dart';
 import '../screens/signup_screen.dart';
 
 abstract class AppPages {
-  static final pages = [
+  static final pcPages = [
     GetPage(
       name: Routes.ABOUT,
       page: () => AboutScreen(),
@@ -38,6 +44,38 @@ abstract class AppPages {
     GetPage(
       name: Routes.SESSION,
       page: () => SessionScreen(
+        session: Get.rootDelegate.arguments(),
+      ),
+    ),
+  ];
+  static final mobilePages = [
+    GetPage(
+      name: Routes.ABOUT,
+      page: () => MobileCalendarScreen(),
+    ),
+    GetPage(
+      name: Routes.LOGIN,
+      page: () => MobileLoginScreen(),
+    ),
+    GetPage(
+      name: Routes.SIGNUP,
+      page: () => MobileSignUpScreen(),
+    ),
+    // GetPage(
+    //   name: Routes.PROFILE,
+    //   page: () => MobileProfileScreen(),
+    // ),
+    GetPage(
+      name: Routes.ADD_PROFILE,
+      page: () => MobileAddProfileScreen(),
+    ),
+    GetPage(
+      name: Routes.CALENDAR,
+      page: () => MobileCalendarScreen(),
+    ),
+    GetPage(
+      name: Routes.SESSION,
+      page: () => MobileSessionScreen(
         session: Get.rootDelegate.arguments(),
       ),
     ),
