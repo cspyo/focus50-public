@@ -1,5 +1,5 @@
 const SIGNED_UP = "Is signed up";
-const NOT_SIGNED_UP = "Is not signed up";
+const NOT_CREATED_PROFILE = "Not created profile";
 const SUCCESS = "Success";
 const ERROR = "Error";
 

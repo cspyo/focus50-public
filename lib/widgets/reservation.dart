@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -44,6 +45,7 @@ class _ReservationState extends State<Reservation> {
   Timer? _timer;
 
   void enterReservation() {
+    AnalyticsMethod().logEnterSession();
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 

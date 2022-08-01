@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
@@ -53,9 +54,11 @@ class _LoginScreenState extends State<LoginScreen> {
       showSnackBar("회원으로 등록되어있지 않습니다.", context);
     } else if (res == WRONG_PASSWORD) {
       showSnackBar("비밀번호가 틀렸습니다.", context);
-    } else if (res == NOT_SIGNED_UP) {
+    } else if (res == NOT_CREATED_PROFILE) {
+      AnalyticsMethod().logLogin("Email");
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
+      AnalyticsMethod().logLogin("Email");
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
@@ -77,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     }
-
+    AnalyticsMethod().logLogin("Google");
     setState(() {
       _isLoading_google = false;
     });
