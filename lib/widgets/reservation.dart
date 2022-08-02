@@ -33,17 +33,54 @@ class _ReservationState extends State<Reservation> {
   ReservationModel? nextReservation1 = null;
   ReservationModel? nextReservation2 = null;
   DateTime? nextReservationStartTime;
-  String? nextReservationId;
+
+  late CollectionReference _reservationColRef;
+  late DocumentReference nextReservationDocRef;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? userUid = _user.currentUser?.uid;
-  late CollectionReference _reservationColRef;
   bool isGetReservationLoading = true;
 
   Timer? _timer;
 
-  void enterReservation() {
+  void enterReservation() async {
+    ReservationModel? newReservation;
+    if (nextReservation!.user1Uid == userUid) {
+      newReservation = ReservationModel(
+        pk: nextReservation?.pk,
+        startTime: nextReservation?.startTime,
+        endTime: nextReservation?.endTime,
+        user1Uid: nextReservation?.user1Uid,
+        user1Name: nextReservation?.user1Name,
+        user1EnterDTTM: DateTime.now(),
+        user2Uid: nextReservation?.user2Uid,
+        user2Name: nextReservation?.user2Name,
+        user2EnterDTTM: nextReservation?.user2EnterDTTM,
+        room: nextReservation?.room,
+        isFull: nextReservation?.isFull,
+      );
+    } else if (nextReservation!.user2Uid == userUid) {
+      newReservation = ReservationModel(
+        pk: nextReservation?.pk,
+        startTime: nextReservation?.startTime,
+        endTime: nextReservation?.endTime,
+        user1Uid: nextReservation?.user1Uid,
+        user1Name: nextReservation?.user1Name,
+        user1EnterDTTM: nextReservation?.user1EnterDTTM,
+        user2Uid: nextReservation?.user2Uid,
+        user2Name: nextReservation?.user2Name,
+        user2EnterDTTM: DateTime.now(),
+        room: nextReservation?.room,
+        isFull: nextReservation?.isFull,
+      );
+    } else {
+      print("not my reservation");
+    }
+    nextReservation = newReservation;
+    await _reservationColRef
+        .doc(nextReservation!.pk)
+        .update(nextReservation!.toFirestore());
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 
@@ -169,7 +206,6 @@ class _ReservationState extends State<Reservation> {
               : nextReservation2;
     }
     if (nextReservation != null) {
-      print("aa");
       if (nextReservation != nextReservation_origin)
         setState(() {
           nextReservationStartTime = nextReservation!.startTime!;
@@ -178,10 +214,8 @@ class _ReservationState extends State<Reservation> {
                   .difference(DateTime.now())
                   .compareTo(Duration(minutes: 10)) <=
               0) {
-            print("10min");
             enableEnter();
           } else {
-            print("timer 10min");
             disableEnter();
             _timer = Timer(
                 nextReservationStartTime!.difference(DateTime.now()) -
