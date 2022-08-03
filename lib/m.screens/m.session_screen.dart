@@ -8,7 +8,6 @@ import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/utils/signaling.dart';
-import 'package:focus42/widgets/countdown_timer_widget.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
 import 'package:focus42/widgets/todo_session_ui.dart';
 import 'package:get/get.dart';
@@ -305,32 +304,6 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                       ),
                     ),
                   ),
-                  Flexible(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: _todoCurrent(context),
-                        ),
-                        Flexible(
-                            fit: FlexFit.tight,
-                            child: Container(
-                              // width: 450,
-                              margin: EdgeInsets.only(left: 8, right: 8),
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: CountDownTimer(
-                                  duration: Duration(minutes: 50),
-                                  startTime: session.startTime!,
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  )
                 ],
               )),
             ],
