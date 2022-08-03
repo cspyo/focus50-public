@@ -5,6 +5,7 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -335,6 +336,7 @@ class CalendarAppointment extends State<Calendar> {
       setState(() {
         loadingAppointmentDateTime = null;
       });
+      AnalyticsMethod().logCalendarTapDateBefore();
       return;
     }
     if (uid != null) {
@@ -365,6 +367,8 @@ class CalendarAppointment extends State<Calendar> {
           startTime: calendarTapDetails.date!,
           endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
         );
+        AnalyticsMethod().logMakeReservationOnEmpty();
+
         setState(() {
           loadingAppointmentDateTime = null;
         });
@@ -376,12 +380,14 @@ class CalendarAppointment extends State<Calendar> {
           // 내가 넣은거에 다시 클릭할때
           docId = await appointment.id.toString();
           await MatchingMethods().cancelRoom(docId);
+          AnalyticsMethod().logCancelReservation();
         } else {
           // 상대방이 넣은거에 다시 클릭할때
           await MatchingMethods().matchRoom(
             startTime: calendarTapDetails.date!,
             endTime: calendarTapDetails.date!.add(Duration(hours: 1)),
           );
+          AnalyticsMethod().logMakeReservationOnSomeone();
         }
         setState(() {
           loadingAppointmentDateTime = null;

@@ -7,6 +7,7 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/signaling.dart';
 import 'package:focus42/widgets/countdown_timer_widget.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
@@ -183,6 +184,7 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isCamOn = false;
                                           });
+                                          AnalyticsMethod().logCameraOff();
                                         },
                                       ),
                                     )
@@ -199,6 +201,7 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isCamOn = true;
                                           });
+                                          AnalyticsMethod().logCameraOn();
                                         },
                                       ),
                                     ),
@@ -219,6 +222,7 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isMicOn = false;
                                           });
+                                          AnalyticsMethod().logMicOff();
                                         },
                                       ),
                                     )
@@ -235,6 +239,7 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isMicOn = true;
                                           });
+                                          AnalyticsMethod().logMicOn();
                                         },
                                       ),
                                     ),
@@ -276,6 +281,8 @@ class _SessionPageState extends State<SessionPage> {
                                               onPressed: () {
                                                 Get.rootDelegate
                                                     .toNamed(Routes.CALENDAR);
+                                                AnalyticsMethod()
+                                                    .logPressExitButton();
                                               },
                                             ),
                                             TextButton(

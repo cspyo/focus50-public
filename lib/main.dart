@@ -1,8 +1,10 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/app_pages.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_strategy/url_strategy.dart';
@@ -17,6 +19,8 @@ void main() async {
   );
   if (kIsWeb) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
+    AnalyticsMethod().logUserAgent(userAgent);
+    AnalyticsMethod().setUserAgent(userAgent);
     // smartphone
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
       html.window.open("https://m.focus50.day", "_self");
@@ -29,11 +33,14 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
       title: "Focus50",
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
         fontFamily: 'IBMPlexSans',

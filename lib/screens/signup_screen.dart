@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
@@ -51,6 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (res == EMAIL_ALREADY_IN_USE) {
       showSnackBar("이미 존재하는 이메일입니다.", context);
     } else if (res == SUCCESS) {
+      AnalyticsMethod().logSignUp("Email");
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     } else {
       showSnackBar(res, context);
@@ -70,8 +72,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
+      AnalyticsMethod().logLogin("Google");
       Get.rootDelegate.toNamed(Routes.CALENDAR);
     } else {
+      AnalyticsMethod().logSignUp("Google");
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     }
     setState(() {
