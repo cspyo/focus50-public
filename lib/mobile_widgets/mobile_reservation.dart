@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
+import 'package:focus42/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -318,7 +319,8 @@ class _MobileReservationState extends State<MobileReservation> {
                           child: isTenMinutesLeft && nextReservation != null
                               ? ElevatedButton(
                                   onPressed: () {
-                                    enterReservation();
+                                    showSnackBar(
+                                        '현재 세션 입장은 PC에서만 가능합니다 :)', context);
                                   },
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<
@@ -351,7 +353,8 @@ class _MobileReservationState extends State<MobileReservation> {
                                 )
                               : TextButton(
                                   onPressed: () {
-                                    // enterReservation();
+                                    showSnackBar(
+                                        '현재 세션 입장은 PC에서만 가능합니다 :)', context);
                                   },
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<
