@@ -1,10 +1,10 @@
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/m.screens/m.add_profile_screen.dart';
-import 'package:focus42/m.screens/m.calendar_screen.dart';
-import 'package:focus42/m.screens/m.login_screen.dart';
 // import 'package:focus42/m.screens/m.profile_screen.dart';
-import 'package:focus42/m.screens/m.session_screen.dart';
-import 'package:focus42/m.screens/m.signup_screen.dart';
+import 'package:focus42/mobile_screens/mobile_add_profile_screen.dart';
+import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
+import 'package:focus42/mobile_screens/mobile_login_screen.dart';
+import 'package:focus42/mobile_screens/mobile_session_screen.dart';
+import 'package:focus42/mobile_screens/mobile_signup_screen.dart';
 import 'package:focus42/screens/add_profile_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
 import 'package:focus42/screens/profile_screen.dart';

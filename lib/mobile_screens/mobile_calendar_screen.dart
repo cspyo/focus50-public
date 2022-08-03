@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/m.widgets/m.calendar.dart';
-import 'package:focus42/m.widgets/m.reservation.dart';
+import 'package:focus42/mobile_widgets/mobile_calendar.dart';
+import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:get/get.dart';
@@ -91,73 +91,93 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                SizedBox(
-                    height: 60,
-                    child: isUserDifferentImg
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                                Image.network(userPhotoUrl),
-                                SizedBox(width: 20),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(userNickname,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.w700),
-                                        textAlign: TextAlign.left),
-                                    Text(
-                                      userJob,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
-                                      textAlign: TextAlign.left,
+                _auth.currentUser?.uid == null
+                    ? Container(
+                        height: 60,
+                        alignment: Alignment.center,
+                        child: TextButton(
+                          onPressed: () {
+                            Get.rootDelegate.toNamed(Routes.LOGIN);
+                          },
+                          child: const Text(
+                            '로그인 해주세요',
+                            style: TextStyle(
+                              fontSize: 26,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        height: 60,
+                        child: isUserDifferentImg
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                    Image.network(userPhotoUrl),
+                                    SizedBox(width: 20),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(userNickname,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 26,
+                                                fontWeight: FontWeight.w700),
+                                            textAlign: TextAlign.left),
+                                        Text(
+                                          userJob,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                          textAlign: TextAlign.left,
+                                        )
+                                      ],
                                     )
-                                  ],
-                                )
-                              ])
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                                Image.asset(
-                                    'assets/images/default_profile.png'),
-                                SizedBox(width: 20),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(userNickname,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.w700),
-                                        textAlign: TextAlign.left),
-                                    Text(
-                                      userJob,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500),
-                                      textAlign: TextAlign.left,
+                                  ])
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                    Image.asset(
+                                        'assets/images/default_profile.png'),
+                                    SizedBox(width: 20),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(userNickname,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 26,
+                                                fontWeight: FontWeight.w700),
+                                            textAlign: TextAlign.left),
+                                        Text(
+                                          userJob,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500),
+                                          textAlign: TextAlign.left,
+                                        )
+                                      ],
                                     )
-                                  ],
-                                )
-                              ])
-                    // : Container(
-                    //     alignment: Alignment.center,
-                    //     width: 20,
-                    //     height: 20,
-                    //     child:
-                    //         CircularProgressIndicator(color: Colors.white)),
-                    ),
+                                  ])
+                        // : Container(
+                        //     alignment: Alignment.center,
+                        //     width: 20,
+                        //     height: 20,
+                        //     child:
+                        //         CircularProgressIndicator(color: Colors.white)),
+                        ),
                 SizedBox(
                   height: 10,
                 ),

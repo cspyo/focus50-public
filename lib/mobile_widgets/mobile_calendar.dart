@@ -196,7 +196,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                 : Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: meeting.subject.contains(nickName)
+                        color: meeting.subject.contains(nickName) && uid != null
                             ? purple200
                             : Colors.white,
                         boxShadow: [
@@ -219,9 +219,11 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       fontSize: 10,
-                                      color: meeting.subject.contains(nickName)
-                                          ? Colors.white
-                                          : Colors.black),
+                                      color:
+                                          meeting.subject.contains(nickName) &&
+                                                  uid != null
+                                              ? Colors.white
+                                              : Colors.black),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   textAlign: TextAlign.center,
