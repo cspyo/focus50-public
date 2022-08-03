@@ -45,42 +45,6 @@ class _ReservationState extends State<Reservation> {
   Timer? _timer;
 
   void enterReservation() async {
-    ReservationModel? newReservation;
-    if (nextReservation!.user1Uid == userUid) {
-      newReservation = ReservationModel(
-        pk: nextReservation?.pk,
-        startTime: nextReservation?.startTime,
-        endTime: nextReservation?.endTime,
-        user1Uid: nextReservation?.user1Uid,
-        user1Name: nextReservation?.user1Name,
-        user1EnterDTTM: DateTime.now(),
-        user2Uid: nextReservation?.user2Uid,
-        user2Name: nextReservation?.user2Name,
-        user2EnterDTTM: nextReservation?.user2EnterDTTM,
-        room: nextReservation?.room,
-        isFull: nextReservation?.isFull,
-      );
-    } else if (nextReservation!.user2Uid == userUid) {
-      newReservation = ReservationModel(
-        pk: nextReservation?.pk,
-        startTime: nextReservation?.startTime,
-        endTime: nextReservation?.endTime,
-        user1Uid: nextReservation?.user1Uid,
-        user1Name: nextReservation?.user1Name,
-        user1EnterDTTM: nextReservation?.user1EnterDTTM,
-        user2Uid: nextReservation?.user2Uid,
-        user2Name: nextReservation?.user2Name,
-        user2EnterDTTM: DateTime.now(),
-        room: nextReservation?.room,
-        isFull: nextReservation?.isFull,
-      );
-    } else {
-      print("not my reservation");
-    }
-    nextReservation = newReservation;
-    await _reservationColRef
-        .doc(nextReservation!.pk)
-        .update(nextReservation!.toFirestore());
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 

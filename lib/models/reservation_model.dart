@@ -70,10 +70,10 @@ class ReservationModel {
       "endTime": endTime,
       "user1Uid": user1Uid,
       "user1Name": user1Name,
-      "user1Enter": user1EnterDTTM,
+      "user1EnterDTTM": user1EnterDTTM,
       "user2Uid": user2Uid,
       "user2Name": user2Name,
-      "user2Enter": user2EnterDTTM,
+      "user2EnterDTTM": user2EnterDTTM,
       "isFull": isFull,
       "room": room,
     };

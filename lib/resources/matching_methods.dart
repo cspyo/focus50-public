@@ -81,7 +81,7 @@ class MatchingMethods {
               endTime: reservation.endTime,
               user1Uid: userId,
               user1Name: userName,
-              user1EnterDTTM: null,
+              user1EnterDTTM: reservation.user1EnterDTTM,
               user2Uid: reservation.user2Uid,
               user2Name: reservation.user2Name,
               user2EnterDTTM: reservation.user2EnterDTTM,
@@ -97,7 +97,7 @@ class MatchingMethods {
               user1EnterDTTM: reservation.user1EnterDTTM,
               user2Uid: userId,
               user2Name: userName,
-              user2EnterDTTM: null,
+              user2EnterDTTM: reservation.user2EnterDTTM,
               isFull: true,
               room: reservation.room,
             );
@@ -185,7 +185,25 @@ class MatchingMethods {
       String? roomId = reservation.room;
       if (roomId == null) {
         roomId = await signaling.createRoom(remoteRenderer);
-        ReservationModel newReservation = ReservationModel(
+      } else {
+        signaling.joinRoom(roomId, remoteRenderer);
+      }
+      ReservationModel? newReservation;
+      if (reservation.user1Uid == userId) {
+        newReservation = ReservationModel(
+          startTime: reservation.startTime,
+          endTime: reservation.endTime,
+          user1Uid: reservation.user1Uid,
+          user1Name: reservation.user1Name,
+          user1EnterDTTM: DateTime.now(),
+          user2Uid: reservation.user2Uid,
+          user2Name: reservation.user2Name,
+          user2EnterDTTM: reservation.user2EnterDTTM,
+          room: roomId,
+          isFull: reservation.isFull,
+        );
+      } else if (reservation.user2Uid == userId) {
+        newReservation = ReservationModel(
           startTime: reservation.startTime,
           endTime: reservation.endTime,
           user1Uid: reservation.user1Uid,
@@ -193,14 +211,12 @@ class MatchingMethods {
           user1EnterDTTM: reservation.user1EnterDTTM,
           user2Uid: reservation.user2Uid,
           user2Name: reservation.user2Name,
-          user2EnterDTTM: reservation.user2EnterDTTM,
+          user2EnterDTTM: DateTime.now(),
           room: roomId,
           isFull: reservation.isFull,
         );
-        transaction.update(reservationRef, newReservation.toFirestore());
-      } else {
-        signaling.joinRoom(roomId, remoteRenderer);
       }
+      transaction.update(reservationRef, newReservation!.toFirestore());
     });
   }
 }

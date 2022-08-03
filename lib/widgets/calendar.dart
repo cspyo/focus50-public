@@ -115,7 +115,6 @@ class CalendarAppointment extends State<Calendar> {
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         ReservationModel reservation = doc.data() as ReservationModel;
         if (!startTimeList.contains(reservation.startTime)) {
-          print(' im in');
           if (reservation.user1Name == null || reservation.user2Name == null) {
             Appointment app = Appointment(
                 startTime: reservation.startTime!,
