@@ -57,7 +57,7 @@ class AuthMethods {
         if (await isSignedUp(uid: _auth.currentUser!.uid)) {
           res = SIGNED_UP;
         } else {
-          res = NOT_SIGNED_UP;
+          res = NOT_CREATED_PROFILE;
         }
       } else {
         res = "모든 필드를 작성해주세요";
