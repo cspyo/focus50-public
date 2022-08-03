@@ -34,15 +34,17 @@ class _ReservationState extends State<Reservation> {
   ReservationModel? nextReservation1 = null;
   ReservationModel? nextReservation2 = null;
   DateTime? nextReservationStartTime;
-  String? nextReservationId;
+
+  late CollectionReference _reservationColRef;
+  late DocumentReference nextReservationDocRef;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? userUid = _user.currentUser?.uid;
-  late CollectionReference _reservationColRef;
   bool isGetReservationLoading = true;
 
   Timer? _timer;
+
 
   void enterReservation() {
     AnalyticsMethod().logEnterSession();
@@ -171,7 +173,6 @@ class _ReservationState extends State<Reservation> {
               : nextReservation2;
     }
     if (nextReservation != null) {
-      print("aa");
       if (nextReservation != nextReservation_origin)
         setState(() {
           nextReservationStartTime = nextReservation!.startTime!;
@@ -180,10 +181,8 @@ class _ReservationState extends State<Reservation> {
                   .difference(DateTime.now())
                   .compareTo(Duration(minutes: 10)) <=
               0) {
-            print("10min");
             enableEnter();
           } else {
-            print("timer 10min");
             disableEnter();
             _timer = Timer(
                 nextReservationStartTime!.difference(DateTime.now()) -
