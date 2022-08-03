@@ -8,7 +8,6 @@ import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../models/reservation_model.dart';
@@ -32,28 +31,19 @@ class CalendarAppointment extends State<Calendar> {
 
   late CollectionReference _reservationColRef;
 
-  int getCurrentDayPosition(screenwidth) {
+  //highlighter 위치 정하는 함수
+  int getFirstWeekOfDay(int highlighterPosition) {
+    int currentDay = DateTime.now().weekday;
+    int firstDayOfWeek =
+        (currentDay - (highlighterPosition - 1)) % DateTime.daysPerWeek;
+    return firstDayOfWeek == 0 ? DateTime.daysPerWeek : firstDayOfWeek;
+  }
+
+  double getCurrentDayPosition(screenwidth) {
     int defaultPositionValue = 49;
-    String currentDay = DateFormat('E').format(DateTime.now());
+    int currentDay = DateTime.now().weekday;
     int oneBoxWidth = ((screenwidth - 489.5) / 7).round();
-    switch (currentDay) {
-      case 'Mon':
-        return defaultPositionValue;
-      case 'Tue':
-        return defaultPositionValue + oneBoxWidth;
-      case 'Wed':
-        return defaultPositionValue + oneBoxWidth * 2;
-      case 'Thu':
-        return defaultPositionValue + oneBoxWidth * 3;
-      case 'Fri':
-        return defaultPositionValue + oneBoxWidth * 4;
-      case 'Sat':
-        return defaultPositionValue + oneBoxWidth * 5;
-      case 'Sun':
-        return defaultPositionValue + oneBoxWidth * 6;
-      default:
-        return defaultPositionValue;
-    }
+    return defaultPositionValue + oneBoxWidth * (currentDay - 2);
   }
 
   void onHover(PointerEvent details) {
@@ -163,13 +153,13 @@ class CalendarAppointment extends State<Calendar> {
             child: Stack(
               children: [
                 Positioned(
-                  left: getCurrentDayPosition(screenWidth).toDouble(),
+                  left: getCurrentDayPosition(screenWidth),
                   top: 100,
                   child: CurrentTimeIndicator(),
                 ),
                 SfCalendar(
                   dataSource: _dataSource,
-                  firstDayOfWeek: 1,
+                  firstDayOfWeek: getFirstWeekOfDay(2),
                   viewHeaderHeight: 100,
                   headerHeight: 0,
                   timeSlotViewSettings: TimeSlotViewSettings(
