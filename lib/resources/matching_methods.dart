@@ -86,7 +86,7 @@ class MatchingMethods {
               user2Name: reservation.user2Name,
               user2EnterDTTM: reservation.user2EnterDTTM,
               isFull: true,
-              room: null,
+              room: reservation.room,
             );
           } else {
             newReservation = ReservationModel(
@@ -99,7 +99,7 @@ class MatchingMethods {
               user2Name: userName,
               user2EnterDTTM: null,
               isFull: true,
-              room: null,
+              room: reservation.room,
             );
           }
           transaction.update(reservationRef, newReservation.toFirestore());
