@@ -53,7 +53,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
       showSnackBar("회원으로 등록되어있지 않습니다.", context);
     } else if (res == WRONG_PASSWORD) {
       showSnackBar("비밀번호가 틀렸습니다.", context);
-    } else if (res == NOT_SIGNED_UP) {
+    } else if (res == NOT_CREATED_PROFILE) {
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
       Get.rootDelegate.offNamed(Routes.CALENDAR);
@@ -133,7 +133,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                       child: _isLoading_google
                           ? const Center(
                               child: CircularProgressIndicator(
-                                color: Colors.white,
+                                color: Colors.blue,
                               ),
                             )
                           : Container(

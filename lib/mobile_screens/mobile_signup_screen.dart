@@ -232,7 +232,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                             child: _isLoading_google
                                 ? const Center(
                                     child: CircularProgressIndicator(
-                                      color: Colors.white,
+                                      color: Colors.blue,
                                     ),
                                   )
                                 : Container(

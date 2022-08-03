@@ -332,12 +332,23 @@ class _MobileReservationState extends State<MobileReservation> {
                                         MaterialStateProperty.all<Color>(
                                             purple300),
                                   ),
-                                  child: Text('입장하기',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      )))
+                                  child: partnerName == null
+                                      ? Text('입장하기',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ))
+                                      : Text(
+                                          '$partnerName와 입장하기',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                )
                               : TextButton(
                                   onPressed: () {
                                     // enterReservation();
@@ -354,12 +365,23 @@ class _MobileReservationState extends State<MobileReservation> {
                                         MaterialStateProperty.all<Color>(
                                             Colors.black38),
                                   ),
-                                  child: Text('입장하기',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      )))),
+                                  child: partnerName == null
+                                      ? Text('입장하기',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ))
+                                      : Text(
+                                          '$partnerName와 입장하기',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                )),
                     ),
                   ],
                 )))
