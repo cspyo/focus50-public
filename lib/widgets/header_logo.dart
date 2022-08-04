@@ -13,6 +13,7 @@ class HeaderLogo extends StatelessWidget {
         Get.rootDelegate.toNamed(Routes.ABOUT);
       },
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: const <Widget>[
           Text(
             'Focus',

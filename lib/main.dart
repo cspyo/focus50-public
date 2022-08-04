@@ -17,23 +17,26 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  bool isMobile = false;
   if (kIsWeb) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
     AnalyticsMethod().logUserAgent(userAgent);
     AnalyticsMethod().setUserAgent(userAgent);
     // smartphone
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
-      html.window.open("https://m.focus50.day", "_self");
+      isMobile = true;
     }
     await FirebaseAuth.instance.authStateChanges().first;
   }
   setPathUrlStrategy();
-  runApp(MyApp());
+  runApp(MyApp(isMobile));
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  bool isMobile = false;
+  MyApp(this.isMobile);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'IBMPlexSans',
       ),
       defaultTransition: Transition.noTransition,
-      getPages: AppPages.pages,
+      getPages: isMobile ? AppPages.mobilePages : AppPages.pcPages,
       routerDelegate: AppRouterDelegate(),
     );
   }
