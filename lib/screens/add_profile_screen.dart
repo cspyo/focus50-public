@@ -5,7 +5,6 @@ import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:universal_html/html.dart' as html;
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
@@ -48,10 +47,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
     });
 
     String res = await AuthMethods().saveUserProfile(
-        username: _nameController.text,
-        nickname: _nicknameController.text,
-        job: _jobController.text,
-        file: _image);
+      username: _nameController.text,
+      nickname: _nicknameController.text,
+      job: _jobController.text,
+      file: _image,
+    );
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
     AnalyticsMethod().logCreateProfile();

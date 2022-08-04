@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/models/user_model.dart';
+import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/line.dart';
@@ -36,13 +36,13 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
   String userNickname = '';
   String userJob = '';
 
-  Future<void> getUserData() async {
-    UserModel user = await AuthMethods().getUserDetails();
-    userNickname = user.nickname;
-    userJob = user.job;
+  getUserData() async {
+    UserPublicModel user = await AuthMethods().getUserPublic();
+    userNickname = user.nickname!;
+    userJob = user.job!;
     setState(() {
       if (userPhotoUrl != user.photoUrl) {
-        userPhotoUrl = user.photoUrl;
+        userPhotoUrl = user.photoUrl!;
         isUserDifferentImg = true;
       } else {
         isUserDifferentImg = false;

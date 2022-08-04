@@ -45,13 +45,8 @@ class ReservationModel {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    // Timestamp? startTimeStamp = data?['startTime'];
-    // Timestamp? endTimeStamp = data?['endTime'];
+
     return ReservationModel(
-      // startTime: DateTime.fromMillisecondsSinceEpoch(
-      //     startTimeStamp!.millisecondsSinceEpoch),
-      // endTime: DateTime.fromMillisecondsSinceEpoch(
-      //     endTimeStamp!.millisecondsSinceEpoch),
       startTime: data?['startTime']?.toDate(),
       endTime: data?['endTime']?.toDate(),
       user1Uid: data?['user1Uid'],

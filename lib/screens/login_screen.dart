@@ -59,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
       AnalyticsMethod().logLogin("Email");
+      AuthMethods().updateLastLogin();
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
@@ -76,6 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
+      AuthMethods().updateLastLogin();
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     } else {
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
