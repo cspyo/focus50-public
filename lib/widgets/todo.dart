@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
@@ -142,6 +143,7 @@ class TodoState extends State<Todo> {
                                   isComplete: false,
                                 );
                                 _todoColRef.add(todo);
+                                AnalyticsMethod().logMakeTodoInCalendar();
                               });
                             } else {
                               Get.rootDelegate.toNamed(Routes.LOGIN);

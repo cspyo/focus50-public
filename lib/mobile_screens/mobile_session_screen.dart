@@ -7,36 +7,35 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
-import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/signaling.dart';
-import 'package:focus42/widgets/countdown_timer_widget.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
 import 'package:focus42/widgets/todo_session_ui.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
-class SessionScreen extends StatelessWidget {
+class MobileSessionScreen extends StatelessWidget {
   final ReservationModel session;
-  const SessionScreen({Key? key, required ReservationModel this.session})
+  const MobileSessionScreen({Key? key, required ReservationModel this.session})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SessionPage(session: session),
+      home: MobileSessionPage(session: session),
     );
   }
 }
 
-class SessionPage extends StatefulWidget {
+class MobileSessionPage extends StatefulWidget {
   final ReservationModel session;
-  SessionPage({Key? key, required this.session}) : super(key: key);
+  MobileSessionPage({Key? key, required this.session}) : super(key: key);
 
   @override
-  _SessionPageState createState() => _SessionPageState(session: session);
+  _MobileSessionPageState createState() =>
+      _MobileSessionPageState(session: session);
 }
 
-class _SessionPageState extends State<SessionPage> {
+class _MobileSessionPageState extends State<MobileSessionPage> {
   final _formKey = GlobalKey<FormState>();
   Signaling signaling = Signaling();
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
@@ -57,7 +56,7 @@ class _SessionPageState extends State<SessionPage> {
   late final Stream<QuerySnapshot> _myTodoColRef;
   List<TodoModel> myTodo = [];
 
-  _SessionPageState({required this.session}) : super();
+  _MobileSessionPageState({required this.session}) : super();
 
   @override
   void initState() {
@@ -184,7 +183,6 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isCamOn = false;
                                           });
-                                          AnalyticsMethod().logCameraOff();
                                         },
                                       ),
                                     )
@@ -201,7 +199,6 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isCamOn = true;
                                           });
-                                          AnalyticsMethod().logCameraOn();
                                         },
                                       ),
                                     ),
@@ -222,7 +219,6 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isMicOn = false;
                                           });
-                                          AnalyticsMethod().logMicOff();
                                         },
                                       ),
                                     )
@@ -239,7 +235,6 @@ class _SessionPageState extends State<SessionPage> {
                                           setState(() {
                                             isMicOn = true;
                                           });
-                                          AnalyticsMethod().logMicOn();
                                         },
                                       ),
                                     ),
@@ -281,8 +276,6 @@ class _SessionPageState extends State<SessionPage> {
                                               onPressed: () {
                                                 Get.rootDelegate
                                                     .toNamed(Routes.CALENDAR);
-                                                AnalyticsMethod()
-                                                    .logPressExitButton();
                                               },
                                             ),
                                             TextButton(
@@ -311,32 +304,6 @@ class _SessionPageState extends State<SessionPage> {
                       ),
                     ),
                   ),
-                  Flexible(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: _todoCurrent(context),
-                        ),
-                        Flexible(
-                            fit: FlexFit.tight,
-                            child: Container(
-                              // width: 450,
-                              margin: EdgeInsets.only(left: 8, right: 8),
-                              alignment: Alignment.centerRight,
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: CountDownTimer(
-                                  duration: Duration(minutes: 50),
-                                  startTime: session.startTime!,
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  )
                 ],
               )),
             ],

@@ -77,24 +77,30 @@ class MatchingMethods {
           ReservationModel newReservation;
           if (reservation.isEmptyUser1()) {
             newReservation = ReservationModel(
-                startTime: reservation.startTime,
-                endTime: reservation.endTime,
-                user1Uid: userId,
-                user1Name: userName,
-                user2Uid: reservation.user2Uid,
-                user2Name: reservation.user2Name,
-                isFull: true,
-                room: null);
+              startTime: reservation.startTime,
+              endTime: reservation.endTime,
+              user1Uid: userId,
+              user1Name: userName,
+              user1EnterDTTM: reservation.user1EnterDTTM,
+              user2Uid: reservation.user2Uid,
+              user2Name: reservation.user2Name,
+              user2EnterDTTM: reservation.user2EnterDTTM,
+              isFull: true,
+              room: reservation.room,
+            );
           } else {
             newReservation = ReservationModel(
-                startTime: reservation.startTime,
-                endTime: reservation.endTime,
-                user1Uid: reservation.user1Uid,
-                user1Name: reservation.user1Name,
-                user2Uid: userId,
-                user2Name: userName,
-                isFull: true,
-                room: null);
+              startTime: reservation.startTime,
+              endTime: reservation.endTime,
+              user1Uid: reservation.user1Uid,
+              user1Name: reservation.user1Name,
+              user1EnterDTTM: reservation.user1EnterDTTM,
+              user2Uid: userId,
+              user2Name: userName,
+              user2EnterDTTM: reservation.user2EnterDTTM,
+              isFull: true,
+              room: reservation.room,
+            );
           }
           transaction.update(reservationRef, newReservation.toFirestore());
         } else {
@@ -103,8 +109,10 @@ class MatchingMethods {
               endTime: endTime,
               user1Uid: userId,
               user1Name: userName,
+              user1EnterDTTM: null,
               user2Uid: null,
               user2Name: null,
+              user2EnterDTTM: null,
               isFull: false,
               room: null);
           DocumentReference doc = await _reservationColRef.add(newReservation);
@@ -126,8 +134,10 @@ class MatchingMethods {
           endTime: reservation.endTime,
           user1Uid: null,
           user1Name: null,
+          user1EnterDTTM: null,
           user2Uid: reservation.user2Uid,
           user2Name: reservation.user2Name,
+          user2EnterDTTM: reservation.user2EnterDTTM,
           isFull: false,
           room: reservation.room,
         );
@@ -142,8 +152,10 @@ class MatchingMethods {
           endTime: reservation.endTime,
           user1Uid: reservation.user1Uid,
           user1Name: reservation.user1Name,
+          user1EnterDTTM: reservation.user1EnterDTTM,
           user2Uid: null,
           user2Name: null,
+          user2EnterDTTM: null,
           isFull: false,
           room: reservation.room,
         );
@@ -173,20 +185,38 @@ class MatchingMethods {
       String? roomId = reservation.room;
       if (roomId == null) {
         roomId = await signaling.createRoom(remoteRenderer);
-        ReservationModel newReservation = ReservationModel(
+      } else {
+        signaling.joinRoom(roomId, remoteRenderer);
+      }
+      ReservationModel? newReservation;
+      if (reservation.user1Uid == userId) {
+        newReservation = ReservationModel(
           startTime: reservation.startTime,
           endTime: reservation.endTime,
           user1Uid: reservation.user1Uid,
           user1Name: reservation.user1Name,
+          user1EnterDTTM: DateTime.now(),
           user2Uid: reservation.user2Uid,
           user2Name: reservation.user2Name,
+          user2EnterDTTM: reservation.user2EnterDTTM,
           room: roomId,
           isFull: reservation.isFull,
         );
-        transaction.update(reservationRef, newReservation.toFirestore());
-      } else {
-        signaling.joinRoom(roomId, remoteRenderer);
+      } else if (reservation.user2Uid == userId) {
+        newReservation = ReservationModel(
+          startTime: reservation.startTime,
+          endTime: reservation.endTime,
+          user1Uid: reservation.user1Uid,
+          user1Name: reservation.user1Name,
+          user1EnterDTTM: reservation.user1EnterDTTM,
+          user2Uid: reservation.user2Uid,
+          user2Name: reservation.user2Name,
+          user2EnterDTTM: DateTime.now(),
+          room: roomId,
+          isFull: reservation.isFull,
+        );
       }
+      transaction.update(reservationRef, newReservation!.toFirestore());
     });
   }
 }

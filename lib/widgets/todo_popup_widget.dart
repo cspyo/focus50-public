@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
+import 'package:focus42/utils/analytics_method.dart';
 
 class TodoPopup extends StatefulWidget {
   final ReservationModel session;
@@ -119,6 +120,7 @@ class TodoPopupState extends State<TodoPopup> {
                           completedDate: DateTime.fromMicrosecondsSinceEpoch(0),
                           isComplete: false,
                         );
+                        AnalyticsMethod().logMakeTodoInSession();
                         _todoColRef.add(todo);
                       });
                     },

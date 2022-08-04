@@ -6,8 +6,10 @@ class ReservationModel {
   final DateTime? endTime;
   final String? user1Uid;
   final String? user1Name;
+  final DateTime? user1EnterDTTM;
   final String? user2Uid;
   final String? user2Name;
+  final DateTime? user2EnterDTTM;
   final bool? isFull;
   final String? room;
 
@@ -18,8 +20,10 @@ class ReservationModel {
     this.endTime,
     this.user1Uid,
     this.user1Name,
+    this.user1EnterDTTM,
     this.user2Uid,
     this.user2Name,
+    this.user2EnterDTTM,
     this.isFull,
     this.room,
   });
@@ -52,8 +56,10 @@ class ReservationModel {
       endTime: data?['endTime']?.toDate(),
       user1Uid: data?['user1Uid'],
       user1Name: data?['user1Name'],
+      user1EnterDTTM: data?['user1EnterDTTM']?.toDate(),
       user2Uid: data?['user2Uid'],
       user2Name: data?['user2Name'],
+      user2EnterDTTM: data?['user2EnterDTTM']?.toDate(),
       isFull: data?['isFull'],
       room: data?['room'],
     );
@@ -64,8 +70,10 @@ class ReservationModel {
       "endTime": endTime,
       "user1Uid": user1Uid,
       "user1Name": user1Name,
+      "user1EnterDTTM": user1EnterDTTM,
       "user2Uid": user2Uid,
       "user2Name": user2Name,
+      "user2EnterDTTM": user2EnterDTTM,
       "isFull": isFull,
       "room": room,
     };

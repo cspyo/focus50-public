@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/resources/auth_method.dart';
-import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
-class DesktopHeader extends StatefulWidget {
-  DesktopHeader({Key? key}) : super(key: key);
+class MobileDesktopHeader extends StatefulWidget {
+  MobileDesktopHeader({Key? key}) : super(key: key);
 
   @override
-  State<DesktopHeader> createState() => _DesktopHeaderState();
+  State<MobileDesktopHeader> createState() => _MobileDesktopHeaderState();
 }
 
-class _DesktopHeaderState extends State<DesktopHeader> {
+class _MobileDesktopHeaderState extends State<MobileDesktopHeader> {
   final _auth = FirebaseAuth.instance;
   final _authMethods = new AuthMethods();
 
@@ -62,7 +61,6 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                         setState(() {
                           _authMethods.signOut();
                         });
-                        AnalyticsMethod().logSignOut();
                         Get.rootDelegate.toNamed(Routes.LOGIN);
                       },
                       child: const Text(

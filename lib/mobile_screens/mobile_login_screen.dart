@@ -2,7 +2,6 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
-import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
@@ -12,14 +11,14 @@ import '../resources/auth_method.dart';
 import '../utils/utils.dart';
 import '../widgets/line.dart';
 
-class LoginScreen extends StatefulWidget {
-  LoginScreen({Key? key}) : super(key: key);
+class MobileLoginScreen extends StatefulWidget {
+  MobileLoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<MobileLoginScreen> createState() => _MobileLoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _MobileLoginScreenState extends State<MobileLoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -55,10 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
     } else if (res == WRONG_PASSWORD) {
       showSnackBar("비밀번호가 틀렸습니다.", context);
     } else if (res == NOT_CREATED_PROFILE) {
-      AnalyticsMethod().logLogin("Email");
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
-      AnalyticsMethod().logLogin("Email");
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
@@ -80,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     }
-    AnalyticsMethod().logLogin("Google");
+
     setState(() {
       _isLoading_google = false;
     });
@@ -92,36 +89,10 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
           Container(
-              padding: const EdgeInsets.only(
-                  top: 15, bottom: 15, left: 25, right: 25),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    HeaderLogo(),
-                    Row(children: <Widget>[
-                      Text(
-                        "계정이 없나요?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: purple300,
-                        ),
-                        onPressed: () {
-                          Get.rootDelegate.toNamed(Routes.SIGNUP);
-                        },
-                        child: const Text(
-                          '   회원가입   ',
-                          style: TextStyle(),
-                        ),
-                      )
-                    ])
-                  ])),
+            padding:
+                const EdgeInsets.only(top: 15, bottom: 15, left: 25, right: 25),
+            child: HeaderLogo(),
+          ),
           const Line(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -154,33 +125,38 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () async {
                         signInWithGoogle();
                       },
-                      style: ElevatedButton.styleFrom(),
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.white,
+                          elevation: 0,
+                          side: BorderSide(
+                              width: 1, color: Colors.grey.shade400)),
                       child: _isLoading_google
                           ? const Center(
                               child: CircularProgressIndicator(
-                                color: Colors.white,
+                                color: Colors.blue,
                               ),
                             )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: 100,
-                                ),
-                                Image.asset(
-                                  "assets/images/google_icon.png",
-                                  width: 30,
-                                  height: 30,
-                                ),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                const Text(
-                                  '구글 계정으로 로그인',
-                                  style: TextStyle(),
-                                ),
-                              ],
-                            ),
+                          : Container(
+                              width: 160,
+                              alignment: Alignment.center,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/google_icon.png",
+                                    width: 30,
+                                    height: 30,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Text(
+                                    '구글 계정으로 로그인',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              )),
                     ),
                   ),
                   // 줄 그리기

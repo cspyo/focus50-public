@@ -1,26 +1,23 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:universal_html/html.dart' as html;
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
 import '../resources/auth_method.dart';
 import '../utils/utils.dart';
-import '../widgets/line.dart';
 
-class AddProfileScreen extends StatefulWidget {
-  AddProfileScreen({Key? key}) : super(key: key);
+class MobileAddProfileScreen extends StatefulWidget {
+  MobileAddProfileScreen({Key? key}) : super(key: key);
 
   @override
-  State<AddProfileScreen> createState() => _AddProfileScreenState();
+  State<MobileAddProfileScreen> createState() => _MobileAddProfileScreenState();
 }
 
-class _AddProfileScreenState extends State<AddProfileScreen> {
+class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
@@ -54,7 +51,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
         file: _image);
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
-    AnalyticsMethod().logCreateProfile();
+
     setState(() {
       _isLoading = false;
     });
@@ -76,34 +73,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
           Container(
               padding: const EdgeInsets.only(
                   top: 15, bottom: 15, left: 25, right: 25),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    HeaderLogo(),
-                    Row(children: <Widget>[
-                      Text(
-                        "이미 계정이 있나요?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: purple300,
-                        ),
-                        onPressed: () {
-                          Get.rootDelegate.offNamed(Routes.LOGIN);
-                        },
-                        child: const Text(
-                          '    로그인    ',
-                          style: TextStyle(),
-                        ),
-                      )
-                    ])
-                  ])),
-          const Line(),
+              child: HeaderLogo()),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             width: double.infinity,
