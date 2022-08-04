@@ -41,9 +41,9 @@ class CalendarAppointment extends State<Calendar> {
 
   double getCurrentDayPosition(screenwidth) {
     int defaultPositionValue = 49;
-    int currentDay = DateTime.now().weekday;
+    int currentDay = DateTime.tuesday;
     int oneBoxWidth = ((screenwidth - 489.5) / 7).round();
-    return defaultPositionValue + oneBoxWidth * (currentDay - 2);
+    return defaultPositionValue + oneBoxWidth * (currentDay - 1);
   }
 
   void onHover(PointerEvent details) {
