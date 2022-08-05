@@ -29,4 +29,4 @@ jobs:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS50_8B405 }}'
           projectId: focus50-8b405
-          expires: 30d
+          expires: 3d
