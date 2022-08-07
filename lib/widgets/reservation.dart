@@ -169,7 +169,6 @@ class _ReservationState extends State<Reservation> {
               : nextReservation2;
     }
     if (nextReservation != null) {
-      print("aa");
       if (nextReservation != nextReservation_origin)
         setState(() {
           nextReservationStartTime = nextReservation!.startTime!;
@@ -178,10 +177,8 @@ class _ReservationState extends State<Reservation> {
                   .difference(DateTime.now())
                   .compareTo(Duration(minutes: 10)) <=
               0) {
-            print("10min");
             enableEnter();
           } else {
-            print("timer 10min");
             disableEnter();
             _timer = Timer(
                 nextReservationStartTime!.difference(DateTime.now()) -
