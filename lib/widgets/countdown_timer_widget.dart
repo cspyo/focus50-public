@@ -18,7 +18,7 @@ class CountDownTimer extends StatefulWidget {
 }
 
 class _CountDownTimerState extends State<CountDownTimer>
-    with TickerProviderStateMixin {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   _CountDownTimerState({required this.duration, required this.startTime})
       : super();
   late AnimationController controller;
@@ -28,6 +28,8 @@ class _CountDownTimerState extends State<CountDownTimer>
 
   late VideoPlayerController _startSoundController;
   late VideoPlayerController _finishSoundController;
+
+  bool isTimerStarted = false;
 
   String get timerString {
     Duration duration = controller.duration! * controller.value;
@@ -40,6 +42,19 @@ class _CountDownTimerState extends State<CountDownTimer>
     if (!controller.isAnimating) {
       controller.reverse(
           from: controller.value == 0.0 ? 1.0 : controller.value);
+    }
+
+    controller.addListener(_listener);
+  }
+
+  void _listener() {
+    if (controller.isAnimating && !isTimerStarted) {
+      double remaining_value =
+          (duration - DateTime.now().difference(startTime)).inSeconds /
+              duration.inSeconds;
+      controller.reverse(from: remaining_value);
+      controller.removeListener(_listener);
+      isTimerStarted = true;
     }
   }
 
@@ -80,6 +95,7 @@ class _CountDownTimerState extends State<CountDownTimer>
   @override
   void dispose() {
     _timer?.cancel();
+    controller.dispose();
     _startSoundController.pause();
     _startSoundController.dispose();
     _finishSoundController.pause();
