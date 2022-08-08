@@ -6,6 +6,7 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -32,7 +33,7 @@ class CalendarAppointment extends State<Calendar> {
   late CollectionReference _reservationColRef;
 
   //highlighter 위치 정하는 함수
-  int getFirstWeekOfDay(int highlighterPosition) {
+  int getFirstDayOfWeek(int highlighterPosition) {
     int currentDay = DateTime.now().weekday;
     int firstDayOfWeek =
         (currentDay - (highlighterPosition - 1)) % DateTime.daysPerWeek;
@@ -159,7 +160,7 @@ class CalendarAppointment extends State<Calendar> {
                 ),
                 SfCalendar(
                   dataSource: _dataSource,
-                  firstDayOfWeek: getFirstWeekOfDay(2),
+                  firstDayOfWeek: getFirstDayOfWeek(2),
                   viewHeaderHeight: 100,
                   headerHeight: 0,
                   timeSlotViewSettings: TimeSlotViewSettings(
@@ -326,6 +327,7 @@ class CalendarAppointment extends State<Calendar> {
       setState(() {
         loadingAppointmentDateTime = null;
       });
+      showSnackBar("현재보다 이전의 시간에는 예약하실 수 없습니다 : )", context);
       AnalyticsMethod().logCalendarTapDateBefore();
       return;
     }
