@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:focus42/models/user_model.dart';
+import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -33,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isUpdating = false;
   bool isLoading = true;
 
-  CollectionReference _userColRef = AuthMethods().getUserColRef();
+  CollectionReference _userPublicColRef = AuthMethods().getUserPublicColRef();
 
   var userData = {};
 
@@ -79,8 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void updateProfile(String uid, String email, String username, String nickname,
-      String job) async {
+  void updateProfile(String nickname, String job) async {
     setState(() {
       isUpdating = true;
     });
@@ -93,15 +92,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           await StorageMethods().uploadImageToStorage('profilePics', _image!);
     }
 
-    UserModel user = new UserModel(
-        username: username,
-        uid: uid,
-        photoUrl: photoUrl,
-        email: email,
-        nickname: nickname,
-        job: job);
+    UserPublicModel user = new UserPublicModel(
+      nickname: nickname,
+      photoUrl: photoUrl,
+      job: job,
+      updatedDate: DateTime.now(),
+    );
 
-    await _userColRef.doc(_auth.currentUser!.uid).update(user.toFirestore());
+    await _userPublicColRef
+        .doc(_auth.currentUser!.uid)
+        .update(user.toFirestore());
 
     showSnackBar("업데이트 완료", context);
 
@@ -210,9 +210,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         final job = _jobController.text;
 
                                         updateProfile(
-                                          userData['uid'],
-                                          userData['email'],
-                                          username,
                                           nickname,
                                           job,
                                         );
@@ -267,9 +264,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         final job = _jobController.text;
 
                                         updateProfile(
-                                          userData['uid'],
-                                          userData['email'],
-                                          username,
                                           nickname,
                                           job,
                                         );
@@ -325,9 +319,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         final job = _jobController.text;
 
                                         updateProfile(
-                                          userData['uid'],
-                                          userData['email'],
-                                          username,
                                           nickname,
                                           job,
                                         );
@@ -361,9 +352,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               final job = _jobController.text;
 
                               updateProfile(
-                                userData['uid'],
-                                userData['email'],
-                                username,
                                 nickname,
                                 job,
                               );
