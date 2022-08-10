@@ -25,6 +25,8 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
   bool _isLoading = false;
   Uint8List? _image;
 
+  String? nicknameValidate = null;
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +63,23 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
     Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
       _image = im;
+    });
+  }
+
+  nicknameValidator() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var nickname = _nicknameController.text;
+    if (nickname.isEmpty) {
+      nicknameValidate = '닉네임은 필수사항입니다';
+    } else if (await AuthMethods().isOverlapNickname(nickname)) {
+      nicknameValidate = '이미 사용중인 닉네임입니다';
+    } else {
+      nicknameValidate = null;
+    }
+    setState(() {
+      _isLoading = false;
     });
   }
 
@@ -141,7 +160,8 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                               return null;
                             },
                             onSaved: (val) {},
-                            onFieldSubmitted: (text) {
+                            onFieldSubmitted: (text) async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -166,13 +186,11 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                           child: TextFormField(
                             controller: _nicknameController,
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '닉네임은 필수사항입니다';
-                              }
-                              return null;
+                              return nicknameValidate;
                             },
                             onSaved: (val) {},
-                            onFieldSubmitted: (text) {
+                            onFieldSubmitted: (text) async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -203,7 +221,8 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                               return null;
                             },
                             onSaved: (val) {},
-                            onFieldSubmitted: (text) {
+                            onFieldSubmitted: (text) async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -227,7 +246,8 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                           width: 450,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
