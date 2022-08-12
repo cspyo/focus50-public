@@ -39,8 +39,8 @@ class SessionPage extends StatefulWidget {
 class _SessionPageState extends State<SessionPage> {
   final _formKey = GlobalKey<FormState>();
   Signaling signaling = Signaling();
-  RTCVideoRenderer _localRenderer = RTCVideoRenderer();
-  RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
+  late RTCVideoRenderer _localRenderer;
+  late RTCVideoRenderer _remoteRenderer;
   String? roomId;
   TextEditingController textEditingController = TextEditingController(text: '');
   final ReservationModel session;
@@ -61,6 +61,8 @@ class _SessionPageState extends State<SessionPage> {
 
   @override
   void initState() {
+    _localRenderer = RTCVideoRenderer();
+    _remoteRenderer = RTCVideoRenderer();
     _localRenderer.initialize().then((value) {
       _remoteRenderer.initialize().then((value) {
         MatchingMethods()
