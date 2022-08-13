@@ -264,6 +264,18 @@ class AuthMethods {
     return res;
   }
 
+  Future<bool> isOverlapNickname(String? value) async {
+    var snap = await _firestore
+        .collection('users')
+        .where('nickname', isEqualTo: value)
+        .get();
+    if (snap.size == 0) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   Future<void> signOut() async {
     await _auth.signOut();
   }
