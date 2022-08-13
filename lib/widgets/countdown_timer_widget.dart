@@ -96,13 +96,11 @@ class _CountDownTimerState extends State<CountDownTimer>
   void initState() {
     super.initState();
 
-    _startSoundController = VideoPlayerController.network(
-      'https://www.mboxdrive.com/ring.mp3',
-    );
+    _startSoundController =
+        VideoPlayerController.asset('assets/sound/ring.mp3');
 
-    _finishSoundController = VideoPlayerController.network(
-      'https://www.mboxdrive.com/ring.mp3',
-    );
+    _finishSoundController =
+        VideoPlayerController.asset('assets/sound/ring.mp3');
 
     _startSoundController.initialize();
     _startSoundController.addListener(_startSoundListener);
