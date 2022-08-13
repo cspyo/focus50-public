@@ -5,7 +5,6 @@ import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:universal_html/html.dart' as html;
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
@@ -28,6 +27,8 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   bool _isLoading = false;
   Uint8List? _image;
 
+  String? nicknameValidate = null;
+
   @override
   void initState() {
     super.initState();
@@ -48,10 +49,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
     });
 
     String res = await AuthMethods().saveUserProfile(
-        username: _nameController.text,
-        nickname: _nicknameController.text,
-        job: _jobController.text,
-        file: _image);
+      username: _nameController.text,
+      nickname: _nicknameController.text,
+      job: _jobController.text,
+      file: _image,
+    );
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
     AnalyticsMethod().logCreateProfile();
@@ -64,6 +66,23 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
     Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
       _image = im;
+    });
+  }
+
+  nicknameValidator() async {
+    setState(() {
+      _isLoading = true;
+    });
+    var nickname = _nicknameController.text;
+    if (nickname.isEmpty) {
+      nicknameValidate = '닉네임은 필수사항입니다';
+    } else if (await AuthMethods().isOverlapNickname(nickname)) {
+      nicknameValidate = '이미 사용중인 닉네임입니다';
+    } else {
+      nicknameValidate = null;
+    }
+    setState(() {
+      _isLoading = false;
     });
   }
 
@@ -171,7 +190,8 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                               return null;
                             },
                             onSaved: (val) {},
-                            onFieldSubmitted: (text) {
+                            onFieldSubmitted: (text) async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -196,13 +216,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           child: TextFormField(
                             controller: _nicknameController,
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '닉네임은 필수사항입니다';
-                              }
-                              return null;
+                              return nicknameValidate;
                             },
                             onSaved: (val) {},
-                            onFieldSubmitted: (text) {
+                            onFieldSubmitted: (text) async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -233,7 +251,8 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                               return null;
                             },
                             onSaved: (val) {},
-                            onFieldSubmitted: (text) {
+                            onFieldSubmitted: (text) async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }
@@ -252,12 +271,13 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                         const SizedBox(
                           height: 20,
                         ),
-                        // 로그인 버튼
+                        // 시작하기 버튼
                         SizedBox(
                           width: 450,
                           height: 40,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              await nicknameValidator();
                               if (_formKey.currentState!.validate()) {
                                 saveUserProfile();
                               }

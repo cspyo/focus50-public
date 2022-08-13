@@ -320,7 +320,7 @@ class _MobileReservationState extends State<MobileReservation> {
                               ? ElevatedButton(
                                   onPressed: () {
                                     showSnackBar(
-                                        '현재 세션 입장은 PC에서만 가능합니다 :)', context);
+                                        '현재 세션 입장은 PC에서만 가능합니다 : )', context);
                                   },
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<
@@ -354,7 +354,7 @@ class _MobileReservationState extends State<MobileReservation> {
                               : TextButton(
                                   onPressed: () {
                                     showSnackBar(
-                                        '현재 세션 입장은 PC에서만 가능합니다 :)', context);
+                                        '현재 세션 입장은 PC에서만 가능합니다 : )', context);
                                   },
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<

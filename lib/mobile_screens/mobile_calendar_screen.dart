@@ -4,7 +4,7 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
-import 'package:focus42/models/user_model.dart';
+import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:get/get.dart';
 
@@ -35,12 +35,12 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
   String userJob = '';
 
   Future<void> getUserData() async {
-    UserModel user = await AuthMethods().getUserDetails();
-    userNickname = user.nickname;
-    userJob = user.job;
+    UserPublicModel user = await AuthMethods().getUserPublic();
+    userNickname = user.nickname!;
+    userJob = user.job!;
     setState(() {
       if (userPhotoUrl != user.photoUrl) {
-        userPhotoUrl = user.photoUrl;
+        userPhotoUrl = user.photoUrl!;
         isUserDifferentImg = true;
       } else {
         isUserDifferentImg = false;

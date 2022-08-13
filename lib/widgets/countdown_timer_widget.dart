@@ -18,7 +18,7 @@ class CountDownTimer extends StatefulWidget {
 }
 
 class _CountDownTimerState extends State<CountDownTimer>
-    with TickerProviderStateMixin {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   _CountDownTimerState({required this.duration, required this.startTime})
       : super();
   late AnimationController controller;
@@ -28,6 +28,10 @@ class _CountDownTimerState extends State<CountDownTimer>
 
   late VideoPlayerController _startSoundController;
   late VideoPlayerController _finishSoundController;
+
+  bool isTimerStarted = false;
+  bool isStartSoundCompleted = false;
+  bool isFinishSoundCompleted = false;
 
   String get timerString {
     Duration duration = controller.duration! * controller.value;
@@ -41,6 +45,45 @@ class _CountDownTimerState extends State<CountDownTimer>
       controller.reverse(
           from: controller.value == 0.0 ? 1.0 : controller.value);
     }
+
+    controller.addListener(_animationControllerListener);
+  }
+
+  void _animationControllerListener() {
+    if (controller.isAnimating && !isTimerStarted) {
+      double remaining_value =
+          (duration - DateTime.now().difference(startTime)).inSeconds /
+              duration.inSeconds;
+      controller.reverse(from: remaining_value);
+      controller.removeListener(_animationControllerListener);
+      isTimerStarted = true;
+    }
+  }
+
+  void _startSoundListener() {
+    if (!_startSoundController.value.isPlaying &&
+        _startSoundController.value.position > Duration.zero &&
+        _startSoundController.value.position.inSeconds >=
+            _startSoundController.value.duration.inSeconds &&
+        !isStartSoundCompleted) {
+      // 세션 시작 알림음이 완료된 후 콜백하는 함수
+      _startSoundController.removeListener(_startSoundListener);
+      _startSoundController.dispose();
+      isStartSoundCompleted = true;
+    }
+  }
+
+  void _finishSoundListener() {
+    if (!_finishSoundController.value.isPlaying &&
+        _finishSoundController.value.position > Duration.zero &&
+        _finishSoundController.value.position.inSeconds >=
+            _finishSoundController.value.duration.inSeconds &&
+        !isFinishSoundCompleted) {
+      // 세션 종료 알림음이 완료된 후 콜백하는 함수
+      _finishSoundController.removeListener(_finishSoundListener);
+      _finishSoundController.dispose();
+      isFinishSoundCompleted = true;
+    }
   }
 
   void stopTimer() {
@@ -53,14 +96,17 @@ class _CountDownTimerState extends State<CountDownTimer>
   void initState() {
     super.initState();
 
-    _startSoundController = VideoPlayerController.network(
-      'https://www.mboxdrive.com/ring.mp3',
-    );
-    _finishSoundController = VideoPlayerController.network(
-      'https://www.mboxdrive.com/ring.mp3',
-    );
+    _startSoundController =
+        VideoPlayerController.asset('assets/sound/ring.mp3');
+
+    _finishSoundController =
+        VideoPlayerController.asset('assets/sound/ring.mp3');
+
     _startSoundController.initialize();
+    _startSoundController.addListener(_startSoundListener);
+
     _finishSoundController.initialize();
+    _finishSoundController.addListener(_finishSoundListener);
 
     controller = AnimationController(
       vsync: this,
@@ -80,10 +126,7 @@ class _CountDownTimerState extends State<CountDownTimer>
   @override
   void dispose() {
     _timer?.cancel();
-    _startSoundController.pause();
-    _startSoundController.dispose();
-    _finishSoundController.pause();
-    _finishSoundController.dispose();
+    controller.dispose();
     super.dispose();
   }
 

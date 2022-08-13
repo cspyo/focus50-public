@@ -73,6 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
       AnalyticsMethod().logLogin("Google");
+      AuthMethods().updateLastLogin();
       Get.rootDelegate.toNamed(Routes.CALENDAR);
     } else {
       AnalyticsMethod().logSignUp("Google");
