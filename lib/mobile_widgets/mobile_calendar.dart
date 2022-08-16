@@ -80,7 +80,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
     // uid 있을때만 nickname 가져오고 없으면 nickname에는 ''가 들어감
 
     if (uid != null) {
-      var user = await AuthMethods().getUserPublic();
+      var user = await AuthMethods().getUserPublic(uid);
       nickName = user.nickname!;
     }
 

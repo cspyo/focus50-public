@@ -12,11 +12,9 @@ class AuthMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Public 유저 정보 가져오기
-  Future<UserPublicModel> getUserPublic() async {
-    User currentUser = _auth.currentUser!;
-
+  Future<UserPublicModel> getUserPublic(String uid) async {
     DocumentSnapshot<Map<String, dynamic>> publicDocSnapshot =
-        await _firestore.collection('users').doc(currentUser.uid).get();
+        await _firestore.collection('users').doc(uid).get();
 
     return UserPublicModel.fromFirestore(publicDocSnapshot, null);
   }
@@ -81,10 +79,15 @@ class AuthMethods {
     var querySnapshot = await _firestore.collection('users').get();
     querySnapshot.docs.forEach((element) async {
       var existingData = element.data();
-      var uid = existingData['uid'];
+      var uid = element.id;
 
       // private 컬렉션이 있는지 확인 (최신 구조로 업데이트 되었는지 확인)
-      final docPrivate = await _firestore.collection('users').doc(uid).get();
+      final docPrivate = await _firestore
+          .collection('users')
+          .doc(uid)
+          .collection('private')
+          .doc(uid)
+          .get();
 
       if (!docPrivate.exists) {
         // public
@@ -118,8 +121,7 @@ class AuthMethods {
     });
   }
 
-  ex(String uid) async {
-    final userPublicColRef = getUserPublicColRef();
+  changeUserTableByUid(String uid) async {
     final userPrivateColRef =
         _firestore.collection('users').doc(uid).collection('private');
 
