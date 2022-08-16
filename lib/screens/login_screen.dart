@@ -177,18 +177,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintStyle: TextStyle(
                                 color: border200,
                               ),
-                              // prefixIcon: const Icon(
-                              //   Icons.email,
-                              // ),
-                              enabledBorder: OutlineInputBorder(
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 2),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Colors.black, width: 2),
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -218,15 +210,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '비밀번호',
-                              enabledBorder: OutlineInputBorder(
+                              border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide:
-                                    BorderSide(color: Colors.black, width: 2),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Colors.black, width: 2),
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -281,7 +268,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(8),
                                 side: BorderSide(
                                   color: Colors.black,
-                                  width: 2,
+                                  width: 0.5,
                                 ),
                               ),
                               elevation: 0,

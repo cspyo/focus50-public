@@ -197,7 +197,7 @@ class CalendarAppointment extends State<Calendar> {
                                 borderRadius: BorderRadius.circular(12),
                                 color: meeting.subject.contains(nickName) &&
                                         uid != null
-                                    ? purple200
+                                    ? purple300
                                     : Colors.white,
                                 //user_uid null 체크는 로그인 안했을 때를 위해 추가함
                                 boxShadow: [
@@ -276,7 +276,7 @@ class CalendarAppointment extends State<Calendar> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: meeting.subject.contains(nickName)
-                                ? purple200
+                                ? purple300
                                 : Colors.white,
                             boxShadow: [
                               BoxShadow(
