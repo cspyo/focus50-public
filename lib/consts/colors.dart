@@ -7,3 +7,5 @@ const Color border100 = Color(0xffF2F1F1);
 const Color black100 = Color(0xff696969);
 const Color blackSession = const Color(0xff1A222D);
 const Color blackCustomized = Color.fromARGB(255, 147, 147, 147);
+const Color highlighterColor = Color.fromARGB(255, 220, 214, 245);
+const Color calendarBackgroundColor = Colors.white;
