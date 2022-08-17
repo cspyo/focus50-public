@@ -29,7 +29,9 @@ class CalendarAppointment extends State<Calendar> {
   Map<String, UserPublicModel> users = {};
   bool isSignedUp = false;
 
-  final LOADING = "loading";
+  final LOADING_RESERVE = "loading reserve";
+  final LOADING_CANCEL = "loading cancel";
+
   final RESERVE = "reserve";
   final MATCHING = "matching";
   final MATCHED = "matched";
@@ -44,7 +46,10 @@ class CalendarAppointment extends State<Calendar> {
   CalendarDetails? details;
 
   List<Appointment> appointments = <Appointment>[];
+
+  List<DateTime> cantHoverTimeList = <DateTime>[];
   List<DateTime> reservationTimeList = <DateTime>[];
+
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   List<TimeRegion> reservationRegions = <TimeRegion>[];
   List<TimeRegion> cantReserveRegions = <TimeRegion>[];
@@ -89,6 +94,7 @@ class CalendarAppointment extends State<Calendar> {
       appointments.clear();
       reservationRegions.clear();
       cantReserveRegions.clear();
+      cantHoverTimeList.clear();
       reservationTimeList.clear();
       setState(() {});
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
@@ -137,7 +143,11 @@ class CalendarAppointment extends State<Calendar> {
             ),
           );
 
-          reservationTimeList.add(reservation.startTime!);
+          cantHoverTimeList.add(startTime);
+          cantHoverTimeList.add(startTime.add(Duration(minutes: 30)));
+          cantHoverTimeList.add(startTime.subtract(Duration(minutes: 30)));
+
+          reservationTimeList.add(startTime);
           reservationTimeList.add(startTime.add(Duration(minutes: 30)));
           reservationTimeList.add(startTime.subtract(Duration(minutes: 30)));
         }
@@ -158,9 +168,7 @@ class CalendarAppointment extends State<Calendar> {
                 users.addAll({
                   partnerUid: partner,
                 });
-              } catch (e) {
-                print(e);
-              }
+              } catch (e) {}
             }
 
             DateTime? startTime = reservation.startTime!;
@@ -171,6 +179,7 @@ class CalendarAppointment extends State<Calendar> {
                   ? reservation.user1Uid
                   : reservation.user2Uid,
             ));
+            reservationTimeList.add(startTime);
           }
         }
       }
@@ -217,9 +226,9 @@ class CalendarAppointment extends State<Calendar> {
         ),
       );
 
-      reservationTimeList.add(startTime);
-      reservationTimeList.add(startTime.add(Duration(minutes: 30)));
-      reservationTimeList.add(startTime.subtract(Duration(minutes: 30)));
+      cantHoverTimeList.add(startTime);
+      cantHoverTimeList.add(startTime.add(Duration(minutes: 30)));
+      cantHoverTimeList.add(startTime.subtract(Duration(minutes: 30)));
       appointments.add(Appointment(
           startTime: startTime, endTime: endTime, subject: RESERVE));
       setState(() {});
@@ -249,7 +258,7 @@ class CalendarAppointment extends State<Calendar> {
           return;
         }
         //
-        if (reservationTimeList.contains(details?.date)) {
+        if (cantHoverTimeList.contains(details?.date)) {
           onHoverRegions.clear();
           setState(() {});
           return;
@@ -379,8 +388,6 @@ class CalendarAppointment extends State<Calendar> {
                                 color: purple300,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              // border:
-                              // Border.all(color: purple300, width: 2)),
                               child: TextButton(
                                   onPressed: () {},
                                   child: Text(
@@ -418,7 +425,7 @@ class CalendarAppointment extends State<Calendar> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               CircleAvatar(
-                                radius: 15,
+                                radius: 13,
                                 backgroundColor: Colors.black38,
                                 backgroundImage: NetworkImage(
                                   photoUrl,
@@ -435,13 +442,20 @@ class CalendarAppointment extends State<Calendar> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Text(
-                                        nickname,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                          Text(
+                                            nickname,
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        ],
                                       ),
                                       // Text(
                                       //   job,
@@ -467,18 +481,40 @@ class CalendarAppointment extends State<Calendar> {
                     final DateTime endTime = appointment.endTime;
                     final String startTimeFormatted =
                         DateFormat('Hm').format(startTime);
-                    final String endTimeFormatted =
-                        DateFormat('Hm').format(endTime);
+                    final String endTimeFormatted = DateFormat('Hm')
+                        .format(endTime.subtract(Duration(minutes: 10)));
 
                     // 로딩중~
-                    if (subject == LOADING) {
+                    if (subject == LOADING_RESERVE) {
                       return Container(
-                        width: 15,
-                        height: 15,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8)),
+                          color: purple100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: purple300,
+                            width: 2,
+                          ),
+                        ),
                         child: Center(
-                          child: CircularProgressIndicator(color: purple300),
+                          child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child:
+                                  CircularProgressIndicator(color: purple300)),
+                        ),
+                      );
+                    } else if (subject == LOADING_CANCEL) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red, width: 1.5)),
+                        child: Center(
+                          child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child:
+                                  CircularProgressIndicator(color: Colors.red)),
                         ),
                       );
                     }
@@ -495,12 +531,12 @@ class CalendarAppointment extends State<Calendar> {
                             children: [
                               ElevatedButton(
                                 onPressed: () async {
-                                  appointment.subject = LOADING;
+                                  appointment.subject = LOADING_RESERVE;
                                   try {
                                     await MatchingMethods().matchRoom(
                                         startTime: startTime, endTime: endTime);
                                   } catch (err) {
-                                    print(err);
+                                    appointment.subject = RESERVE;
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -524,10 +560,10 @@ class CalendarAppointment extends State<Calendar> {
                               ElevatedButton(
                                 onPressed: () {
                                   appointments.remove(appointment);
-                                  reservationTimeList.remove(startTime);
-                                  reservationTimeList.remove(
+                                  cantHoverTimeList.remove(startTime);
+                                  cantHoverTimeList.remove(
                                       startTime.add(Duration(minutes: 30)));
-                                  reservationTimeList.remove(startTime
+                                  cantHoverTimeList.remove(startTime
                                       .subtract(Duration(minutes: 30)));
                                   cantReserveRegions.removeWhere((element) =>
                                       element.startTime ==
@@ -585,7 +621,7 @@ class CalendarAppointment extends State<Calendar> {
                                             "${startTimeFormatted}~${endTimeFormatted}",
                                             style: TextStyle(
                                               fontWeight: FontWeight.w500,
-                                              fontSize: 14,
+                                              fontSize: 13,
                                               color: Colors.black,
                                             ),
                                             textAlign: TextAlign.start,
@@ -595,10 +631,10 @@ class CalendarAppointment extends State<Calendar> {
                                   Container(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      '매칭중..',
+                                      '매칭중...',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w400,
-                                          fontSize: 10,
+                                          fontSize: 11,
                                           color: Colors.black),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
@@ -660,7 +696,7 @@ class CalendarAppointment extends State<Calendar> {
                                             "${startTimeFormatted}~${endTimeFormatted}",
                                             style: TextStyle(
                                               fontWeight: FontWeight.w500,
-                                              fontSize: 14,
+                                              fontSize: 13,
                                               color: Colors.black,
                                             ),
                                             textAlign: TextAlign.start,
@@ -669,16 +705,25 @@ class CalendarAppointment extends State<Calendar> {
                                       : SizedBox(),
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    width: 50,
-                                    child: Text(
-                                      "${users[appointment.notes]!.nickname!}",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 10,
-                                          color: purple200),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
+                                    width: 150,
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.people_alt_rounded,
+                                            size: 15.0),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          "${users[appointment.notes]!.nickname!}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11,
+                                              color: purple200),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   SizedBox(height: 15),
@@ -726,7 +771,7 @@ class CalendarAppointment extends State<Calendar> {
                                   onPressed: () async {
                                     String? docId = appointment.id as String;
 
-                                    appointment.subject = LOADING;
+                                    appointment.subject = LOADING_CANCEL;
                                     setState(() {});
                                     try {
                                       await MatchingMethods().cancelRoom(docId);
