@@ -28,7 +28,9 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
   Map<String, UserPublicModel> users = {};
   bool isSignedUp = false;
 
-  final LOADING = "loading";
+  final LOADING_RESERVE = "loading reserve";
+  final LOADING_CANCEL = "loading cancel";
+
   final RESERVE = "reserve";
   final MATCHING = "matching";
   final MATCHED = "matched";
@@ -43,7 +45,10 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
   CalendarDetails? details;
 
   List<Appointment> appointments = <Appointment>[];
+
+  List<DateTime> cantHoverTimeList = <DateTime>[];
   List<DateTime> reservationTimeList = <DateTime>[];
+
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   List<TimeRegion> reservationRegions = <TimeRegion>[];
   List<TimeRegion> cantReserveRegions = <TimeRegion>[];
@@ -73,6 +78,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
       appointments.clear();
       reservationRegions.clear();
       cantReserveRegions.clear();
+      cantHoverTimeList.clear();
       reservationTimeList.clear();
       setState(() {});
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
@@ -121,7 +127,11 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
             ),
           );
 
-          reservationTimeList.add(reservation.startTime!);
+          cantHoverTimeList.add(startTime);
+          cantHoverTimeList.add(startTime.add(Duration(minutes: 30)));
+          cantHoverTimeList.add(startTime.subtract(Duration(minutes: 30)));
+
+          reservationTimeList.add(startTime);
           reservationTimeList.add(startTime.add(Duration(minutes: 30)));
           reservationTimeList.add(startTime.subtract(Duration(minutes: 30)));
         }
@@ -142,9 +152,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                 users.addAll({
                   partnerUid: partner,
                 });
-              } catch (e) {
-                print(e);
-              }
+              } catch (e) {}
             }
 
             DateTime? startTime = reservation.startTime!;
@@ -155,6 +163,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                   ? reservation.user1Uid
                   : reservation.user2Uid,
             ));
+            reservationTimeList.add(startTime);
           }
         }
       }
@@ -201,9 +210,9 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
         ),
       );
 
-      reservationTimeList.add(startTime);
-      reservationTimeList.add(startTime.add(Duration(minutes: 30)));
-      reservationTimeList.add(startTime.subtract(Duration(minutes: 30)));
+      cantHoverTimeList.add(startTime);
+      cantHoverTimeList.add(startTime.add(Duration(minutes: 30)));
+      cantHoverTimeList.add(startTime.subtract(Duration(minutes: 30)));
       appointments.add(Appointment(
           startTime: startTime, endTime: endTime, subject: RESERVE));
       setState(() {});
@@ -233,7 +242,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
           return;
         }
         //
-        if (reservationTimeList.contains(details?.date)) {
+        if (cantHoverTimeList.contains(details?.date)) {
           onHoverRegions.clear();
           setState(() {});
           return;
@@ -296,8 +305,6 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
           top: 10,
         ),
         padding: EdgeInsets.only(right: 5),
-        // decoration: BoxDecoration(
-        //     border: Border(right: BorderSide(color: Color(0xffEBEBEB)))),
         child: Stack(
           children: [
             MouseRegion(
@@ -312,7 +319,6 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                 child: SfCalendar(
                   controller: _calendarController,
                   dataSource: _getDataSource(),
-
                   // 기본 캘린더 경계선
                   cellBorderColor: Colors.grey.withOpacity(0.4),
                   // 클릭했을 때 경계선
@@ -366,8 +372,6 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                 color: purple300,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              // border:
-                              // Border.all(color: purple300, width: 2)),
                               child: TextButton(
                                   onPressed: () {},
                                   child: Text(
@@ -384,7 +388,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                     } else if (timeRegionDetails.region.text == CANT_RESERVE) {
                       Color cantReserveColor;
                       if (timeRegionDetails.date.day == DateTime.now().day) {
-                        cantReserveColor = Colors.white; //sda
+                        cantReserveColor = Colors.white;
                       } else {
                         cantReserveColor = calendarBackgroundColor;
                       }
@@ -405,7 +409,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               CircleAvatar(
-                                radius: 15,
+                                radius: 13,
                                 backgroundColor: Colors.black38,
                                 backgroundImage: NetworkImage(
                                   photoUrl,
@@ -422,14 +426,28 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Text(
-                                        nickname,
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                          Text(
+                                            nickname,
+                                            style: TextStyle(
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                        ],
                                       ),
+                                      // Text(
+                                      //   job,
+                                      //   style: TextStyle(
+                                      //       fontSize: 8,
+                                      //       color: Color.fromARGB(
+                                      //           255, 83, 83, 83)),
+                                      // )
                                     ],
                                   ),
                                 ),
@@ -447,18 +465,40 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                     final DateTime endTime = appointment.endTime;
                     final String startTimeFormatted =
                         DateFormat('Hm').format(startTime);
-                    final String endTimeFormatted =
-                        DateFormat('Hm').format(endTime);
+                    final String endTimeFormatted = DateFormat('Hm')
+                        .format(endTime.subtract(Duration(minutes: 10)));
 
                     // 로딩중~
-                    if (subject == LOADING) {
+                    if (subject == LOADING_RESERVE) {
                       return Container(
-                        width: 15,
-                        height: 15,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8)),
+                          color: purple100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: purple300,
+                            width: 2,
+                          ),
+                        ),
                         child: Center(
-                          child: CircularProgressIndicator(color: purple300),
+                          child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child:
+                                  CircularProgressIndicator(color: purple300)),
+                        ),
+                      );
+                    } else if (subject == LOADING_CANCEL) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red, width: 1.5)),
+                        child: Center(
+                          child: SizedBox(
+                              width: 15,
+                              height: 15,
+                              child:
+                                  CircularProgressIndicator(color: Colors.red)),
                         ),
                       );
                     }
@@ -475,12 +515,15 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                             children: [
                               ElevatedButton(
                                 onPressed: () async {
-                                  appointment.subject = LOADING;
+                                  setState(() {
+                                    appointment.subject = LOADING_RESERVE;
+                                  });
+
                                   try {
                                     await MatchingMethods().matchRoom(
                                         startTime: startTime, endTime: endTime);
                                   } catch (err) {
-                                    print(err);
+                                    appointment.subject = RESERVE;
                                   }
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -504,10 +547,10 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                               ElevatedButton(
                                 onPressed: () {
                                   appointments.remove(appointment);
-                                  reservationTimeList.remove(startTime);
-                                  reservationTimeList.remove(
+                                  cantHoverTimeList.remove(startTime);
+                                  cantHoverTimeList.remove(
                                       startTime.add(Duration(minutes: 30)));
-                                  reservationTimeList.remove(startTime
+                                  cantHoverTimeList.remove(startTime
                                       .subtract(Duration(minutes: 30)));
                                   cantReserveRegions.removeWhere((element) =>
                                       element.startTime ==
@@ -564,7 +607,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                       "${startTimeFormatted}~${endTimeFormatted}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 14,
+                                        fontSize: 13,
                                         color: Colors.black,
                                       ),
                                       textAlign: TextAlign.start,
@@ -573,10 +616,10 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                   Container(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      '매칭중..',
+                                      '매칭중...',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w400,
-                                          fontSize: 10,
+                                          fontSize: 11,
                                           color: Colors.black),
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 1,
@@ -637,7 +680,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                       "${startTimeFormatted}~${endTimeFormatted}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 14,
+                                        fontSize: 13,
                                         color: Colors.black,
                                       ),
                                       textAlign: TextAlign.start,
@@ -645,16 +688,25 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                   ),
                                   Container(
                                     alignment: Alignment.centerLeft,
-                                    width: 50,
-                                    child: Text(
-                                      "${users[appointment.notes]!.nickname!}",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 10,
-                                          color: purple200),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
+                                    width: 150,
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.people_alt_rounded,
+                                            size: 15.0),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          "${users[appointment.notes]!.nickname!}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 11,
+                                              color: purple200),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   SizedBox(height: 15),
@@ -694,6 +746,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                               border:
                                   Border.all(color: Colors.red, width: 1.5)),
                           child: Container(
+                            width: 110,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -701,7 +754,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                   onPressed: () async {
                                     String? docId = appointment.id as String;
 
-                                    appointment.subject = LOADING;
+                                    appointment.subject = LOADING_CANCEL;
                                     setState(() {});
                                     try {
                                       await MatchingMethods().cancelRoom(docId);

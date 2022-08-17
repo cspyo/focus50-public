@@ -531,7 +531,10 @@ class CalendarAppointment extends State<Calendar> {
                             children: [
                               ElevatedButton(
                                 onPressed: () async {
-                                  appointment.subject = LOADING_RESERVE;
+                                  setState(() {
+                                    appointment.subject = LOADING_RESERVE;
+                                  });
+
                                   try {
                                     await MatchingMethods().matchRoom(
                                         startTime: startTime, endTime: endTime);
