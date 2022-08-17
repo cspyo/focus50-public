@@ -110,7 +110,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 30,
+                    height: 40,
                   ),
                   Form(
                     key: _formKey,
@@ -135,9 +135,10 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: '이메일',
-                              prefixIcon: const Icon(Icons.email),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -167,20 +168,22 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '비밀번호',
-                              prefixIcon: const Icon(Icons.lock),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 30,
                         ),
                         // 다음 버튼
+
                         SizedBox(
                           width: 450,
-                          height: 40,
+                          height: 50,
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
@@ -189,6 +192,11 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               primary: purple300,
+                              fixedSize: Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
                             ),
                             child: _isLoading_email
                                 ? const Center(
@@ -198,64 +206,57 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                                   )
                                 : const Text(
                                     '계정 생성하기',
+                                    style: TextStyle(),
                                   ),
                           ),
                         ),
 
-                        // 줄 그리기
                         SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          height: 2.0,
-                          width: 440.0,
-                          color: Colors.grey.shade400,
-                        ),
-                        SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
                         // 구글 로그인 버튼
                         SizedBox(
                           width: 450,
-                          height: 40,
+                          height: 50,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: () {
                               signUpWithGoogle();
                             },
                             style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                elevation: 0,
+                              primary: Colors.white,
+                              fixedSize: Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                                 side: BorderSide(
-                                  width: 1,
-                                  color: Colors.grey.shade400,
-                                )),
+                                  color: Colors.black,
+                                  width: 0.5,
+                                ),
+                              ),
+                              elevation: 0,
+                            ),
                             child: _isLoading_google
                                 ? const Center(
                                     child: CircularProgressIndicator(
-                                      color: Colors.blue,
+                                      color: purple300,
                                     ),
                                   )
-                                : Container(
-                                    width: 160,
-                                    alignment: Alignment.center,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Image.asset(
-                                          "assets/images/google_icon.png",
-                                          width: 30,
-                                          height: 30,
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        const Text(
-                                          '구글 계정으로 로그인',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ],
-                                    )),
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/google_icon.png",
+                                        width: 30,
+                                        height: 30,
+                                      ),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      const Text(
+                                        '구글 계정으로 회원가입',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
                           ),
                         ),
                         // 구글 로그인 버튼
