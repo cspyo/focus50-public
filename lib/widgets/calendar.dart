@@ -9,6 +9,7 @@ import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
@@ -336,7 +337,7 @@ class CalendarAppointment extends State<Calendar> {
                   headerHeight: 0,
                   timeSlotViewSettings: TimeSlotViewSettings(
                       dayFormat: 'EEE',
-                      timeIntervalHeight: 50,
+                      timeIntervalHeight: 40,
                       timeIntervalWidth: -2,
                       timeInterval: Duration(minutes: 30),
                       timeFormat: 'HH:mm'),
@@ -361,15 +362,35 @@ class CalendarAppointment extends State<Calendar> {
                     if (timeRegionDetails.region.text == HOVER) {
                       return Container(
                         decoration: BoxDecoration(
-                          border: Border.all(color: purple200, width: 4),
+                          border: Border.all(color: purple300, width: 2),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         width: 150,
-                        height: 100,
+                        height: 80,
+                        padding: EdgeInsets.all(3),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text("예약하기"),
+                            Container(
+                              width: 132,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: purple300,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              // border:
+                              // Border.all(color: purple300, width: 2)),
+                              child: TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    '예약하기',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  )),
+                            ),
                           ],
                         ),
                       );
@@ -386,30 +407,52 @@ class CalendarAppointment extends State<Calendar> {
                         height: 100,
                       );
                     } else {
-                      var photoUrl =
+                      String photoUrl =
                           users[timeRegionDetails.region.text]!.photoUrl!;
-                      var nickname =
+                      String nickname =
                           users[timeRegionDetails.region.text]!.nickname!;
+                      // String job = users[timeRegionDetails.region.text]!.job!;
                       return Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(1),
-                        ),
+                        padding: EdgeInsets.only(left: 10, right: 10),
                         child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               CircleAvatar(
-                                radius: 10,
+                                radius: 15,
                                 backgroundColor: Colors.black38,
                                 backgroundImage: NetworkImage(
                                   photoUrl,
                                 ),
                               ),
-                              Text(
-                                nickname,
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 5),
+                                  decoration: BoxDecoration(),
+                                  height: 30,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(
+                                        nickname,
+                                        style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      // Text(
+                                      //   job,
+                                      //   style: TextStyle(
+                                      //       fontSize: 8,
+                                      //       color: Color.fromARGB(
+                                      //           255, 83, 83, 83)),
+                                      // )
+                                    ],
+                                  ),
+                                ),
                               )
                             ]),
                       );
@@ -422,227 +465,318 @@ class CalendarAppointment extends State<Calendar> {
                     final String subject = appointment.subject;
                     final DateTime startTime = appointment.startTime;
                     final DateTime endTime = appointment.endTime;
+                    final String startTimeFormatted =
+                        DateFormat('Hm').format(startTime);
+                    final String endTimeFormatted =
+                        DateFormat('Hm').format(endTime);
 
                     // 로딩중~
                     if (subject == LOADING) {
                       return Container(
-                          decoration:
-                              BoxDecoration(color: Colors.grey, boxShadow: [
-                            BoxShadow(
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                              spreadRadius: 2,
-                              color: Colors.black.withOpacity(0.25),
-                            ),
-                          ]),
-                          child: Container(
-                            width: 110,
-                            child: CircularProgressIndicator(),
-                          ));
+                        width: 15,
+                        height: 15,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Center(
+                          child: CircularProgressIndicator(color: purple300),
+                        ),
+                      );
                     }
                     // 캘린더 그냥 탭했을 때 (예약하시겠습니까?)
                     else if (subject == RESERVE) {
                       return Container(
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                                spreadRadius: 2,
-                                color: Colors.black.withOpacity(0.25),
+                            color: Colors.white,
+                            border: Border.all(color: purple300, width: 1.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  appointment.subject = LOADING;
+                                  try {
+                                    await MatchingMethods().matchRoom(
+                                        startTime: startTime, endTime: endTime);
+                                  } catch (err) {
+                                    print(err);
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: purple300,
+                                  minimumSize: Size(40, 50),
+                                  side: BorderSide(
+                                    width: 1.5,
+                                    color: purple300,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  elevation: 0,
+                                ),
+                                child: Text(
+                                  "예약",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  appointments.remove(appointment);
+                                  reservationTimeList.remove(startTime);
+                                  reservationTimeList.remove(
+                                      startTime.add(Duration(minutes: 30)));
+                                  reservationTimeList.remove(startTime
+                                      .subtract(Duration(minutes: 30)));
+                                  cantReserveRegions.removeWhere((element) =>
+                                      element.startTime ==
+                                      startTime
+                                          .subtract(Duration(minutes: 30)));
+                                  setState(() {}); //취소 누르고 가만히 있으면 안사라져서 추가함
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  minimumSize: Size(40, 50),
+                                  side: BorderSide(
+                                    width: 1.5,
+                                    color: purple300,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  elevation: 0,
+                                ),
+                                child: Text(
+                                  "취소",
+                                  style: TextStyle(
+                                    color: purple300,
+                                  ),
+                                ),
                               ),
                             ],
-                          ),
-                          child: Container(
-                            width: 110,
-                            child: Column(
-                              children: [
-                                Text(
-                                  "예약하시겠습니까?",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                ),
-                                Row(
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        appointment.subject = LOADING;
-                                        try {
-                                          await MatchingMethods().matchRoom(
-                                              startTime: startTime,
-                                              endTime: endTime);
-                                        } catch (err) {
-                                          print(err);
-                                        }
-                                      },
-                                      child: Text("예약"),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        appointments.remove(appointment);
-                                        reservationTimeList.remove(startTime);
-                                        reservationTimeList.remove(startTime
-                                            .add(Duration(minutes: 30)));
-                                        reservationTimeList.remove(startTime
-                                            .subtract(Duration(minutes: 30)));
-                                        cantReserveRegions.removeWhere(
-                                            (element) =>
-                                                element.startTime ==
-                                                startTime.subtract(
-                                                    Duration(minutes: 30)));
-                                      },
-                                      child: Text("취소"),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
                           ));
                     }
                     // 예약 (매칭중)
                     else if (subject == MATCHING) {
                       return Container(
-                          padding: EdgeInsets.all(4),
-                          decoration:
-                              BoxDecoration(color: Colors.grey, boxShadow: [
-                            BoxShadow(
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                              spreadRadius: 2,
-                              color: Colors.black.withOpacity(0.25),
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: purple100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                              color: purple300,
+                              // color: Color.fromARGB(255, 119, 119, 119),
+                              width: 2),
+                        ),
+                        child: Stack(children: [
+                          Container(
+                            padding:
+                                EdgeInsets.only(left: 5, top: 5, bottom: 5),
+                            width: 150,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  screenWidth > 1280
+                                      ? Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "${startTimeFormatted}~${endTimeFormatted}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      '매칭중..',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 10,
+                                          color: Colors.black),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  SizedBox(height: 15),
+                                ],
+                              ),
                             ),
-                          ]),
-                          child: Container(
-                            width: 110,
-                            child: Column(
-                              children: [
-                                Text(
-                                  "matching",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
+                          ),
+                          Positioned(
+                            bottom: 5,
+                            right: 5,
+                            child: SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: IconButton(
+                                onPressed: () {
+                                  appointment.subject = CANCEL;
+                                  setState(() {});
+                                },
+                                padding: EdgeInsets.all(0),
+                                icon: Icon(
+                                  Icons.close,
+                                  color: purple200,
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    appointment.subject = CANCEL;
-                                    setState(() {});
-                                  },
-                                  child: Text("delete"),
-                                ),
-                              ],
+                                hoverColor: Colors.transparent,
+                              ),
                             ),
-                          ));
+                          )
+                        ]),
+                      );
                     }
                     // 예약 (매칭 완료 - 상대방 정보 보여주기)
                     else if (subject == MATCHED) {
                       return Container(
-                          decoration:
-                              BoxDecoration(color: Colors.grey, boxShadow: [
-                            BoxShadow(
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                              spreadRadius: 2,
-                              color: Colors.black.withOpacity(0.25),
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: purple100,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: purple300, width: 2),
+                        ),
+                        child: Stack(children: [
+                          Container(
+                            padding:
+                                EdgeInsets.only(left: 5, top: 5, bottom: 5),
+                            width: 150,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  screenWidth > 1280
+                                      ? Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "${startTimeFormatted}~${endTimeFormatted}",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    width: 50,
+                                    child: Text(
+                                      "${users[appointment.notes]!.nickname!}",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 10,
+                                          color: purple200),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  SizedBox(height: 15),
+                                ],
+                              ),
                             ),
-                          ]),
-                          child: Container(
-                            width: 110,
-                            child: Column(
-                              children: [
-                                Text(
-                                  users[appointment.notes]!.nickname!,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
+                          ),
+                          Positioned(
+                            bottom: 5,
+                            right: 5,
+                            child: SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: IconButton(
+                                onPressed: () {
+                                  appointment.subject = CANCEL;
+                                  setState(() {});
+                                },
+                                padding: EdgeInsets.all(0),
+                                icon: Icon(
+                                  Icons.close,
+                                  color: purple200,
                                 ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    appointment.subject = CANCEL;
-                                    setState(() {});
-                                  },
-                                  child: Text("delete"),
-                                ),
-                              ],
+                                hoverColor: Colors.transparent,
+                              ),
                             ),
-                          ));
+                          )
+                        ]),
+                      );
                     }
                     // 예약 취소를 눌렀을 때 (취소하시겠습니까?)
                     else if (subject == CANCEL) {
                       return Container(
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                                spreadRadius: 2,
-                                color: Colors.black.withOpacity(0.25),
-                              ),
-                            ],
-                          ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border:
+                                  Border.all(color: Colors.red, width: 1.5)),
                           child: Container(
                             width: 110,
-                            child: Column(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text(
-                                  "cancel?",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                ),
-                                Row(
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        if (appointment.notes == null) {
-                                          appointment.subject = MATCHING;
-                                        } else {
-                                          appointment.subject = MATCHED;
-                                        }
-                                      },
-                                      child: Text("취소"),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () async {
-                                        String? docId =
-                                            appointment.id as String;
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    String? docId = appointment.id as String;
 
-                                        appointment.subject = LOADING;
-                                        setState(() {});
-                                        try {
-                                          await MatchingMethods()
-                                              .cancelRoom(docId);
-                                        } catch (e) {
-                                          if (appointment.notes == null) {
-                                            appointment.subject = MATCHING;
-                                          } else {
-                                            appointment.subject = MATCHED;
-                                          }
-                                        }
-                                        AnalyticsMethod()
-                                            .logCancelReservation();
-                                      },
-                                      child: Text("삭제"),
+                                    appointment.subject = LOADING;
+                                    setState(() {});
+                                    try {
+                                      await MatchingMethods().cancelRoom(docId);
+                                    } catch (e) {
+                                      if (appointment.notes == null) {
+                                        appointment.subject = MATCHING;
+                                      } else {
+                                        appointment.subject = MATCHED;
+                                      }
+                                    }
+                                    AnalyticsMethod().logCancelReservation();
+                                  },
+                                  child: Text(
+                                    "삭제",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(40, 50),
+                                    primary: Colors.red,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ],
+                                    elevation: 0,
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (appointment.notes == null) {
+                                      appointment.subject = MATCHING;
+                                    } else {
+                                      appointment.subject = MATCHED;
+                                    }
+                                    setState(() {});
+                                  },
+                                  child: Text(
+                                    "취소",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(40, 50),
+                                    primary: Colors.white,
+                                    side: BorderSide(
+                                      color: Colors.red,
+                                      width: 1.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    elevation: 0,
+                                  ),
                                 ),
                               ],
                             ),
