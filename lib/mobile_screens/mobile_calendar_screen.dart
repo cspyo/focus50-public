@@ -35,7 +35,8 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
   String userJob = '';
 
   Future<void> getUserData() async {
-    UserPublicModel user = await AuthMethods().getUserPublic();
+    UserPublicModel user =
+        await AuthMethods().getUserPublic(_auth.currentUser!.uid);
     userNickname = user.nickname!;
     userJob = user.job!;
     setState(() {
