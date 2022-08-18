@@ -151,6 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(
                           width: 450,
                           child: TextFormField(
+                            autofocus: true,
                             controller: _emailController,
                             validator: (value) =>
                                 EmailValidator.validate(value!)
@@ -181,6 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(
                           width: 450,
                           child: TextFormField(
+                            autofocus: true,
                             controller: _passwordController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
