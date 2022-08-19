@@ -314,12 +314,28 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                           onTap: () {
                             launchUrl(toLaunch);
                           },
-                          child: Text(
-                            '더 나은 Focus50 이 되겠습니다. 설문 부탁드려요.',
-                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          child: Row(
+                            children: [
+                              Text(
+                                '더 나은 Focus50 이 되겠습니다.  ',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                              Text(
+                                '설문하러 가기',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700),
+                              )
+                            ],
                           ),
                         ),
-                        // SizedBox(width: 30),
+                        Icon(
+                          Icons.arrow_right_alt_rounded,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 20),
                         IconButton(
                           onPressed: () {
                             setState(() {
