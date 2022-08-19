@@ -22,6 +22,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   Uint8List? _image;
 
@@ -37,7 +38,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
     _nameController.dispose();
     _nicknameController.dispose();
     _jobController.dispose();
-
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -86,196 +87,255 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // 데스크탑 헤더
-          Container(
-              padding: const EdgeInsets.only(
-                  top: 15, bottom: 15, left: 25, right: 25),
-              child: HeaderLogo()),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            width: double.infinity,
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Text(
-                    '프로필 작성',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      color: purple300,
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          children: [
+            // 데스크탑 헤더
+            Container(
+                padding: const EdgeInsets.only(
+                    top: 15, bottom: 15, left: 25, right: 25),
+                child: HeaderLogo()),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              width: double.infinity,
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 50,
                     ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Stack(
-                    children: [
-                      _image != null
-                          ? CircleAvatar(
-                              radius: 64,
-                              backgroundColor: Colors.black38,
-                              backgroundImage: MemoryImage(_image!),
-                            )
-                          : CircleAvatar(
-                              radius: 64,
-                              backgroundColor: Colors.black38,
-                              backgroundImage: NetworkImage(
-                                  'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'),
-                            ),
-                      Positioned(
-                        bottom: -10,
-                        left: 80,
-                        child: IconButton(
-                          onPressed: selectImage,
-                          icon: const Icon(
-                            Icons.add_a_photo,
-                          ),
-                        ),
+                    Text(
+                      '프로필 작성',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                        color: purple300,
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Form(
-                    key: _formKey,
-                    child: Column(
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Stack(
                       children: [
-                        // 이름 텍스트 필드
-                        SizedBox(
-                          width: 450,
-                          child: TextFormField(
-                            controller: _nameController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '이름은 필수사항입니다';
-                              }
-                              return null;
-                            },
-                            onSaved: (val) {},
-                            onFieldSubmitted: (text) async {
-                              await nicknameValidator();
-                              if (_formKey.currentState!.validate()) {
-                                saveUserProfile();
-                              }
-                            },
-                            maxLines: 1,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              hintText: '이름',
-                              prefixIcon: const Icon(Icons.person),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                        _image != null
+                            ? CircleAvatar(
+                                radius: 64,
+                                backgroundColor: Colors.black38,
+                                backgroundImage: MemoryImage(_image!),
+                              )
+                            : CircleAvatar(
+                                radius: 64,
+                                backgroundColor: Colors.black38,
+                                backgroundImage: NetworkImage(
+                                    'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'),
                               ),
+                        Positioned(
+                          bottom: -10,
+                          right: -10,
+                          child: IconButton(
+                            onPressed: selectImage,
+                            icon: const Icon(
+                              Icons.add_a_photo,
+                              size: 22,
                             ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // 닉네임 텍스트 필드
-                        SizedBox(
-                          width: 450,
-                          child: TextFormField(
-                            controller: _nicknameController,
-                            validator: (value) {
-                              return nicknameValidate;
-                            },
-                            onSaved: (val) {},
-                            onFieldSubmitted: (text) async {
-                              await nicknameValidator();
-                              if (_formKey.currentState!.validate()) {
-                                saveUserProfile();
-                              }
-                            },
-                            maxLines: 1,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              hintText: '닉네임',
-                              prefixIcon: const Icon(Icons.person),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // job 텍스트 필드
-                        SizedBox(
-                          width: 450,
-                          child: TextFormField(
-                            controller: _jobController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '직업은 필수사항입니다';
-                              }
-                              return null;
-                            },
-                            onSaved: (val) {},
-                            onFieldSubmitted: (text) async {
-                              await nicknameValidator();
-                              if (_formKey.currentState!.validate()) {
-                                saveUserProfile();
-                              }
-                            },
-                            maxLines: 1,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              hintText: '직업',
-                              prefixIcon: const Icon(Icons.article),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // 로그인 버튼
-                        SizedBox(
-                          width: 450,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await nicknameValidator();
-                              if (_formKey.currentState!.validate()) {
-                                saveUserProfile();
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: purple300,
-                            ),
-                            child: _isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    '시작하기',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          // 이름 텍스트 필드
+                          SizedBox(
+                            width: 450,
+                            child: TextFormField(
+                              controller: _nameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '이름은 필수사항입니다';
+                                }
+                                return null;
+                              },
+                              onSaved: (val) {},
+                              textInputAction: TextInputAction.next,
+                              onTap: () {
+                                _scrollController.animateTo(70,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              },
+                              onFieldSubmitted: (text) async {
+                                await nicknameValidator();
+                                _scrollController.animateTo(140.0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              },
+                              maxLines: 1,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: '이름',
+                                hintStyle: TextStyle(
+                                  color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 0.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          // 닉네임 텍스트 필드
+                          SizedBox(
+                            width: 450,
+                            child: TextFormField(
+                              controller: _nicknameController,
+                              validator: (value) {
+                                return nicknameValidate;
+                              },
+                              // onSaved: (val) {},
+                              textInputAction: TextInputAction.next,
+                              onTap: () {
+                                _scrollController.animateTo(140.0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              },
+                              onFieldSubmitted: (text) async {
+                                _scrollController.animateTo(200.0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              },
+                              maxLines: 1,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: '닉네임',
+                                hintStyle: TextStyle(
+                                  color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 0.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          // job 텍스트 필드
+                          SizedBox(
+                            width: 450,
+                            child: TextFormField(
+                              controller: _jobController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '직업은 필수사항입니다';
+                                }
+                                return null;
+                              },
+                              onSaved: (val) {},
+                              onTap: () {
+                                _scrollController.animateTo(200.0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease);
+                              },
+                              onFieldSubmitted: (text) async {
+                                await nicknameValidator();
+                                if (_formKey.currentState!.validate()) {
+                                  saveUserProfile();
+                                }
+                              },
+                              maxLines: 1,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                hintText: '직업',
+                                hintStyle: TextStyle(
+                                  color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.work,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                      color: Colors.black, width: 0.5),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          // 로그인 버튼
+                          SizedBox(
+                            width: 450,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await nicknameValidator();
+                                if (_formKey.currentState!.validate()) {
+                                  saveUserProfile();
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                primary: purple300,
+                                fixedSize: Size.fromHeight(50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: _isLoading
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Text(
+                                      '시작하기',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                            ),
+                          ),
+                          SizedBox(height: 300),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

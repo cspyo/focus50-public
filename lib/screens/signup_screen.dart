@@ -141,7 +141,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: 30,
+                    height: 40,
                   ),
                   Form(
                     key: _formKey,
@@ -151,6 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(
                           width: 450,
                           child: TextFormField(
+                            autofocus: true,
                             controller: _emailController,
                             validator: (value) =>
                                 EmailValidator.validate(value!)
@@ -166,9 +167,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: '이메일',
-                              prefixIcon: const Icon(Icons.email),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.email,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -180,6 +192,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         SizedBox(
                           width: 450,
                           child: TextFormField(
+                            autofocus: true,
                             controller: _passwordController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -198,15 +211,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '비밀번호',
-                              prefixIcon: const Icon(Icons.lock),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.lock,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 30,
                         ),
                         // 다음 버튼
                         Row(
@@ -215,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           children: [
                             SizedBox(
                               width: 450,
-                              height: 40,
+                              height: 50,
                               child: ElevatedButton(
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
@@ -224,6 +248,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   primary: purple300,
+                                  fixedSize: Size.fromHeight(50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
                                 ),
                                 child: _isLoading_email
                                     ? const Center(
@@ -239,31 +268,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ],
                         ),
-                        // 줄 그리기
                         SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          height: 2.0,
-                          width: 440.0,
-                          color: Colors.grey.shade400,
-                        ),
-                        SizedBox(
-                          height: 20,
+                          height: 15,
                         ),
                         // 구글 로그인 버튼
                         SizedBox(
                           width: 450,
-                          height: 40,
+                          height: 50,
                           child: ElevatedButton(
                             onPressed: () {
                               signUpWithGoogle();
                             },
-                            style: ElevatedButton.styleFrom(),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              fixedSize: Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                ),
+                              ),
+                              elevation: 0,
+                            ),
                             child: _isLoading_google
                                 ? const Center(
                                     child: CircularProgressIndicator(
-                                      color: Colors.white,
+                                      color: purple300,
                                     ),
                                   )
                                 : Row(
@@ -282,7 +313,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       ),
                                       const Text(
                                         '구글 계정으로 회원가입',
-                                        style: TextStyle(),
+                                        style: TextStyle(color: Colors.black),
                                       ),
                                     ],
                                   ),

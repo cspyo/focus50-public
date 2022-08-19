@@ -37,7 +37,8 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
   String userJob = '';
 
   getUserData() async {
-    UserPublicModel user = await AuthMethods().getUserPublic();
+    UserPublicModel user =
+        await AuthMethods().getUserPublic(_auth.currentUser!.uid);
     userNickname = user.nickname!;
     userJob = user.job!;
     setState(() {

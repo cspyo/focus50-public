@@ -7,6 +7,7 @@ import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/line.dart';
 
@@ -33,9 +34,16 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
       'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3';
   String userNickname = '';
   String userJob = '';
+  bool isNotificationOpen = true;
+  final Uri toLaunch = Uri(
+    scheme: 'https',
+    host: 'forms.gle',
+    path: '/3bGecKhsiAwtyk4k9',
+  );
 
   Future<void> getUserData() async {
-    UserPublicModel user = await AuthMethods().getUserPublic();
+    UserPublicModel user =
+        await AuthMethods().getUserPublic(_auth.currentUser!.uid);
     userNickname = user.nickname!;
     userJob = user.job!;
     setState(() {
@@ -284,6 +292,50 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
           child: Column(//페이지 전체 구성
               children: <Widget>[
             const Line(),
+            isNotificationOpen
+                ? Container(
+                    height: 50,
+                    padding: EdgeInsets.only(left: 30, right: 30),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Color(0xff5E88FF),
+                          Color(0xff8465FF),
+                        ],
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            launchUrl(toLaunch);
+                          },
+                          child: Text(
+                            '더 나은 Focus50 이 되겠습니다. 설문 부탁드려요.',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ),
+                        // SizedBox(width: 30),
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isNotificationOpen = false;
+                            });
+                          },
+                          hoverColor: Colors.transparent,
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                : SizedBox(),
             Column(children: <Widget>[
               Container(
                 child: MobileReservation(),

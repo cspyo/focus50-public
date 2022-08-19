@@ -138,65 +138,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   // 로그인 텍스트
                   Text(
-                    '로 그 인',
+                    '로그인',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: purple300,
+                      letterSpacing: 3,
                     ),
                   ),
                   // 구글로 로그인하기
                   SizedBox(
-                    height: 30,
-                  ),
-                  SizedBox(
-                    width: 450,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        signInWithGoogle();
-                      },
-                      style: ElevatedButton.styleFrom(),
-                      child: _isLoading_google
-                          ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: 100,
-                                ),
-                                Image.asset(
-                                  "assets/images/google_icon.png",
-                                  width: 30,
-                                  height: 30,
-                                ),
-                                SizedBox(
-                                  width: 30,
-                                ),
-                                const Text(
-                                  '구글 계정으로 로그인',
-                                  style: TextStyle(),
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-                  // 줄 그리기
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    height: 2.0,
-                    width: 440.0,
-                    color: Colors.grey.shade400,
-                  ),
-                  SizedBox(
                     height: 40,
                   ),
+
                   Form(
                     key: _formKey,
                     child: Column(
@@ -205,6 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           width: 450,
                           child: TextFormField(
+                            autofocus: true,
                             controller: _emailController,
                             validator: (value) =>
                                 EmailValidator.validate(value!)
@@ -220,9 +175,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: '이메일',
-                              prefixIcon: const Icon(Icons.email),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.email,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -234,6 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(
                           width: 450,
                           child: TextFormField(
+                            autofocus: true,
                             controller: _passwordController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -252,9 +219,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '비밀번호',
-                              prefixIcon: const Icon(Icons.lock),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.lock,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -265,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         // 로그인 버튼
                         SizedBox(
                           width: 450,
-                          height: 40,
+                          height: 50,
                           child: ElevatedButton(
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
@@ -274,6 +252,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               primary: purple300,
+                              fixedSize: Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
                             ),
                             child: _isLoading_email
                                 ? const Center(
@@ -289,6 +272,56 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(
                           height: 15,
+                        ),
+                        SizedBox(
+                          width: 450,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              signInWithGoogle();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              fixedSize: Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: Colors.black,
+                                  width: 0.5,
+                                ),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: _isLoading_google
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: purple200,
+                                    ),
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 100,
+                                      ),
+                                      Image.asset(
+                                        "assets/images/google_icon.png",
+                                        width: 30,
+                                        height: 30,
+                                      ),
+                                      SizedBox(
+                                        width: 30,
+                                      ),
+                                      const Text(
+                                        '구글 계정으로 로그인',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
                         ),
                         Container(
                           child: Row(

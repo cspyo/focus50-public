@@ -17,7 +17,7 @@ class _CurrentTimeIndicatorState extends State<CurrentTimeIndicator> {
     return Container(
       width: ((screenWidth - 489.5) / 7),
       height: 1000,
-      decoration: new BoxDecoration(color: purple100.withOpacity(0.5)),
+      decoration: new BoxDecoration(color: highlighterColor),
       child: Text(''),
     );
   }
