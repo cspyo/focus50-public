@@ -139,7 +139,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                                     curve: Curves.ease);
                               },
                               onFieldSubmitted: (text) {
-                                _scrollController.animateTo(120.0,
+                                _scrollController.animateTo(130.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -176,7 +176,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                                 }
                               },
                               onTap: () {
-                                _scrollController.animateTo(120.0,
+                                _scrollController.animateTo(130.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -310,7 +310,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                             ),
                           ),
                           SizedBox(
-                            height: 400,
+                            height: 240,
                           ),
                         ],
                       ),

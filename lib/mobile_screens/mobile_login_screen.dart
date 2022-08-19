@@ -146,7 +146,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                     curve: Curves.ease);
                               },
                               onFieldSubmitted: (text) {
-                                _scrollController.animateTo(120.0,
+                                _scrollController.animateTo(130.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -187,7 +187,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                 }
                               },
                               onTap: () {
-                                _scrollController.animateTo(120.0,
+                                _scrollController.animateTo(130.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -319,7 +319,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                             ),
                           ),
                           SizedBox(
-                            height: 400,
+                            height: 240,
                           ),
                         ],
                       ),
