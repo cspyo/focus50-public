@@ -55,7 +55,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
         isNotificationOpen
             ? Container(
                 height: 50,
-                padding: EdgeInsets.only(left: 450, right: 450),
                 width: double.infinity,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -68,17 +67,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     InkWell(
                       onTap: () {
                         launchUrl(toLaunch);
                       },
                       child: Text(
-                        '더 나은 Focus50 이 되겠습니다. 설문 부탁드려요. 아이스아메리카노 받아가세요!',
+                        '더 나은 Focus50 이 되겠습니다. 설문 부탁드려요. 아이스 아메리카노 받아가세요!',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
+                    SizedBox(width: 30),
                     IconButton(
                       onPressed: () {
                         setState(() {

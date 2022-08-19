@@ -167,6 +167,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               hintText: '이메일',
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.email,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide:
@@ -201,6 +211,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '비밀번호',
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.lock,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide:

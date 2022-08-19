@@ -1,5 +1,4 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/widgets/header_logo.dart';
@@ -24,7 +23,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isLoading_email = false;
-  bool _isLoading_google = false;
+  // bool _isLoading_google = false;
 
   @override
   void initState() {
@@ -67,23 +66,23 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
   }
 
   // 구글로 로그인
-  void signInWithGoogle() async {
-    setState(() {
-      _isLoading_google = true;
-    });
+  // void signInWithGoogle() async {
+  //   setState(() {
+  //     _isLoading_google = true;
+  //   });
 
-    UserCredential cred = await AuthMethods().signInWithGoogle();
+  //   UserCredential cred = await AuthMethods().signInWithGoogle();
 
-    if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-      Get.rootDelegate.offNamed(Routes.CALENDAR);
-    } else {
-      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
-    }
+  //   if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
+  //     Get.rootDelegate.offNamed(Routes.CALENDAR);
+  //   } else {
+  //     Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
+  //   }
 
-    setState(() {
-      _isLoading_google = false;
-    });
-  }
+  //   setState(() {
+  //     _isLoading_google = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +145,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                     curve: Curves.ease);
                               },
                               onFieldSubmitted: (text) {
-                                _scrollController.animateTo(130.0,
+                                _scrollController.animateTo(100.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -157,6 +156,13 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                 hintText: '이메일',
                                 hintStyle: TextStyle(
                                   color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.email,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -187,7 +193,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                 }
                               },
                               onTap: () {
-                                _scrollController.animateTo(130.0,
+                                _scrollController.animateTo(100.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -201,6 +207,16 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                               keyboardType: TextInputType.text,
                               decoration: InputDecoration(
                                 hintText: '비밀번호',
+                                hintStyle: TextStyle(
+                                  color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.lock,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide(
@@ -245,54 +261,54 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                           SizedBox(
                             height: 15,
                           ),
-                          SizedBox(
-                            width: 450,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                signInWithGoogle();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.white,
-                                fixedSize: Size.fromHeight(50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  side: BorderSide(
-                                    color: Colors.black,
-                                    width: 0.5,
-                                  ),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: _isLoading_google
-                                  ? const Center(
-                                      child: CircularProgressIndicator(
-                                        color: purple200,
-                                      ),
-                                    )
-                                  : Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        // SizedBox(
-                                        //   width: 100,
-                                        // ),
-                                        Image.asset(
-                                          "assets/images/google_icon.png",
-                                          width: 30,
-                                          height: 30,
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        const Text(
-                                          '구글 계정으로 로그인',
-                                          style: TextStyle(color: Colors.black),
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          ),
+                          // SizedBox(
+                          //   width: 450,
+                          //   height: 50,
+                          //   child: ElevatedButton(
+                          //     onPressed: () async {
+                          //       signInWithGoogle();
+                          //     },
+                          //     style: ElevatedButton.styleFrom(
+                          //       primary: Colors.white,
+                          //       fixedSize: Size.fromHeight(50),
+                          //       shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(8),
+                          //         side: BorderSide(
+                          //           color: Colors.black,
+                          //           width: 0.5,
+                          //         ),
+                          //       ),
+                          //       elevation: 0,
+                          //     ),
+                          //     child: _isLoading_google
+                          //         ? const Center(
+                          //             child: CircularProgressIndicator(
+                          //               color: purple200,
+                          //             ),
+                          //           )
+                          //         : Row(
+                          //             mainAxisAlignment:
+                          //                 MainAxisAlignment.center,
+                          //             children: [
+                          //               // SizedBox(
+                          //               //   width: 100,
+                          //               // ),
+                          //               Image.asset(
+                          //                 "assets/images/google_icon.png",
+                          //                 width: 30,
+                          //                 height: 30,
+                          //               ),
+                          //               SizedBox(
+                          //                 width: 30,
+                          //               ),
+                          //               const Text(
+                          //                 '구글 계정으로 로그인',
+                          //                 style: TextStyle(color: Colors.black),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //   ),
+                          // ),
                           SizedBox(
                             height: 20,
                           ),
@@ -319,7 +335,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                             ),
                           ),
                           SizedBox(
-                            height: 240,
+                            height: 300,
                           ),
                         ],
                       ),

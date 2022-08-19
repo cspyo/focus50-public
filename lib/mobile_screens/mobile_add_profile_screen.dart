@@ -172,7 +172,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                               },
                               onFieldSubmitted: (text) async {
                                 await nicknameValidator();
-                                _scrollController.animateTo(130.0,
+                                _scrollController.animateTo(140.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -212,12 +212,12 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                               // onSaved: (val) {},
                               textInputAction: TextInputAction.next,
                               onTap: () {
-                                _scrollController.animateTo(130.0,
+                                _scrollController.animateTo(140.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
                               onFieldSubmitted: (text) async {
-                                _scrollController.animateTo(190.0,
+                                _scrollController.animateTo(200.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
@@ -231,7 +231,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                                 prefixIcon: Padding(
                                   padding: EdgeInsets.all(0.0),
                                   child: Icon(
-                                    Icons.email,
+                                    Icons.person,
                                     color: Colors.grey,
                                   ), // icon is 48px widget.
                                 ),
@@ -259,7 +259,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                               },
                               onSaved: (val) {},
                               onTap: () {
-                                _scrollController.animateTo(190.0,
+                                _scrollController.animateTo(200.0,
                                     duration: Duration(milliseconds: 500),
                                     curve: Curves.ease);
                               },
