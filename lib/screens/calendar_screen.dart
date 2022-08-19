@@ -69,16 +69,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(width: 210),
                     InkWell(
                       onTap: () {
                         launchUrl(toLaunch);
                       },
-                      child: Text(
-                        '더 나은 Focus50 이 되겠습니다. 설문 부탁드려요. 아이스 아메리카노 받아가세요!',
-                        style: TextStyle(color: Colors.white),
+                      child: Row(
+                        children: [
+                          Text(
+                            '더 나은 Focus50 이 되겠습니다. 아이스 아메리카노 받아가세요!  ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            '설문하러 가기',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ],
                       ),
                     ),
-                    SizedBox(width: 30),
+                    Icon(
+                      Icons.arrow_right_alt_rounded,
+                      color: Colors.white,
+                    ),
+                    SizedBox(width: 200),
                     IconButton(
                       onPressed: () {
                         setState(() {
