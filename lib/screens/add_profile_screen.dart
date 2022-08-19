@@ -200,9 +200,20 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '이름',
-                              prefixIcon: const Icon(Icons.person),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -229,9 +240,20 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '닉네임',
-                              prefixIcon: const Icon(Icons.person),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -261,9 +283,20 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                               hintText: '직업',
-                              prefixIcon: const Icon(Icons.article),
+                              hintStyle: TextStyle(
+                                color: border200,
+                              ),
+                              prefixIcon: Padding(
+                                padding: EdgeInsets.all(0.0),
+                                child: Icon(
+                                  Icons.work,
+                                  color: Colors.grey,
+                                ), // icon is 48px widget.
+                              ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.black, width: 0.5),
                               ),
                             ),
                           ),
@@ -274,7 +307,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                         // 시작하기 버튼
                         SizedBox(
                           width: 450,
-                          height: 40,
+                          height: 50,
                           child: ElevatedButton(
                             onPressed: () async {
                               await nicknameValidator();
@@ -284,6 +317,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                             },
                             style: ElevatedButton.styleFrom(
                               primary: purple300,
+                              fixedSize: Size.fromHeight(50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
                             ),
                             child: _isLoading
                                 ? const Center(

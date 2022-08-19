@@ -183,6 +183,13 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                                 hintStyle: TextStyle(
                                   color: border200,
                                 ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: BorderSide(
@@ -220,6 +227,13 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                                 hintText: '닉네임',
                                 hintStyle: TextStyle(
                                   color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.email,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
@@ -261,6 +275,13 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                                 hintText: '직업',
                                 hintStyle: TextStyle(
                                   color: border200,
+                                ),
+                                prefixIcon: Padding(
+                                  padding: EdgeInsets.all(0.0),
+                                  child: Icon(
+                                    Icons.work,
+                                    color: Colors.grey,
+                                  ), // icon is 48px widget.
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
