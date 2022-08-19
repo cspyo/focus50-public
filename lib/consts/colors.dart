@@ -10,3 +10,4 @@ const Color blackSession = const Color(0xff1A222D);
 const Color blackCustomized = Color.fromARGB(255, 147, 147, 147);
 const Color highlighterColor = Color.fromARGB(255, 229, 231, 255);
 const Color calendarBackgroundColor = Colors.white;
+const Color headerNotificationColor = Color.fromARGB(114, 106, 111, 253);
