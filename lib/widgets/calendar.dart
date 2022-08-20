@@ -28,6 +28,7 @@ class CalendarAppointment extends State<Calendar> {
 
   Map<String, UserPublicModel> users = {};
   bool isSignedUp = false;
+  int tabletBoundSize = 1200;
 
   final LOADING_RESERVE = "loading reserve";
   final LOADING_CANCEL = "loading cancel";
@@ -66,6 +67,13 @@ class CalendarAppointment extends State<Calendar> {
     int defaultPositionValue = 49;
     int currentDay = DateTime.tuesday;
     int oneBoxWidth = ((screenWidth - 489.5) / 7).round();
+    return defaultPositionValue + oneBoxWidth * (currentDay - 1);
+  }
+
+  double getCurrentDayPositionSmall(screenWidth) {
+    int defaultPositionValue = 49;
+    int currentDay = DateTime.tuesday;
+    int oneBoxWidth = ((screenWidth - defaultPositionValue) / 7).round();
     return defaultPositionValue + oneBoxWidth * (currentDay - 1);
   }
 
@@ -313,12 +321,15 @@ class CalendarAppointment extends State<Calendar> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     String? uid = _auth.currentUser?.uid;
+    bool isTabletSize = screenWidth < tabletBoundSize ? true : false;
     return Container(
-        width: screenWidth - 440,
+        width: isTabletSize ? screenWidth : screenWidth - 440,
         child: Stack(
           children: [
             Positioned(
-              left: getCurrentDayPosition(screenWidth),
+              left: isTabletSize
+                  ? getCurrentDayPositionSmall(screenWidth)
+                  : getCurrentDayPosition(screenWidth),
               top: 100,
               child: CurrentTimeIndicator(),
             ),
@@ -422,7 +433,7 @@ class CalendarAppointment extends State<Calendar> {
                       return Container(
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CircleAvatar(
                                 radius: 13,
@@ -431,10 +442,9 @@ class CalendarAppointment extends State<Calendar> {
                                   photoUrl,
                                 ),
                               ),
-                              Expanded(
+                              Flexible(
                                 child: Container(
-                                  padding: EdgeInsets.only(left: 5),
-                                  decoration: BoxDecoration(),
+                                  padding: EdgeInsets.only(left: 8),
                                   height: 30,
                                   child: Column(
                                     crossAxisAlignment:
@@ -442,28 +452,15 @@ class CalendarAppointment extends State<Calendar> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceEvenly,
                                     children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 3,
-                                          ),
-                                          Text(
-                                            nickname,
-                                            style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w500),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          ),
-                                        ],
+                                      Text(
+                                        nickname,
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500),
+                                        overflow: TextOverflow.fade,
+                                        maxLines: 1,
+                                        softWrap: false,
                                       ),
-                                      // Text(
-                                      //   job,
-                                      //   style: TextStyle(
-                                      //       fontSize: 8,
-                                      //       color: Color.fromARGB(
-                                      //           255, 83, 83, 83)),
-                                      // )
                                     ],
                                   ),
                                 ),
@@ -544,7 +541,7 @@ class CalendarAppointment extends State<Calendar> {
                                 },
                                 style: ElevatedButton.styleFrom(
                                   primary: purple300,
-                                  minimumSize: Size(40, 50),
+                                  minimumSize: Size(0, 40),
                                   side: BorderSide(
                                     width: 1.5,
                                     color: purple300,
@@ -552,6 +549,9 @@ class CalendarAppointment extends State<Calendar> {
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8)),
                                   elevation: 0,
+                                  padding: isTabletSize
+                                      ? EdgeInsets.all(10)
+                                      : EdgeInsets.all(16),
                                 ),
                                 child: Text(
                                   "예약",
@@ -575,16 +575,18 @@ class CalendarAppointment extends State<Calendar> {
                                   setState(() {}); //취소 누르고 가만히 있으면 안사라져서 추가함
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: Colors.white,
-                                  minimumSize: Size(40, 50),
-                                  side: BorderSide(
-                                    width: 1.5,
-                                    color: purple300,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                  elevation: 0,
-                                ),
+                                    primary: Colors.white,
+                                    minimumSize: Size(0, 40),
+                                    side: BorderSide(
+                                      width: 1.5,
+                                      color: purple300,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    elevation: 0,
+                                    padding: isTabletSize
+                                        ? EdgeInsets.all(10)
+                                        : EdgeInsets.all(16)),
                                 child: Text(
                                   "취소",
                                   style: TextStyle(
@@ -617,20 +619,18 @@ class CalendarAppointment extends State<Calendar> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  screenWidth > 1280
-                                      ? Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "${startTimeFormatted}~${endTimeFormatted}",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 13,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        )
-                                      : SizedBox(),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "${startTimeFormatted}~${endTimeFormatted}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
                                   Container(
                                     alignment: Alignment.centerLeft,
                                     child: Text(
@@ -692,20 +692,18 @@ class CalendarAppointment extends State<Calendar> {
                                     MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  screenWidth > 1280
-                                      ? Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "${startTimeFormatted}~${endTimeFormatted}",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 13,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        )
-                                      : SizedBox(),
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "${startTimeFormatted}~${endTimeFormatted}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 13,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ),
                                   Container(
                                     alignment: Alignment.centerLeft,
                                     width: 150,
@@ -792,12 +790,15 @@ class CalendarAppointment extends State<Calendar> {
                                     style: TextStyle(color: Colors.white),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    minimumSize: Size(40, 50),
+                                    minimumSize: Size(0, 40),
                                     primary: Colors.red,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     elevation: 0,
+                                    padding: isTabletSize
+                                        ? EdgeInsets.all(10)
+                                        : EdgeInsets.all(16),
                                   ),
                                 ),
                                 ElevatedButton(
@@ -814,7 +815,7 @@ class CalendarAppointment extends State<Calendar> {
                                     style: TextStyle(color: Colors.red),
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                    minimumSize: Size(40, 50),
+                                    minimumSize: Size(0, 40),
                                     primary: Colors.white,
                                     side: BorderSide(
                                       color: Colors.red,
@@ -824,6 +825,9 @@ class CalendarAppointment extends State<Calendar> {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     elevation: 0,
+                                    padding: isTabletSize
+                                        ? EdgeInsets.all(10)
+                                        : EdgeInsets.all(16),
                                   ),
                                 ),
                               ],

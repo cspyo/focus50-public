@@ -16,7 +16,7 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   int remainingTime = 0;
-
+  int tabletBoundSize = 1200;
   DateTime now = new DateTime.now();
 
   String fastReservation = '10시';
@@ -47,7 +47,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isTabletSize = screenWidth < 1200 ? true : false;
     return Scaffold(
         body: SingleChildScrollView(
       child: Column(//페이지 전체 구성
@@ -69,7 +70,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(width: 210),
+                    SizedBox(width: isTabletSize ? 10 : 210),
                     InkWell(
                       onTap: () {
                         launchUrl(toLaunch);
@@ -93,7 +94,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       Icons.arrow_right_alt_rounded,
                       color: Colors.white,
                     ),
-                    SizedBox(width: 200),
+                    SizedBox(width: isTabletSize ? 10 : 200),
                     IconButton(
                       onPressed: () {
                         setState(() {
@@ -114,26 +115,41 @@ class _CalendarScreenState extends State<CalendarScreen> {
         const Line(),
         Container(
           height: isNotificationOpen ? screenHeight - 125 : screenHeight - 75,
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 420,
-                height: screenHeight - 70,
-                decoration: BoxDecoration(
-                    border: Border(
-                        right: BorderSide(color: border100, width: 1.5))),
-                child: Column(
+          child: isTabletSize
+              ? Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      child: Reservation(),
+                    ),
+                    Container(
+                      height: isNotificationOpen
+                          ? screenHeight - 225
+                          : screenHeight - 175,
+                      child: Calendar(),
+                    )
+                  ],
+                )
+              : Row(
                   children: <Widget>[
-                    Reservation(),
-                    Todo(),
+                    Container(
+                      width: 420,
+                      height: screenHeight - 70,
+                      decoration: BoxDecoration(
+                          border: Border(
+                              right: BorderSide(color: border100, width: 1.5))),
+                      child: Column(
+                        children: <Widget>[
+                          Reservation(),
+                          Todo(),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: Calendar(),
+                    ),
                   ],
                 ),
-              ),
-              Container(
-                child: Calendar(),
-              ),
-            ],
-          ),
         ),
       ]),
     ));

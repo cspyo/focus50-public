@@ -11,7 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/line.dart';
 
-// ignore: use_key_in_widget_constructors
 class MobileCalendarScreen extends StatefulWidget {
   MobileCalendarScreen({Key? key}) : super(key: key);
   @override
@@ -317,7 +316,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                           child: Row(
                             children: [
                               Text(
-                                '더 나은 Focus50 이 되겠습니다.  ',
+                                '더 나은 Focus50 이 되겠습니다. ',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 12),
                               ),

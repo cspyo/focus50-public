@@ -10,12 +10,14 @@ class CurrentTimeIndicator extends StatefulWidget {
 
 class _CurrentTimeIndicatorState extends State<CurrentTimeIndicator> {
   final curretTime = DateTime.now();
+  int tabletBoundSize = 1200;
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    bool isTabletSize = screenWidth < tabletBoundSize ? true : false;
     return Container(
-      width: ((screenWidth - 489.5) / 7),
+      width: isTabletSize ? (screenWidth - 49) / 7 : (screenWidth - 489.5) / 7,
       height: 1000,
       decoration: new BoxDecoration(color: highlighterColor),
       child: Text(''),
