@@ -7,6 +7,7 @@ import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
 import 'package:get/get.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/line.dart';
@@ -40,6 +41,15 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
     host: 'forms.gle',
     path: '/3bGecKhsiAwtyk4k9',
   );
+  CalendarController calendarController = CalendarController();
+
+  // void changeVisibleDates(List<DateTime> datesList) {
+  //   setState(() {
+  //     // visibleDates = datesList;
+  //     // print(datesList);
+  //     print('success');
+  //   });
+  // }
 
   Future<void> getUserData() async {
     UserPublicModel user =
@@ -64,6 +74,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -357,8 +368,24 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                 child: MobileReservation(),
               ),
               Container(
-                child: MobileCalendar(),
-              )
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: border100)),
+                  height: isNotificationOpen
+                      ? screenHeight - 215
+                      : screenHeight - 165,
+                  child: Column(
+                    children: [
+                      // MobileCalendarHeader(
+                      //   calendarController: calendarController,
+                      //   // visibleDates: visibleDates,
+                      // ),
+                      MobileCalendar(
+                        calendarController: calendarController,
+                        isNotificationOpen: isNotificationOpen,
+                      ),
+                      // changeVisibleDates: changeVisibleDates),
+                    ],
+                  )),
             ])
           ]),
         ));
