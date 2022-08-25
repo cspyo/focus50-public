@@ -45,7 +45,6 @@ class _ReservationState extends State<Reservation> {
 
   Timer? _timer;
 
-
   void enterReservation() {
     AnalyticsMethod().logEnterSession();
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
@@ -215,7 +214,7 @@ class _ReservationState extends State<Reservation> {
 
   void disableEnter() {
     setState(() {
-      isTenMinutesLeft = false;
+      isTenMinutesLeft = true; //false로 바꿔야 함(중간평가 때문에 잠깐 풀어놓음)
     });
   }
 
