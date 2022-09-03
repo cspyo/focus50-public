@@ -50,6 +50,9 @@ class DefaultFirebaseOptions {
       messagingSenderId: \"$3\",
       projectId: \"$4\",
       authDomain: \"$5\",
-      storageBucket: \"$6\");
+      storageBucket: \"$6\",
+      measurementId: \"$7\",
+    );
 }
+
 " >> $(dirname "$0")/../lib/firebase_options.dart
