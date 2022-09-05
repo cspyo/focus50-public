@@ -30,10 +30,6 @@ class _AboutScreenState extends State<AboutScreen> {
           initialSourceType: SourceType.url,
           onWebViewCreated: (controller) {
             webviewController = controller;
-            // webviewController.loadContent(
-            //   '/about/index.html',
-            //   SourceType.url,
-            // );
           },
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
