@@ -22,7 +22,7 @@ void main() async {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
     AnalyticsMethod().logUserAgent(userAgent);
     AnalyticsMethod().setUserAgent(userAgent);
-    // smartphone
+    // smartphones
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
       isMobile = true;
     }
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp.router(
-      title: "Focus50",
+      title: "Focus50 - 스탠포드 행동설계 연구에 입각한 집중향상 캠스터디",
       debugShowCheckedModeBanner: false,
       navigatorObservers: [FirebaseAnalyticsObserver(analytics: analytics)],
       theme: ThemeData(
