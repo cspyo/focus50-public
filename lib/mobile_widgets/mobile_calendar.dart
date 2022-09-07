@@ -312,13 +312,15 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
     String? uid = _auth.currentUser?.uid;
     return Container(
       width: screenWidth - 40,
-      height:
-          widget.isNotificationOpen ? screenHeight - 227 : screenHeight - 177,
+      height: screenHeight - 177,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            color: purple300,
+            decoration: BoxDecoration(
+                color: purple300,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8), topRight: Radius.circular(8))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
