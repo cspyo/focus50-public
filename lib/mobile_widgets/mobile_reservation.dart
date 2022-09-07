@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
-import 'package:focus42/utils/utils.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -26,6 +26,7 @@ final FirebaseAuth _user = FirebaseAuth.instance;
 class _MobileReservationState extends State<MobileReservation> {
   String? partnerName = null;
   String reservationTime = '10시';
+  int tabletBoundSize = 1200;
 
   bool isTenMinutesLeft = false;
 
@@ -34,17 +35,19 @@ class _MobileReservationState extends State<MobileReservation> {
   ReservationModel? nextReservation1 = null;
   ReservationModel? nextReservation2 = null;
   DateTime? nextReservationStartTime;
-  String? nextReservationId;
+
+  late CollectionReference _reservationColRef;
+  late DocumentReference nextReservationDocRef;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   String? userUid = _user.currentUser?.uid;
-  late CollectionReference _reservationColRef;
   bool isGetReservationLoading = true;
 
   Timer? _timer;
 
   void enterReservation() {
+    AnalyticsMethod().logEnterSession();
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 
@@ -231,204 +234,194 @@ class _MobileReservationState extends State<MobileReservation> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    return isGetReservationLoading
-        ? Container(
-            margin: EdgeInsets.only(top: 32),
-            padding: EdgeInsets.all(15),
-            width: screenWidth - 40,
-            height: 120,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(width: 1.5, color: border100),
-                borderRadius: BorderRadius.all(Radius.circular(32)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    spreadRadius: 0,
-                    blurRadius: 4,
-                    offset: Offset(0, 6),
-                  ),
-                ]),
-            child: Text(
+
+    return Container(
+      height: 90,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        // border: Border(bottom: BorderSide(width: 1.5, color: border100)),
+      ),
+      child: isGetReservationLoading
+          ? Text(
               '로딩중입니다...',
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: Color.fromARGB(255, 24, 24, 24)),
-            ),
-          )
-        : nextReservationStartTime != null
-            ? Container(
-                margin: EdgeInsets.only(top: 20),
-                width: screenWidth - 50,
-                height: 120,
-                padding: EdgeInsets.only(top: 15, bottom: 12),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 1.5, color: border100),
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        spreadRadius: 0,
-                        blurRadius: 4,
-                        offset: Offset(0, 6),
-                      ),
-                    ]),
-                child: Container(
-                    // margin: EdgeInsets.only(top: 20),
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TimerCountdown(
-                          format: CountDownTimerFormat.hoursMinutesSeconds,
-                          endTime: Timestamp.fromDate(nextReservationStartTime!)
-                              .toDate(),
-                          enableDescriptions: false,
-                          timeTextStyle: TextStyle(
-                            height: 1.0,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          colonsTextStyle: TextStyle(
-                            height: 1.0,
-                            fontSize: 26,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          spacerWidth: 0,
-                        ),
-                        Text(' 남았습니다',
-                            // textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              height: 1.0,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w600,
-                            )),
-                      ],
-                    ),
-                    Container(
-                      width: screenWidth - 80,
-                      child: Container(
-                          width: (screenWidth - 80) / 2,
-                          height: 46,
-                          // margin: EdgeInsets.only(bottom: 10),
-                          child: isTenMinutesLeft && nextReservation != null
-                              ? ElevatedButton(
-                                  onPressed: () {
-                                    showSnackBar(
-                                        '현재 세션 입장은 PC에서만 가능합니다 : )', context);
-                                  },
-                                  style: ButtonStyle(
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(32.0),
-                                            side: BorderSide(
-                                                color: Colors.transparent))),
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            purple300),
-                                  ),
-                                  child: partnerName == null
-                                      ? Text('입장하기',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ))
-                                      : Text(
-                                          '$partnerName와 입장하기',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                )
-                              : TextButton(
-                                  onPressed: () {
-                                    showSnackBar(
-                                        '현재 세션 입장은 PC에서만 가능합니다 : )', context);
-                                  },
-                                  style: ButtonStyle(
-                                    shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16.0),
-                                            side: BorderSide(
-                                                color: Colors.transparent))),
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.black38),
-                                  ),
-                                  child: partnerName == null
-                                      ? Text('입장하기',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ))
-                                      : Text(
-                                          '$partnerName와 입장하기',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                )),
-                    ),
-                  ],
-                )))
-            : Container(
-                margin: EdgeInsets.only(top: 32),
-                padding: EdgeInsets.all(15),
-                width: screenWidth - 40,
-                height: 120,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 1.5, color: border100),
-                    borderRadius: BorderRadius.all(Radius.circular(32)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.25),
-                        spreadRadius: 0,
-                        blurRadius: 4,
-                        offset: Offset(0, 6),
-                      ),
-                    ]),
-                child: Center(
-                    child: userUid != null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            )
+          : nextReservationStartTime != null
+              ? Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                                Text('캘린더를 클릭해 예약해보세요!',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color:
-                                            Color.fromARGB(255, 24, 24, 24))),
-                              ])
-                        : SizedBox(
-                            height: 120,
-                            width: screenWidth - 40,
-                            child: TextButton(
-                              onPressed: () {
-                                Get.rootDelegate.toNamed(Routes.LOGIN);
-                              },
-                              child: Text('로그인이 필요합니다',
+                              TimerCountdown(
+                                format:
+                                    CountDownTimerFormat.hoursMinutesSeconds,
+                                endTime: Timestamp.fromDate(
+                                        nextReservationStartTime!)
+                                    .toDate(),
+                                enableDescriptions: false,
+                                timeTextStyle: TextStyle(
+                                  height: 1.0,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                colonsTextStyle: TextStyle(
+                                  height: 1.0,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                spacerWidth: 0,
+                              ),
+                              Text(' 남았습니다',
+                                  // textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    height: 1.0,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w600,
+                                  )),
+                            ],
+                          ),
+                          partnerName != null
+                              ? Container(
+                                  margin: EdgeInsets.only(top: 12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('$partnerName',
+                                          style: const TextStyle(
+                                            height: 1.0,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
+                                            color: purple300,
+                                          )),
+                                      Text(
+                                        '님과의 세션이 $reservationTime시에 예약되었어요!',
+                                        style: TextStyle(
+                                          height: 1.0,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.normal,
+                                          color: black100,
+                                        ),
+                                      )
+                                    ],
+                                  ))
+                              : Container(
+                                  margin: EdgeInsets.only(top: 12),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('$reservationTime',
+                                          style: const TextStyle(
+                                            height: 1.0,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.normal,
+                                            color: purple300,
+                                          )),
+                                      Text(
+                                        '시에 예약되었어요!',
+                                        style: TextStyle(
+                                          height: 1.0,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.normal,
+                                          color: black100,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                        ],
+                      ),
+                      // Container(
+                      //     width: 119,
+                      //     height: 54,
+                      //     child: isTenMinutesLeft && nextReservation != null
+                      //         ? ElevatedButton(
+                      //             onPressed: () {
+                      //               enterReservation();
+                      //             },
+                      //             style: ButtonStyle(
+                      //               shape: MaterialStateProperty.all<
+                      //                       RoundedRectangleBorder>(
+                      //                   RoundedRectangleBorder(
+                      //                       borderRadius:
+                      //                           BorderRadius.circular(16.0),
+                      //                       side: BorderSide(
+                      //                           color: Colors.transparent))),
+                      //               backgroundColor:
+                      //                   MaterialStateProperty.all<Color>(
+                      //                       purple300),
+                      //             ),
+                      //             child: Text('입장하기',
+                      //                 style: TextStyle(
+                      //                   fontSize: 20,
+                      //                   fontWeight: FontWeight.w600,
+                      //                   color: Colors.white,
+                      //                 )))
+                      //         : TextButton(
+                      //             onPressed: () {
+                      //               // enterReservation();
+                      //             },
+                      //             style: ButtonStyle(
+                      //               shape: MaterialStateProperty.all<
+                      //                       RoundedRectangleBorder>(
+                      //                   RoundedRectangleBorder(
+                      //                       borderRadius:
+                      //                           BorderRadius.circular(16.0),
+                      //                       side: BorderSide(
+                      //                           color: Colors.transparent))),
+                      //               backgroundColor:
+                      //                   MaterialStateProperty.all<Color>(
+                      //                       Colors.black38),
+                      //             ),
+                      //             child: Text('입장하기',
+                      //                 style: TextStyle(
+                      //                   fontSize: 20,
+                      //                   fontWeight: FontWeight.w600,
+                      //                   color: Colors.white,
+                      //                 )))),
+                    ],
+                  ),
+                )
+              : Container(
+                  child: userUid != null
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                              Text('예약이 없습니다',
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
                                       color: Color.fromARGB(255, 24, 24, 24))),
-                            ))));
+                              Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.normal,
+                                      color:
+                                          Color.fromARGB(105, 105, 105, 100))),
+                            ])
+                      : SizedBox(
+                          height: 80,
+                          width: 250,
+                          child: TextButton(
+                            onPressed: () {
+                              Get.rootDelegate.toNamed(Routes.LOGIN);
+                            },
+                            child: Text('로그인이 필요합니다',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromARGB(255, 24, 24, 24))),
+                          ),
+                        ),
+                ),
+    ); //모바일
   }
 }
