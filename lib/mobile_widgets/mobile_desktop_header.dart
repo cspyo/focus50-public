@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
@@ -61,6 +62,7 @@ class _MobileDesktopHeaderState extends State<MobileDesktopHeader> {
                         setState(() {
                           _authMethods.signOut();
                         });
+                        AnalyticsMethod().mobileLogSignOut();
                         Get.rootDelegate.toNamed(Routes.LOGIN);
                       },
                       child: const Text(

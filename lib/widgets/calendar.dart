@@ -205,12 +205,14 @@ class CalendarAppointment extends State<Calendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
+      AnalyticsMethod().logCalendarTapWithoutSignIn();
       Get.rootDelegate.toNamed(Routes.LOGIN);
       return;
     }
 
     // 프로필 작성이 안되어 있으면 add profile 페이지로
     if (!isSignedUp) {
+      AnalyticsMethod().logCalendarTapWithoutProfile();
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
       return;
     }
@@ -218,6 +220,7 @@ class CalendarAppointment extends State<Calendar> {
     // calendar cell 이 눌렸을 때
     if (calendarTapDetails.targetElement == CalendarElement.calendarCell) {
       if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+        AnalyticsMethod().logCalendarTapDateBefore();
         return;
       }
 
@@ -531,6 +534,7 @@ class CalendarAppointment extends State<Calendar> {
                                   setState(() {
                                     appointment.subject = LOADING_RESERVE;
                                   });
+                                  AnalyticsMethod().logMakeReservationOnEmpty();
 
                                   try {
                                     await MatchingMethods().matchRoom(

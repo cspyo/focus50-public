@@ -193,12 +193,14 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
+      AnalyticsMethod().mobileLogCalendarTapWithoutSignIn();
       Get.rootDelegate.toNamed(Routes.LOGIN);
       return;
     }
 
     // 프로필 작성이 안되어 있으면 add profile 페이지로
     if (!isSignedUp) {
+      AnalyticsMethod().mobileLogCalendarTapWithoutProfile();
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
       return;
     }
@@ -206,6 +208,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
     // calendar cell 이 눌렸을 때
     if (calendarTapDetails.targetElement == CalendarElement.calendarCell) {
       if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+        AnalyticsMethod().mobileLogCalendarTapDateBefore();
         return;
       }
 
@@ -581,7 +584,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                   setState(() {
                                     appointment.subject = LOADING_RESERVE;
                                   });
-
+                                  AnalyticsMethod()
+                                      .mobileLogMakeReservationOnEmpty();
                                   try {
                                     await MatchingMethods().matchRoom(
                                         startTime: startTime, endTime: endTime);
@@ -828,7 +832,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                         appointment.subject = MATCHED;
                                       }
                                     }
-                                    AnalyticsMethod().logCancelReservation();
+                                    AnalyticsMethod()
+                                        .mobileLogCancelReservation();
                                   },
                                   child: Text(
                                     "삭제",

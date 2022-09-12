@@ -47,7 +47,7 @@ class _MobileReservationState extends State<MobileReservation> {
   Timer? _timer;
 
   void enterReservation() {
-    AnalyticsMethod().logEnterSession();
+    AnalyticsMethod().mobileLogEnterSession();
     Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation!);
   }
 

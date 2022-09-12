@@ -4,6 +4,7 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/line.dart';
 import 'package:get/get.dart';
@@ -199,6 +200,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen> {
                             setState(() {
                               _authMethods.signOut();
                             });
+                            AnalyticsMethod().mobileLogSignOut();
                             Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
                           child: const Text(
