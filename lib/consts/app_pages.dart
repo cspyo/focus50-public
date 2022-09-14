@@ -1,4 +1,5 @@
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/mobile_screens/mobile_about_screen.dart';
 // import 'package:focus42/m.screens/m.profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_add_profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
@@ -51,7 +52,7 @@ abstract class AppPages {
   static final mobilePages = [
     GetPage(
       name: Routes.ABOUT,
-      page: () => MobileCalendarScreen(),
+      page: () => MobileAboutScreen(),
     ),
     GetPage(
       name: Routes.LOGIN,
