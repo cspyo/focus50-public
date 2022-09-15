@@ -8,8 +8,10 @@ import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:universal_html/html.dart' as html;
 
 import '../consts/colors.dart';
 
@@ -43,6 +45,7 @@ class _MobileReservationState extends State<MobileReservation> {
 
   String? userUid = _user.currentUser?.uid;
   bool isGetReservationLoading = true;
+  String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
 
   Timer? _timer;
 
@@ -240,7 +243,6 @@ class _MobileReservationState extends State<MobileReservation> {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: Colors.white,
-        // border: Border(bottom: BorderSide(width: 1.5, color: border100)),
       ),
       child: isGetReservationLoading
           ? Text(
@@ -252,141 +254,153 @@ class _MobileReservationState extends State<MobileReservation> {
             )
           : nextReservationStartTime != null
               ? Container(
-                  child: Row(
+                  width: screenWidth - 40,
+                  height: 80,
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TimerCountdown(
-                                format:
-                                    CountDownTimerFormat.hoursMinutesSeconds,
-                                endTime: Timestamp.fromDate(
-                                        nextReservationStartTime!)
+                          TimerCountdown(
+                            format: CountDownTimerFormat.hoursMinutesSeconds,
+                            endTime:
+                                Timestamp.fromDate(nextReservationStartTime!)
                                     .toDate(),
-                                enableDescriptions: false,
-                                timeTextStyle: TextStyle(
-                                  height: 1.0,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                colonsTextStyle: TextStyle(
-                                  height: 1.0,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                spacerWidth: 0,
-                              ),
-                              Text(' 남았습니다',
-                                  // textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    height: 1.0,
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w600,
-                                  )),
-                            ],
+                            enableDescriptions: false,
+                            timeTextStyle: TextStyle(
+                              height: 1.0,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            colonsTextStyle: TextStyle(
+                              height: 1.0,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            spacerWidth: 0,
                           ),
-                          partnerName != null
-                              ? Container(
-                                  margin: EdgeInsets.only(top: 12),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('$partnerName',
-                                          style: const TextStyle(
-                                            height: 1.0,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.normal,
-                                            color: purple300,
-                                          )),
-                                      Text(
-                                        '님과의 세션이 $reservationTime시에 예약되었어요!',
-                                        style: TextStyle(
-                                          height: 1.0,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.normal,
-                                          color: black100,
-                                        ),
-                                      )
-                                    ],
-                                  ))
-                              : Container(
-                                  margin: EdgeInsets.only(top: 12),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('$reservationTime',
-                                          style: const TextStyle(
-                                            height: 1.0,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.normal,
-                                            color: purple300,
-                                          )),
-                                      Text(
-                                        '시에 예약되었어요!',
-                                        style: TextStyle(
-                                          height: 1.0,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.normal,
-                                          color: black100,
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                          Text(' 남았습니다',
+                              // textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                height: 1.0,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                              )),
                         ],
                       ),
-                      // Container(
-                      //     width: 119,
-                      //     height: 54,
-                      //     child: isTenMinutesLeft && nextReservation != null
-                      //         ? ElevatedButton(
-                      //             onPressed: () {
-                      //               enterReservation();
-                      //             },
-                      //             style: ButtonStyle(
-                      //               shape: MaterialStateProperty.all<
-                      //                       RoundedRectangleBorder>(
-                      //                   RoundedRectangleBorder(
-                      //                       borderRadius:
-                      //                           BorderRadius.circular(16.0),
-                      //                       side: BorderSide(
-                      //                           color: Colors.transparent))),
-                      //               backgroundColor:
-                      //                   MaterialStateProperty.all<Color>(
-                      //                       purple300),
-                      //             ),
-                      //             child: Text('입장하기',
-                      //                 style: TextStyle(
-                      //                   fontSize: 20,
-                      //                   fontWeight: FontWeight.w600,
-                      //                   color: Colors.white,
-                      //                 )))
-                      //         : TextButton(
-                      //             onPressed: () {
-                      //               // enterReservation();
-                      //             },
-                      //             style: ButtonStyle(
-                      //               shape: MaterialStateProperty.all<
-                      //                       RoundedRectangleBorder>(
-                      //                   RoundedRectangleBorder(
-                      //                       borderRadius:
-                      //                           BorderRadius.circular(16.0),
-                      //                       side: BorderSide(
-                      //                           color: Colors.transparent))),
-                      //               backgroundColor:
-                      //                   MaterialStateProperty.all<Color>(
-                      //                       Colors.black38),
-                      //             ),
-                      //             child: Text('입장하기',
-                      //                 style: TextStyle(
-                      //                   fontSize: 20,
-                      //                   fontWeight: FontWeight.w600,
-                      //                   color: Colors.white,
-                      //                 )))),
+                      Container(
+                        width: screenWidth - 160,
+                        height: 36,
+                        child: isTenMinutesLeft && nextReservation != null
+                            ? TextButton(
+                                onPressed: () {
+                                  if (userAgent.contains('android')) {
+                                    enterReservation();
+                                  } else {
+                                    showSnackBar(
+                                      '세션 입장은 안드로이드 및 PC 브라우저만 지원하고 있습니다 : )',
+                                      context,
+                                    );
+                                  }
+                                },
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          side: BorderSide(
+                                              color: Colors.transparent))),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          purple300),
+                                ),
+                                child: partnerName != null
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '$partnerName',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            '님과 입장하기',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        '입장하기',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              )
+                            : TextButton(
+                                onPressed: () {
+                                  // enterReservation();
+                                },
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12.0),
+                                          side: BorderSide(
+                                              color: Colors.transparent))),
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.black38),
+                                ),
+                                child: partnerName != null
+                                    ? Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            '$partnerName',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          Text(
+                                            '님과 입장하기',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(
+                                        '입장하기',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                              ),
+                      ),
                     ],
                   ),
                 )

@@ -191,8 +191,8 @@ class CalendarAppointment extends State<Calendar> {
           }
         }
       }
+      setState(() {});
     });
-    setState(() {});
   }
 
   _DataSource _getDataSource() {
@@ -317,6 +317,7 @@ class CalendarAppointment extends State<Calendar> {
               toFirestore: (ReservationModel reservationModel, _) =>
                   reservationModel.toFirestore(),
             );
+
     putCalendarData();
   }
 
