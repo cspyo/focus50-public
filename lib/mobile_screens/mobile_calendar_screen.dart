@@ -6,6 +6,7 @@ import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -233,6 +234,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                             setState(() {
                               _authMethods.signOut();
                             });
+                            AnalyticsMethod().mobileLogSignOut();
                             Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
                           child: const Text(

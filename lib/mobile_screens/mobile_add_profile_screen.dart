@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -54,7 +55,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
         file: _image);
 
     Get.rootDelegate.toNamed(Routes.CALENDAR);
-
+    AnalyticsMethod().mobileLogCreateProfile();
     setState(() {
       _isLoading = false;
     });

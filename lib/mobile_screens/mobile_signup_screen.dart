@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
@@ -53,6 +54,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
     if (res == EMAIL_ALREADY_IN_USE) {
       showSnackBar("이미 존재하는 이메일입니다.", context);
     } else if (res == SUCCESS) {
+      AnalyticsMethod().mobileLogSignUp("Email");
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     } else {
       showSnackBar(res, context);

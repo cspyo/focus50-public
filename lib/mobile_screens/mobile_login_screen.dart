@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
@@ -55,8 +56,11 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
     } else if (res == WRONG_PASSWORD) {
       showSnackBar("비밀번호가 틀렸습니다.", context);
     } else if (res == NOT_CREATED_PROFILE) {
+      AnalyticsMethod().mobileLogLogin("Email");
       Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
+      AnalyticsMethod().mobileLogLogin("Email");
+      AuthMethods().updateLastLogin();
       Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
