@@ -179,8 +179,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
           }
         }
       }
+      setState(() {});
     });
-    setState(() {});
   }
 
   _DataSource _getDataSource() {
