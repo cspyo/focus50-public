@@ -6,12 +6,12 @@ import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../widgets/line.dart';
 
-// ignore: use_key_in_widget_constructors
 class MobileCalendarScreen extends StatefulWidget {
   MobileCalendarScreen({Key? key}) : super(key: key);
   @override
@@ -40,6 +40,15 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
     host: 'forms.gle',
     path: '/3bGecKhsiAwtyk4k9',
   );
+  CalendarController calendarController = CalendarController();
+
+  // void changeVisibleDates(List<DateTime> datesList) {
+  //   setState(() {
+  //     // visibleDates = datesList;
+  //     // print(datesList);
+  //     print('success');
+  //   });
+  // }
 
   Future<void> getUserData() async {
     UserPublicModel user =
@@ -64,6 +73,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -224,6 +234,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                             setState(() {
                               _authMethods.signOut();
                             });
+                            AnalyticsMethod().mobileLogSignOut();
                             Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
                           child: const Text(
@@ -292,73 +303,87 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
           child: Column(//페이지 전체 구성
               children: <Widget>[
             const Line(),
-            isNotificationOpen
-                ? Container(
-                    height: 50,
-                    padding: EdgeInsets.only(left: 30, right: 30),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Color(0xff5E88FF),
-                          Color(0xff8465FF),
-                        ],
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            launchUrl(toLaunch);
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                '더 나은 Focus50 이 되겠습니다.  ',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                              Text(
-                                '설문하러 가기',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700),
-                              )
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_right_alt_rounded,
-                          color: Colors.white,
-                        ),
-                        SizedBox(width: 20),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isNotificationOpen = false;
-                            });
-                          },
-                          hoverColor: Colors.transparent,
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.white,
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                : SizedBox(),
+            // isNotificationOpen
+            //     ? Container(
+            //         height: 50,
+            //         padding: EdgeInsets.only(left: 30, right: 30),
+            //         width: double.infinity,
+            //         decoration: BoxDecoration(
+            //           gradient: LinearGradient(
+            //             begin: Alignment.centerLeft,
+            //             end: Alignment.centerRight,
+            //             colors: [
+            //               Color(0xff5E88FF),
+            //               Color(0xff8465FF),
+            //             ],
+            //           ),
+            //         ),
+            //         child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             InkWell(
+            //               onTap: () {
+            //                 launchUrl(toLaunch);
+            //               },
+            //               child: Row(
+            //                 children: [
+            //                   Text(
+            //                     '더 나은 Focus50 이 되겠습니다. ',
+            //                     style: TextStyle(
+            //                         color: Colors.white, fontSize: 12),
+            //                   ),
+            //                   Text(
+            //                     '설문하러 가기',
+            //                     style: TextStyle(
+            //                         color: Colors.white,
+            //                         fontSize: 12,
+            //                         fontWeight: FontWeight.w700),
+            //                   )
+            //                 ],
+            //               ),
+            //             ),
+            //             Icon(
+            //               Icons.arrow_right_alt_rounded,
+            //               color: Colors.white,
+            //             ),
+            //             SizedBox(width: 20),
+            //             IconButton(
+            //               onPressed: () {
+            //                 setState(() {
+            //                   isNotificationOpen = false;
+            //                 });
+            //               },
+            //               hoverColor: Colors.transparent,
+            //               icon: Icon(
+            //                 Icons.close,
+            //                 color: Colors.white,
+            //               ),
+            //             )
+            //           ],
+            //         ),
+            //       )
+            //     : SizedBox(),
             Column(children: <Widget>[
               Container(
                 child: MobileReservation(),
               ),
               Container(
-                child: MobileCalendar(),
-              )
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: border100)),
+                  height: screenHeight - 165,
+                  child: Column(
+                    children: [
+                      // MobileCalendarHeader(
+                      //   calendarController: calendarController,
+                      //   // visibleDates: visibleDates,
+                      // ),
+                      MobileCalendar(
+                        calendarController: calendarController,
+                        isNotificationOpen: isNotificationOpen,
+                      ),
+                      // changeVisibleDates: changeVisibleDates),
+                    ],
+                  )),
             ])
           ]),
         ));

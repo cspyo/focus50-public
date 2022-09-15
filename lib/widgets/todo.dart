@@ -54,9 +54,9 @@ class TodoState extends State<Todo> {
     return StreamBuilder<QuerySnapshot>(
       stream: _myTodoColRef,
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (!snapshot.hasData) {
-          return Text('');
-        }
+        // if (!snapshot.hasData) {
+        //   return Text('');
+        // }
 
         if (snapshot.hasError) {
           var logger = Logger();

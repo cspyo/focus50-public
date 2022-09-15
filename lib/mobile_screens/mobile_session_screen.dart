@@ -7,6 +7,7 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/signaling.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
 import 'package:focus42/widgets/todo_session_ui.dart';
@@ -183,6 +184,8 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                                           setState(() {
                                             isCamOn = false;
                                           });
+                                          AnalyticsMethod()
+                                              .mobileLogCameraOff();
                                         },
                                       ),
                                     )
@@ -199,6 +202,7 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                                           setState(() {
                                             isCamOn = true;
                                           });
+                                          AnalyticsMethod().mobileLogCameraOn();
                                         },
                                       ),
                                     ),
@@ -219,6 +223,7 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                                           setState(() {
                                             isMicOn = false;
                                           });
+                                          AnalyticsMethod().mobileLogMicOff();
                                         },
                                       ),
                                     )
@@ -235,6 +240,7 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                                           setState(() {
                                             isMicOn = true;
                                           });
+                                          AnalyticsMethod().mobileLogMicOn();
                                         },
                                       ),
                                     ),
@@ -276,6 +282,8 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                                               onPressed: () {
                                                 Get.rootDelegate
                                                     .toNamed(Routes.CALENDAR);
+                                                AnalyticsMethod()
+                                                    .mobileLogPressExitButton();
                                               },
                                             ),
                                             TextButton(

@@ -15,6 +15,19 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import '../models/reservation_model.dart';
 
 class MobileCalendar extends StatefulWidget {
+  MobileCalendar({
+    Key? key,
+    required this.calendarController,
+    required this.isNotificationOpen,
+    // required this.changeVisibleDates,
+  }) : super(key: key);
+  CalendarController calendarController;
+  bool isNotificationOpen;
+  // Function(List<DateTime>) changeVisibleDates;
+  List<DateTime> visibleDates = [
+    DateTime.now(),
+  ];
+
   @override
   MobileCalendarAppointment createState() => MobileCalendarAppointment();
 }
@@ -41,7 +54,6 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
 
   late CollectionReference _reservationColRef;
 
-  CalendarController _calendarController = CalendarController();
   CalendarDetails? details;
 
   List<Appointment> appointments = <Appointment>[];
@@ -167,8 +179,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
           }
         }
       }
+      setState(() {});
     });
-    setState(() {});
   }
 
   _DataSource _getDataSource() {
@@ -181,12 +193,14 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
+      AnalyticsMethod().mobileLogCalendarTapWithoutSignIn();
       Get.rootDelegate.toNamed(Routes.LOGIN);
       return;
     }
 
     // 프로필 작성이 안되어 있으면 add profile 페이지로
     if (!isSignedUp) {
+      AnalyticsMethod().mobileLogCalendarTapWithoutProfile();
       Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
       return;
     }
@@ -194,6 +208,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
     // calendar cell 이 눌렸을 때
     if (calendarTapDetails.targetElement == CalendarElement.calendarCell) {
       if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+        AnalyticsMethod().mobileLogCalendarTapDateBefore();
         return;
       }
 
@@ -228,8 +243,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
 
   // 캘린더 안에서의 hover action
   void onHover(PointerEvent event) {
-    details =
-        _calendarController.getCalendarDetailsAtOffset!(event.localPosition);
+    details = widget
+        .calendarController.getCalendarDetailsAtOffset!(event.localPosition);
 
     if (details != null) {
       onHoverRegions.clear();
@@ -299,17 +314,56 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
     double screenHeight = MediaQuery.of(context).size.height;
     String? uid = _auth.currentUser?.uid;
     return Container(
-        width: screenWidth - 40,
-        height: screenHeight - 210,
-        margin: EdgeInsets.only(
-          top: 10,
-        ),
-        padding: EdgeInsets.only(right: 5),
-        child: Stack(
-          children: [
-            MouseRegion(
+      width: screenWidth - 40,
+      height: screenHeight - 177,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+                color: purple300,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      widget.calendarController.backward!();
+                    });
+                  },
+                ),
+                Text(
+                  DateFormat.MMMd().format(widget.visibleDates.first),
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      widget.calendarController.forward!();
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: MouseRegion(
               cursor: SystemMouseCursors.click,
-              onHover: onHover,
+              // onHover: onHover,
               onExit: onExit,
               child: SfCalendarTheme(
                 data: SfCalendarThemeData(
@@ -317,7 +371,7 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                   selectionBorderColor: Colors.white,
                 ),
                 child: SfCalendar(
-                  controller: _calendarController,
+                  controller: widget.calendarController,
                   dataSource: _getDataSource(),
                   // 기본 캘린더 경계선
                   cellBorderColor: Colors.grey.withOpacity(0.4),
@@ -326,24 +380,38 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                     border: Border.all(color: Colors.transparent),
                     color: Colors.transparent,
                   ),
-                  viewHeaderHeight: 100,
+                  viewHeaderHeight: 0,
                   headerHeight: 0,
+                  onViewChanged: (ViewChangedDetails details) {
+                    widget.visibleDates = details.visibleDates;
+                  },
+                  // headerDateFormat: 'MMMd',
+                  // headerStyle: CalendarHeaderStyle(
+                  //     textAlign: TextAlign.center,
+                  //     backgroundColor: Colors.transparent,
+                  //     textStyle: TextStyle(
+                  //         fontSize: 25,
+                  //         fontStyle: FontStyle.normal,
+                  //         letterSpacing: 5,
+                  //         color: Color(0xFFff5eaea),
+                  //         fontWeight: FontWeight.w500)),
                   timeSlotViewSettings: TimeSlotViewSettings(
                       dayFormat: 'EEE',
                       timeIntervalHeight: 40,
                       timeIntervalWidth: -2,
                       timeInterval: Duration(minutes: 30),
                       timeFormat: 'HH:mm'),
-                  viewHeaderStyle: ViewHeaderStyle(
-                      backgroundColor: calendarBackgroundColor,
-                      dateTextStyle: TextStyle(
-                          fontSize: 26,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500),
-                      dayTextStyle: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400)),
+                  // viewHeaderStyle: ViewHeaderStyle(
+                  //     backgroundColor: calendarBackgroundColor,
+                  //     dateTextStyle: TextStyle(
+                  //         fontSize: 26,
+                  //         color: Colors.black,
+                  //         fontWeight: FontWeight.w500),
+                  //     dayTextStyle: TextStyle(
+                  //         fontSize: 15,
+                  //         color: Colors.black,
+                  //         fontWeight: FontWeight.w400)),
+
                   onTap: calendarTapped,
                   view: CalendarView.day,
                   monthViewSettings: MonthViewSettings(showAgenda: true),
@@ -518,7 +586,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                   setState(() {
                                     appointment.subject = LOADING_RESERVE;
                                   });
-
+                                  AnalyticsMethod()
+                                      .mobileLogMakeReservationOnEmpty();
                                   try {
                                     await MatchingMethods().matchRoom(
                                         startTime: startTime, endTime: endTime);
@@ -765,7 +834,8 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                                         appointment.subject = MATCHED;
                                       }
                                     }
-                                    AnalyticsMethod().logCancelReservation();
+                                    AnalyticsMethod()
+                                        .mobileLogCancelReservation();
                                   },
                                   child: Text(
                                     "삭제",
@@ -816,8 +886,10 @@ class MobileCalendarAppointment extends State<MobileCalendar> {
                 ),
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }
 
