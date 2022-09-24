@@ -1,72 +1,75 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/top_level_providers.dart';
+import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webviewx/webviewx.dart';
 
-// ignore: use_key_in_widget_constructors
-class MobileAboutScreen extends StatefulWidget {
+class MobileAboutScreen extends ConsumerStatefulWidget {
   MobileAboutScreen({Key? key}) : super(key: key);
   @override
-  State<MobileAboutScreen> createState() => _MobileAboutScreenState();
+  _MobileAboutScreenState createState() => _MobileAboutScreenState();
 }
 
-class _MobileAboutScreenState extends State<MobileAboutScreen>
+class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
     with TickerProviderStateMixin {
-  int remainingTime = 0;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  late WebViewXController webviewController;
-
-  DateTime now = new DateTime.now();
-
-  String fastReservation = '10시';
-
-  DateTime fastestReservation =
-      new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
-  final _authMethods = new AuthMethods();
-  bool isUserDifferentImg = false;
+  bool getUserInfo = false;
   String userPhotoUrl =
-      'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3';
+      'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
   String userNickname = '';
   String userJob = '';
 
-  getUserData() async {
-    UserPublicModel user =
-        await AuthMethods().getUserPublic(_auth.currentUser!.uid);
-    userNickname = user.nickname!;
-    userJob = user.job!;
-    setState(() {
-      if (userPhotoUrl != user.photoUrl) {
-        userPhotoUrl = user.photoUrl!;
-        isUserDifferentImg = true;
-      } else {
-        isUserDifferentImg = false;
-      }
-    });
-  }
+  late AnimationController _controller;
+  double wavesStartPoint = 0.0;
+  List<double> wavesEndPoints = [2.5, -2, 2.2];
 
-  Animation<double> spinAnimation(int seconds, bool reverse) {
-    AnimationController _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: seconds))
-          ..repeat(reverse: reverse);
-    return CurvedAnimation(parent: _controller, curve: Curves.linear);
+  Future<void> getUserData() async {
+    final usersNotifier = ref.read(usersProvider.notifier);
+    final database = ref.read(databaseProvider);
+    final auth = ref.read(firebaseAuthProvider);
+    final uid = auth.currentUser?.uid;
+    if (uid != null) {
+      if (!usersNotifier.containsKey(uid)) {
+        UserPublicModel user = await database.getUserPublic(othersUid: uid);
+        usersNotifier.addAll({uid: user});
+      }
+      final users = ref.read(usersProvider);
+      userPhotoUrl = users[uid]!.photoUrl!;
+      userNickname = users[uid]!.nickname!;
+      userJob = users[uid]!.job!;
+      setState(() {
+        getUserInfo = true;
+      });
+    }
   }
 
   @override
   void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: Duration(seconds: 20))
+          ..repeat();
     getUserData();
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    final authState = ref.watch(authStateChangesProvider).asData?.value;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -103,7 +106,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
           ),
           SizedBox(
               height: 60,
-              child: isUserDifferentImg
+              child: getUserInfo
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -189,7 +192,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
           SizedBox(
             height: 20,
           ),
-          (_auth.currentUser != null)
+          (authState != null)
               ? SizedBox(
                   height: 40,
                   child: ElevatedButton(
@@ -201,7 +204,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
                     ),
                     onPressed: () {
                       setState(() {
-                        _authMethods.signOut();
+                        AuthMethods().signOut();
                       });
                       Get.rootDelegate.toNamed(Routes.LOGIN);
                     },
@@ -238,7 +241,7 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
           SizedBox(
             height: 10,
           ),
-          (_auth.currentUser != null)
+          (authState != null)
               ? Container()
               : SizedBox(
                   height: 40,
@@ -368,7 +371,8 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
                 Positioned(
                   bottom: -screenWidth * 0.8,
                   child: RotationTransition(
-                    turns: spinAnimation(8, true),
+                    turns: Tween(begin: wavesStartPoint, end: wavesEndPoints[0])
+                        .animate(_controller),
                     child: Container(
                       width: screenWidth,
                       height: screenWidth,
@@ -384,7 +388,8 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
                   bottom: -screenWidth * 0.5,
                   left: -screenWidth * 0.3,
                   child: RotationTransition(
-                    turns: spinAnimation(4, false),
+                    turns: Tween(begin: wavesStartPoint, end: wavesEndPoints[1])
+                        .animate(_controller),
                     child: Container(
                       width: screenWidth * 0.7,
                       height: screenWidth * 0.7,
@@ -400,7 +405,8 @@ class _MobileAboutScreenState extends State<MobileAboutScreen>
                   bottom: -screenWidth * 0.6,
                   right: -screenWidth * 0.4,
                   child: RotationTransition(
-                    turns: spinAnimation(7, false),
+                    turns: Tween(begin: wavesStartPoint, end: wavesEndPoints[2])
+                        .animate(_controller),
                     child: Container(
                       width: screenWidth * 0.8,
                       height: screenWidth * 0.8,

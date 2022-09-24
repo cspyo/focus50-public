@@ -16,7 +16,7 @@ class AuthMethods {
     DocumentSnapshot<Map<String, dynamic>> publicDocSnapshot =
         await _firestore.collection('users').doc(uid).get();
 
-    return UserPublicModel.fromFirestore(publicDocSnapshot, null);
+    return UserPublicModel.fromMap(publicDocSnapshot, null);
   }
 
   // Private 유저 정보 가져오기
@@ -30,16 +30,16 @@ class AuthMethods {
         .doc(currentUser.uid)
         .get();
 
-    return UserPrivateModel.fromFirestore(privateDocSnapshot, null);
+    return UserPrivateModel.fromMap(privateDocSnapshot, null);
   }
 
   // UserPublicModel Collection Reference 가져오기
   CollectionReference getUserPublicColRef() {
     final userPublicColRef =
         _firestore.collection('users').withConverter<UserPublicModel>(
-              fromFirestore: UserPublicModel.fromFirestore,
+              fromFirestore: UserPublicModel.fromMap,
               toFirestore: (UserPublicModel userPublicModel, _) =>
-                  userPublicModel.toFirestore(),
+                  userPublicModel.toMap(),
             );
     return userPublicColRef;
   }
@@ -51,9 +51,9 @@ class AuthMethods {
         .doc(_auth.currentUser!.uid)
         .collection('private')
         .withConverter<UserPrivateModel>(
-          fromFirestore: UserPrivateModel.fromFirestore,
+          fromFirestore: UserPrivateModel.fromMap,
           toFirestore: (UserPrivateModel userPrivateModel, _) =>
-              userPrivateModel.toFirestore(),
+              userPrivateModel.toMap(),
         );
     return userPrivateColRef;
   }
@@ -116,7 +116,7 @@ class AuthMethods {
             .doc(uid)
             .collection('private')
             .doc(uid)
-            .set(userPrivateModel.toFirestore());
+            .set(userPrivateModel.toMap());
       }
     });
   }
@@ -152,7 +152,7 @@ class AuthMethods {
         email: existingData?["email"],
         phoneNumber: null,
       );
-      await userPrivateColRef.doc(uid).set(userPrivateModel.toFirestore());
+      await userPrivateColRef.doc(uid).set(userPrivateModel.toMap());
     }
   }
 
@@ -165,7 +165,7 @@ class AuthMethods {
     var userPublicColRef = getUserPublicColRef();
     await userPublicColRef
         .doc(_auth.currentUser!.uid)
-        .update(userPublicModel.toFirestore());
+        .update(userPublicModel.toMap());
   }
 
   // 로그인 (email and password)
