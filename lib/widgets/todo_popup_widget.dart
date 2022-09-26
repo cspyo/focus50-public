@@ -147,7 +147,7 @@ class TodoPopupState extends State<TodoPopup> {
                         createdDate: Timestamp.fromDate(element.createdDate!),
                         userUid: element.userUid!,
                         docId: element.pk!,
-                        currentSessionId: session.pk!,
+                        currentSessionId: session.id!,
                         assignedSessionId: element.assignedSessionId,
                       ))
                   .whereType<Widget>()

@@ -99,9 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       updatedDate: DateTime.now(),
     );
 
-    await _userPublicColRef
-        .doc(_auth.currentUser!.uid)
-        .update(user.toFirestore());
+    await _userPublicColRef.doc(_auth.currentUser!.uid).update(user.toMap());
 
     showSnackBar("업데이트 완료", context);
 

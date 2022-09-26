@@ -17,7 +17,7 @@ class UserPublicModel {
     this.lastLogin,
   });
 
-  factory UserPublicModel.fromFirestore(
+  factory UserPublicModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
@@ -46,7 +46,7 @@ class UserPublicModel {
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       if (photoUrl != null) "photoUrl": photoUrl,
       if (nickname != null) "nickname": nickname,

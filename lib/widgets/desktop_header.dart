@@ -1,25 +1,19 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
-class DesktopHeader extends StatefulWidget {
+class DesktopHeader extends ConsumerWidget {
   DesktopHeader({Key? key}) : super(key: key);
 
   @override
-  State<DesktopHeader> createState() => _DesktopHeaderState();
-}
-
-class _DesktopHeaderState extends State<DesktopHeader> {
-  final _auth = FirebaseAuth.instance;
-  final _authMethods = new AuthMethods();
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _authState = ref.watch(authStateChangesProvider).asData?.value;
     return // 데스크탑 헤더
         Container(
       padding: const EdgeInsets.only(top: 15, bottom: 15, left: 25, right: 25),
@@ -53,15 +47,13 @@ class _DesktopHeaderState extends State<DesktopHeader> {
               //             style: TextStyle(fontSize: 17, color: Colors.black)))
               //     : Container(),
               // SizedBox(width: 10),
-              (_auth.currentUser != null)
+              (_authState != null)
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: purple300,
                       ),
                       onPressed: () {
-                        setState(() {
-                          _authMethods.signOut();
-                        });
+                        AuthMethods().signOut();
                         AnalyticsMethod().logSignOut();
                         Get.rootDelegate.toNamed(Routes.LOGIN);
                       },
@@ -85,8 +77,8 @@ class _DesktopHeaderState extends State<DesktopHeader> {
                           fontWeight: FontWeight.bold,
                         ),
                       )),
-              (_auth.currentUser != null) ? Container() : SizedBox(width: 20),
-              (_auth.currentUser != null)
+              (_authState != null) ? Container() : SizedBox(width: 20),
+              (_authState != null)
                   ? Container()
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(

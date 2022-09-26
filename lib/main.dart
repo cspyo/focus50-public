@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/app_pages.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
@@ -29,17 +31,19 @@ void main() async {
     await FirebaseAuth.instance.authStateChanges().first;
   }
   setPathUrlStrategy();
-  runApp(MyApp(isMobile));
+  runApp(ProviderScope(child: MyApp(isMobile)));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   // This widget is the root of your application.
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   bool isMobile = false;
   MyApp(this.isMobile);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAuth = ref.watch(firebaseAuthProvider);
+
     return GetMaterialApp.router(
       title: "Focus50 - 스탠포드 행동설계 연구에 입각한 집중향상 캠스터디",
       debugShowCheckedModeBanner: false,

@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/signaling.dart';
 import 'package:focus42/widgets/countdown_timer_widget.dart';
@@ -28,7 +30,7 @@ class SessionScreen extends StatelessWidget {
   }
 }
 
-class SessionPage extends StatefulWidget {
+class SessionPage extends ConsumerStatefulWidget {
   final ReservationModel session;
   SessionPage({Key? key, required this.session}) : super(key: key);
 
@@ -36,7 +38,7 @@ class SessionPage extends StatefulWidget {
   _SessionPageState createState() => _SessionPageState(session: session);
 }
 
-class _SessionPageState extends State<SessionPage> {
+class _SessionPageState extends ConsumerState<SessionPage> {
   final _formKey = GlobalKey<FormState>();
   Signaling signaling = Signaling();
   late RTCVideoRenderer _localRenderer;
@@ -65,8 +67,9 @@ class _SessionPageState extends State<SessionPage> {
     _remoteRenderer = RTCVideoRenderer();
     _localRenderer.initialize().then((value) {
       _remoteRenderer.initialize().then((value) {
-        MatchingMethods()
-            .enterRoom(session.pk!, signaling, _localRenderer, _remoteRenderer);
+        final database = ref.read(databaseProvider);
+        MatchingMethods(database: database)
+            .enterRoom(session.id!, signaling, _localRenderer, _remoteRenderer);
       });
     });
 
@@ -79,7 +82,7 @@ class _SessionPageState extends State<SessionPage> {
     // myTodoColRef
     _myTodoColRef = _todoColRef
         .where('userUid', isEqualTo: _user.currentUser?.uid)
-        .where('assignedSessionId', isEqualTo: session.pk!)
+        .where('assignedSessionId', isEqualTo: session.id!)
         .orderBy('completedDate')
         .orderBy('modifiedDate', descending: true)
         .orderBy('createdDate', descending: true)
@@ -415,7 +418,7 @@ class _SessionPageState extends State<SessionPage> {
                   createdDate: Timestamp.fromDate(myTodo[index].createdDate!),
                   userUid: myTodo[index].userUid!,
                   docId: myTodo[index].pk!,
-                  assignedSessionId: session.pk!,
+                  assignedSessionId: session.id!,
                 );
               }),
         ),
