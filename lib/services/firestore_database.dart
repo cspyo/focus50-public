@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:focus42/models/reservation_model.dart';
+import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -164,4 +165,32 @@ class FirestoreDatabase {
         builder: (snapshot, options) =>
             ReservationModel.fromMap(snapshot, options),
       );
+
+  // 내 전체 투두
+  Stream<List<TodoModel>> myEntireTodoStream() => _service.collectionStream(
+        path: FirestorePath.todos(),
+        queryBuilder: (query) => query.where("userUid", isEqualTo: uid),
+        builder: (snapshot, options) => TodoModel.fromMap(snapshot, options),
+      );
+
+  // 내 전체 투두
+  Stream<List<TodoModel>> mySessionTodoStream({required String sessionId}) =>
+      _service.collectionStream(
+        path: FirestorePath.todos(),
+        queryBuilder: (query) => query
+            .where("userUid", isEqualTo: uid)
+            .where("assignedSessionId", isEqualTo: sessionId),
+        builder: (snapshot, options) => TodoModel.fromMap(snapshot, options),
+      );
+
+  Future<void> setTodo(TodoModel todo) => _service.setData(
+        path: todo.id != null
+            ? FirestorePath.todo(todo.id!)
+            : FirestorePath.todos(),
+        data: todo.toMap(),
+        isAdd: todo.id == null,
+      );
+
+  Future<void> deleteTodo(TodoModel todo) =>
+      _service.deleteData(path: FirestorePath.todo(todo.id!));
 }

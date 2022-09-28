@@ -18,8 +18,8 @@ class TodoPopupState extends State<TodoPopup> {
   final _user = FirebaseAuth.instance;
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
-            fromFirestore: TodoModel.fromFirestore,
-            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+            fromFirestore: TodoModel.fromMap,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toMap(),
           );
   Map<String, TodoModel> myTodo = {};
 
@@ -42,7 +42,7 @@ class TodoPopupState extends State<TodoPopup> {
           switch (change.type) {
             case DocumentChangeType.added:
               TodoModel todo = change.doc.data() as TodoModel;
-              todo.pk = change.doc.id;
+              todo.id = change.doc.id;
               myTodo[change.doc.id] = todo;
               break;
             case DocumentChangeType.removed:
@@ -50,7 +50,7 @@ class TodoPopupState extends State<TodoPopup> {
               break;
             case DocumentChangeType.modified:
               TodoModel todo = change.doc.data() as TodoModel;
-              todo.pk = change.doc.id;
+              todo.id = change.doc.id;
               myTodo[change.doc.id] = todo;
               break;
           }
@@ -146,7 +146,7 @@ class TodoPopupState extends State<TodoPopup> {
                         isComplete: element.isComplete!,
                         createdDate: Timestamp.fromDate(element.createdDate!),
                         userUid: element.userUid!,
-                        docId: element.pk!,
+                        docId: element.id!,
                         currentSessionId: session.id!,
                         assignedSessionId: element.assignedSessionId,
                       ))
@@ -187,8 +187,8 @@ class TodoPopupUi extends StatefulWidget {
 class TodoPopupUiState extends State<TodoPopupUi> {
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
-            fromFirestore: TodoModel.fromFirestore,
-            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+            fromFirestore: TodoModel.fromMap,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toMap(),
           );
   bool isHover = false;
   bool isEdit = false;

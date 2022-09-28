@@ -1,9 +1,11 @@
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/jitsi/presentation/meeting_screen.dart';
 import 'package:focus42/mobile_screens/mobile_about_screen.dart';
 // import 'package:focus42/m.screens/m.profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_add_profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
 import 'package:focus42/mobile_screens/mobile_login_screen.dart';
+import 'package:focus42/mobile_screens/mobile_meeting_screen.dart';
 import 'package:focus42/mobile_screens/mobile_session_screen.dart';
 import 'package:focus42/mobile_screens/mobile_signup_screen.dart';
 import 'package:focus42/screens/add_profile_screen.dart';
@@ -48,6 +50,12 @@ abstract class AppPages {
         session: Get.rootDelegate.arguments(),
       ),
     ),
+    GetPage(
+      name: Routes.MEET,
+      page: () => MeetingScreen(
+        reservation: Get.rootDelegate.arguments(),
+      ),
+    ),
   ];
   static final mobilePages = [
     GetPage(
@@ -78,6 +86,12 @@ abstract class AppPages {
       name: Routes.SESSION,
       page: () => MobileSessionScreen(
         session: Get.rootDelegate.arguments(),
+      ),
+    ),
+    GetPage(
+      name: Routes.MEET,
+      page: () => MobileMeetingScreen(
+        reservation: Get.rootDelegate.arguments(),
       ),
     ),
   ];

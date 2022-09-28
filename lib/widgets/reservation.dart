@@ -31,9 +31,17 @@ class ReservationState extends ConsumerState<Reservation> {
   String? partnerUid = '';
   String? partnerName = null;
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void enterReservation(ReservationModel nextReservation) {
+    final database = ref.read(databaseProvider);
+    final uid = database.uid;
+    database.setReservation(nextReservation.doEnter(uid));
     AnalyticsMethod().logEnterSession();
-    Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation);
+    Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
   }
 
   @override

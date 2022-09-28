@@ -91,268 +91,279 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Container(
-              padding: const EdgeInsets.only(
-                  top: 15, bottom: 15, left: 25, right: 25),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    HeaderLogo(),
-                    Row(children: <Widget>[
-                      Text(
-                        "계정이 없나요?",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      SizedBox(width: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          primary: purple300,
-                        ),
-                        onPressed: () {
-                          Get.rootDelegate.toNamed(Routes.SIGNUP);
-                        },
-                        child: const Text(
-                          '   회원가입   ',
-                          style: TextStyle(),
-                        ),
-                      )
-                    ])
-                  ])),
-          const Line(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            width: double.infinity,
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 80,
-                  ),
-                  // 로그인 텍스트
-                  Text(
-                    '로그인',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      color: purple300,
-                      letterSpacing: 3,
-                    ),
-                  ),
-                  // 구글로 로그인하기
-                  SizedBox(
-                    height: 40,
-                  ),
-
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        // 이메일 텍스트 필드
-                        SizedBox(
-                          width: 450,
-                          child: TextFormField(
-                            autofocus: true,
-                            controller: _emailController,
-                            validator: (value) =>
-                                EmailValidator.validate(value!)
-                                    ? null
-                                    : "이메일을 입력해주세요",
-                            onSaved: (val) {},
-                            onFieldSubmitted: (text) {
-                              if (_formKey.currentState!.validate()) {
-                                loginUser();
-                              }
-                            },
-                            maxLines: 1,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              hintText: '이메일',
-                              hintStyle: TextStyle(
-                                color: border200,
-                              ),
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.all(0.0),
-                                child: Icon(
-                                  Icons.email,
-                                  color: Colors.grey,
-                                ), // icon is 48px widget.
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Colors.black, width: 0.5),
-                              ),
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        reverse: true,
+        child: Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: Column(
+            children: [
+              Container(
+                  padding: const EdgeInsets.only(
+                      top: 15, bottom: 15, left: 25, right: 25),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        HeaderLogo(),
+                        Row(children: <Widget>[
+                          Text(
+                            "계정이 없나요?",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.grey,
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        // 비밀번호 텍스트 필드
-                        SizedBox(
-                          width: 450,
-                          child: TextFormField(
-                            autofocus: true,
-                            controller: _passwordController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '비밀번호를 입력해주세요';
-                              }
-                              return null;
-                            },
-                            onSaved: (val) {},
-                            onFieldSubmitted: (text) {
-                              if (_formKey.currentState!.validate()) {
-                                loginUser();
-                              }
-                            },
-                            maxLines: 1,
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              hintText: '비밀번호',
-                              hintStyle: TextStyle(
-                                color: border200,
-                              ),
-                              prefixIcon: Padding(
-                                padding: EdgeInsets.all(0.0),
-                                child: Icon(
-                                  Icons.lock,
-                                  color: Colors.grey,
-                                ), // icon is 48px widget.
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide:
-                                    BorderSide(color: Colors.black, width: 0.5),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        // 로그인 버튼
-                        SizedBox(
-                          width: 450,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                loginUser();
-                              }
-                            },
+                          SizedBox(width: 20),
+                          ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               primary: purple300,
-                              fixedSize: Size.fromHeight(50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              elevation: 0,
                             ),
-                            child: _isLoading_email
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    '이메일로 로그인',
-                                    style: TextStyle(),
-                                  ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        SizedBox(
-                          width: 450,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              signInWithGoogle();
+                            onPressed: () {
+                              Get.rootDelegate.toNamed(Routes.SIGNUP);
                             },
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              fixedSize: Size.fromHeight(50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(
-                                  color: Colors.black,
-                                  width: 0.5,
-                                ),
-                              ),
-                              elevation: 0,
+                            child: const Text(
+                              '   회원가입   ',
+                              style: TextStyle(),
                             ),
-                            child: _isLoading_google
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                      color: purple200,
-                                    ),
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: 100,
-                                      ),
-                                      Image.asset(
-                                        "assets/images/google_icon.png",
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                      SizedBox(
-                                        width: 30,
-                                      ),
-                                      const Text(
-                                        '구글 계정으로 로그인',
-                                        style: TextStyle(color: Colors.black),
-                                      ),
-                                    ],
-                                  ),
-                          ),
+                          )
+                        ])
+                      ])),
+              const Line(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                width: double.infinity,
+                child: SafeArea(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 80,
+                      ),
+                      // 로그인 텍스트
+                      Text(
+                        '로그인',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          color: purple300,
+                          letterSpacing: 3,
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("계정이 아직 없나요?"),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  Get.rootDelegate.toNamed(Routes.SIGNUP);
+                      ),
+                      // 구글로 로그인하기
+                      SizedBox(
+                        height: 40,
+                      ),
+
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            // 이메일 텍스트 필드
+                            SizedBox(
+                              width: 450,
+                              child: TextFormField(
+                                autofocus: true,
+                                controller: _emailController,
+                                validator: (value) =>
+                                    EmailValidator.validate(value!)
+                                        ? null
+                                        : "이메일을 입력해주세요",
+                                onSaved: (val) {},
+                                textInputAction: TextInputAction.next,
+                                onFieldSubmitted: (text) {
+                                  // if (_formKey.currentState!.validate()) {
+                                  //   loginUser();
+                                  // }
                                 },
-                                child: Text(
-                                  "회원가입",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                maxLines: 1,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: InputDecoration(
+                                  hintText: '이메일',
+                                  hintStyle: TextStyle(
+                                    color: border200,
+                                  ),
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.all(0.0),
+                                    child: Icon(
+                                      Icons.email,
+                                      color: Colors.grey,
+                                    ), // icon is 48px widget.
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 0.5),
                                   ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            // 비밀번호 텍스트 필드
+                            SizedBox(
+                              width: 450,
+                              child: TextFormField(
+                                autofocus: true,
+                                controller: _passwordController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '비밀번호를 입력해주세요';
+                                  }
+                                  return null;
+                                },
+                                onSaved: (val) {},
+                                onFieldSubmitted: (text) {
+                                  if (_formKey.currentState!.validate()) {
+                                    loginUser();
+                                  }
+                                },
+                                maxLines: 1,
+                                obscureText: true,
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                  hintText: '비밀번호',
+                                  hintStyle: TextStyle(
+                                    color: border200,
+                                  ),
+                                  prefixIcon: Padding(
+                                    padding: EdgeInsets.all(0.0),
+                                    child: Icon(
+                                      Icons.lock,
+                                      color: Colors.grey,
+                                    ), // icon is 48px widget.
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide(
+                                        color: Colors.black, width: 0.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            // 로그인 버튼
+                            SizedBox(
+                              width: 450,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    loginUser();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: purple300,
+                                  fixedSize: Size.fromHeight(50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: _isLoading_email
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Text(
+                                        '이메일로 로그인',
+                                        style: TextStyle(),
+                                      ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            SizedBox(
+                              width: 450,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  signInWithGoogle();
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  fixedSize: Size.fromHeight(50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color: Colors.black,
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: _isLoading_google
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                          color: purple200,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            width: 100,
+                                          ),
+                                          Image.asset(
+                                            "assets/images/google_icon.png",
+                                            width: 30,
+                                            height: 30,
+                                          ),
+                                          SizedBox(
+                                            width: 30,
+                                          ),
+                                          const Text(
+                                            '구글 계정으로 로그인',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("계정이 아직 없나요?"),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Get.rootDelegate.toNamed(Routes.SIGNUP);
+                                    },
+                                    child: Text(
+                                      "회원가입",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

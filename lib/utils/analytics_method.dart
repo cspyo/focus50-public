@@ -73,24 +73,40 @@ class AnalyticsMethod {
     await analytics.logEvent(name: "make_todo_calendar");
   } //O
 
+  Future logCompleteTodoInSession() async {
+    await analytics.logEvent(name: "complete_todo_session");
+  } //X
+
+  Future logCompleteTodoInCalendar() async {
+    await analytics.logEvent(name: "complete_todo_calendar");
+  } //X
+
   Future logMicOn() async {
     await analytics.logEvent(name: "mic_on");
-  } //O
+  } //X
 
   Future logMicOff() async {
     await analytics.logEvent(name: "mic_off");
-  } //O
+  } //X
 
   Future logCameraOn() async {
     await analytics.logEvent(name: "camera_on");
-  } //O
+  } //X
 
   Future logCameraOff() async {
     await analytics.logEvent(name: "camera_off");
-  } //O
+  } //X
 
   Future logPressExitButton() async {
     await analytics.logEvent(name: "press_exit");
+  } //O
+
+  Future logForceExit() async {
+    await analytics.logEvent(name: "force_exit");
+  } //O
+
+  Future logPressSessionLogo() async {
+    await analytics.logEvent(name: "session_press_logo");
   } //O
 
   Future mobileLogPageView(String pageName) async {
@@ -150,23 +166,39 @@ class AnalyticsMethod {
     await analytics.logEvent(name: "mobile_make_todo_calendar");
   } //X
 
+  Future mobileLogCompleteTodoInSession() async {
+    await analytics.logEvent(name: "complete_todo_session");
+  } //O
+
+  Future mobileLogCompleteTodoInCalendar() async {
+    await analytics.logEvent(name: "complete_todo_calendar");
+  } //O
+
   Future mobileLogMicOn() async {
     await analytics.logEvent(name: "mobile_mic_on");
-  } //O
+  } //X
 
   Future mobileLogMicOff() async {
     await analytics.logEvent(name: "mobile_mic_off");
-  } //O
+  } //X
 
   Future mobileLogCameraOn() async {
     await analytics.logEvent(name: "mobile_camera_on");
-  } //O
+  } //X
 
   Future mobileLogCameraOff() async {
     await analytics.logEvent(name: "mobile_camera_off");
-  } //O
+  } //X
 
   Future mobileLogPressExitButton() async {
     await analytics.logEvent(name: "mobile_press_exit");
+  } //O
+
+  Future mobileLogForceExit() async {
+    await analytics.logEvent(name: "mobile_force_exit");
+  } //O
+
+  Future mobileLogPressSessionLogo() async {
+    await analytics.logEvent(name: "mobile_session_press_logo");
   } //O
 }

@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -43,6 +45,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final firebaseAuth = ref.watch(firebaseAuthProvider);
+    int screenWidth = window.screen!.width!;
 
     return GetMaterialApp.router(
       title: "Focus50 - 스탠포드 행동설계 연구에 입각한 집중향상 캠스터디",
@@ -53,7 +56,9 @@ class MyApp extends ConsumerWidget {
         fontFamily: 'IBMPlexSans',
       ),
       defaultTransition: Transition.noTransition,
-      getPages: isMobile ? AppPages.mobilePages : AppPages.pcPages,
+      getPages: isMobile && screenWidth < 560
+          ? AppPages.mobilePages
+          : AppPages.pcPages,
       routerDelegate: AppRouterDelegate(),
     );
   }

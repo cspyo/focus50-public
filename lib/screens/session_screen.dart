@@ -53,8 +53,8 @@ class _SessionPageState extends ConsumerState<SessionPage> {
   final _user = FirebaseAuth.instance;
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
-            fromFirestore: TodoModel.fromFirestore,
-            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+            fromFirestore: TodoModel.fromMap,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toMap(),
           );
   late final Stream<QuerySnapshot> _myTodoColRef;
   List<TodoModel> myTodo = [];
@@ -112,7 +112,7 @@ class _SessionPageState extends ConsumerState<SessionPage> {
         myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
           final TodoModel todo = doc.data() as TodoModel;
-          todo.pk = doc.id;
+          todo.id = doc.id;
           myTodo.add(todo);
         });
         return Scaffold(
@@ -417,7 +417,7 @@ class _SessionPageState extends ConsumerState<SessionPage> {
                   isComplete: myTodo[index].isComplete!,
                   createdDate: Timestamp.fromDate(myTodo[index].createdDate!),
                   userUid: myTodo[index].userUid!,
-                  docId: myTodo[index].pk!,
+                  docId: myTodo[index].id!,
                   assignedSessionId: session.id!,
                 );
               }),
