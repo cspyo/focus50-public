@@ -73,6 +73,30 @@ class ReservationViewModel {
         }));
       });
 
+      // 다른 사람들의 예약을 만드는 부분
+      List<ReservationModel> notFullReservations =
+          await database.othersReservations();
+
+      // 내가 포함된 예약은 위에서 이미 처리했기에 필요없음 (복합쿼리로 가져올 수 없어서 로직으로 처리)
+      List<ReservationModel> othersReservations = <ReservationModel>[];
+      for (ReservationModel notFullReservation in notFullReservations) {
+        if (!notFullReservation.userIds!.contains(database.uid)) {
+          othersReservations.add(notFullReservation);
+        }
+      }
+
+      await Future.forEach(othersReservations,
+          (ReservationModel othersReservation) async {
+        if (!(reservationTimeList.contains(othersReservation.startTime))) {
+          await Future.forEach(othersReservation.userIds!, (String uid) async {
+            if (!usersNotifier.containsKey(uid)) {
+              final userInfo = await database.getUserPublic(othersUid: uid);
+              usersNotifier.addAll({uid: userInfo});
+            }
+          });
+        }
+      });
+
       appointmentsNotifier.clear();
       timeRegionNotifier.clearCantReserveRegions();
       cantHoverTimeList.clear();
@@ -124,33 +148,7 @@ class ReservationViewModel {
         reservationTimeList.add(startTime.subtract(Duration(minutes: 30)));
       }
 
-      // 다른 사람들의 예약을 만드는 부분
-      List<ReservationModel> notFullReservations =
-          await database.othersReservations();
-
-      // 내가 포함된 예약은 위에서 이미 처리했기에 필요없음 (복합쿼리로 가져올 수 없어서 로직으로 처리)
-      List<ReservationModel> othersReservations = <ReservationModel>[];
-      for (ReservationModel notFullReservation in notFullReservations) {
-        if (!notFullReservation.userIds!.contains(database.uid)) {
-          othersReservations.add(notFullReservation);
-        }
-      }
-
-      await Future.forEach(othersReservations,
-          (ReservationModel othersReservation) async {
-        if (!(reservationTimeList.contains(othersReservation.startTime))) {
-          await Future.forEach(othersReservation.userIds!, (String uid) async {
-            if (!usersNotifier.containsKey(uid)) {
-              final userInfo = await database.getUserPublic(othersUid: uid);
-              usersNotifier.addAll({uid: userInfo});
-            }
-          });
-        }
-      });
-
-      if (reservationTimeList.isEmpty) {
-        timeRegionNotifier.clearReservationRegions();
-      }
+      timeRegionNotifier.clearReservationRegions();
 
       for (ReservationModel othersReservation in othersReservations) {
         if (!(reservationTimeList.contains(othersReservation.startTime))) {
