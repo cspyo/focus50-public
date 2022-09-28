@@ -6,4 +6,6 @@ class FirestorePath {
   static String reservation(String documentId) => 'reservation/$documentId';
   static String updateReservationUserInfo(String uid, String field) =>
       'userInfos.$uid.$field';
+  static String todos() => 'todo/';
+  static String todo(String documentId) => 'todo/$documentId';
 }

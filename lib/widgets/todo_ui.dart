@@ -29,8 +29,8 @@ class TodoUi extends StatefulWidget {
 class TodoUiState extends State<TodoUi> {
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
-            fromFirestore: TodoModel.fromFirestore,
-            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+            fromFirestore: TodoModel.fromMap,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toMap(),
           );
   bool isHover = false;
   bool isEdit = false;

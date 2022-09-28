@@ -94,6 +94,59 @@ class ReservationModel {
     return userUpdatedReservation;
   }
 
+  ReservationModel doEnter(String uid) {
+    assert(this.userInfos!.containsKey(uid));
+    Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
+    updatedUserInfo!.update(
+      uid,
+      (value) => ReservationUserInfo(
+        enterDTTM: DateTime.now(),
+        leaveDTTM: value.leaveDTTM,
+        nickname: value.nickname,
+        uid: value.uid,
+      ),
+    );
+    ReservationModel enteredReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: this.isFull,
+      roomId: this.roomId,
+      headcount: this.headcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: this.userIds,
+      userInfos: updatedUserInfo,
+    );
+    return enteredReservation;
+  }
+
+  ReservationModel doLeave(String uid) {
+    assert(this.userInfos!.containsKey(uid));
+    print("doLeave");
+    Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
+    updatedUserInfo!.update(
+      uid,
+      (value) => ReservationUserInfo(
+        enterDTTM: value.enterDTTM,
+        leaveDTTM: DateTime.now(),
+        nickname: value.nickname,
+        uid: value.uid,
+      ),
+    );
+    ReservationModel leavedReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: this.isFull,
+      roomId: this.roomId,
+      headcount: this.headcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: this.userIds,
+      userInfos: updatedUserInfo,
+    );
+    return leavedReservation;
+  }
+
   factory ReservationModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,

@@ -10,7 +10,6 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
-import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/reservation.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
@@ -26,9 +25,17 @@ class MobileReservation extends ConsumerStatefulWidget {
 class _MobileReservationState extends ConsumerState<MobileReservation> {
   String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void enterReservation(ReservationModel nextReservation) {
+    final database = ref.read(databaseProvider);
+    final uid = database.uid;
+    database.setReservation(nextReservation.doEnter(uid));
     AnalyticsMethod().mobileLogEnterSession();
-    Get.rootDelegate.toNamed(Routes.SESSION, arguments: nextReservation);
+    Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
   }
 
   @override
@@ -175,14 +182,15 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
             child: canEnter
                 ? TextButton(
                     onPressed: () {
-                      if (userAgent.contains('android')) {
-                        enterReservation(nextReservation);
-                      } else {
-                        showSnackBar(
-                          '세션 입장은 안드로이드 및 PC 브라우저만 지원하고 있습니다 : )',
-                          context,
-                        );
-                      }
+                      enterReservation(nextReservation);
+                      // if (userAgent.contains('android')) {
+                      //   enterReservation(nextReservation);
+                      // } else {
+                      //   showSnackBar(
+                      //     '세션 입장은 안드로이드 및 PC 브라우저만 지원하고 있습니다 : )',
+                      //     context,
+                      //   );
+                      // }
                     },
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
