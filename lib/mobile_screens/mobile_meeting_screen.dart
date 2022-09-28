@@ -316,7 +316,7 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
             height: _screenHeight * 0.7,
             child: GoogleTimer(
               duration: Times.min50,
-              startTime: DateTime.now(),
+              startTime: reservation.startTime!,
             ),
           ),
         ),

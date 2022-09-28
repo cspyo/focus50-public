@@ -78,7 +78,7 @@ class _GoogleTimerState extends State<GoogleTimer>
     // Todo: animation dismiss 가 종료 소리 trigger 라 화면에 떠있어야 함
     _animationController = AnimationController(
       vsync: this,
-      duration: _getLeftDuration(),
+      duration: duration,
     )..addStatusListener((status) {
         if (status == AnimationStatus.dismissed) {
           _playFinishSound();
@@ -249,10 +249,10 @@ class _GoogleTimerState extends State<GoogleTimer>
     return '${duration.inMinutes}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
-  Duration _getLeftDuration() {
-    Duration _duration = (DateTime.now().isBefore(startTime))
-        ? duration
-        : duration - DateTime.now().difference(startTime);
-    return _duration;
-  }
+  // Duration _getLeftDuration() {
+  //   Duration _duration = (DateTime.now().isBefore(startTime))
+  //       ? duration
+  //       : duration - DateTime.now().difference(startTime);
+  //   return _duration;
+  // }
 }
