@@ -88,6 +88,7 @@ class FirestoreDatabase {
         isAdd: reservation.id == null,
       );
 
+  // document id가 같은 reservation 반환
   Future<ReservationModel> getReservation(String docId) async {
     return await _service.getData(
         path: FirestorePath.reservation(docId),
@@ -99,6 +100,7 @@ class FirestoreDatabase {
   Future<void> deleteReservation(ReservationModel reservation) =>
       _service.deleteData(path: FirestorePath.reservation(reservation.id!));
 
+  // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
       {required DateTime startTime}) async {
     List<ReservationModel?> findNotFullReservation =
@@ -154,7 +156,7 @@ class FirestoreDatabase {
             ReservationModel.fromMap(snapshot, options),
       );
 
-  // 내가 포함되지 않은 예약들
+  // isFull 이 false인 reservation
   Future<List<ReservationModel>> othersReservations() =>
       _service.getDataWithQuery(
         path: FirestorePath.reservations(),
@@ -165,6 +167,21 @@ class FirestoreDatabase {
         builder: (snapshot, options) =>
             ReservationModel.fromMap(snapshot, options),
       );
+
+  // 현재 시간 이후 모든 reservation의 스트림 반환
+  Stream<List<ReservationModel>> allReservationsStream() =>
+      _service.collectionStream(
+        path: FirestorePath.reservations(),
+        queryBuilder: (query) => query
+            .where("startTime",
+                isGreaterThanOrEqualTo:
+                    DateTime.now().subtract(Duration(minutes: 10)))
+            .orderBy("startTime"),
+        builder: (snapshot, options) =>
+            ReservationModel.fromMap(snapshot, options),
+      );
+
+  //----------------------todo----------------------//
 
   // 내 전체 투두
   Stream<List<TodoModel>> myEntireTodoStream() => _service.collectionStream(

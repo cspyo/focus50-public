@@ -122,7 +122,6 @@ class ReservationModel {
 
   ReservationModel doLeave(String uid) {
     assert(this.userInfos!.containsKey(uid));
-    print("doLeave");
     Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
     updatedUserInfo!.update(
       uid,

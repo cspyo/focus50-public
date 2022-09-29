@@ -12,7 +12,8 @@ import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-final myNextReservationStreamProvider = StreamProvider<List<ReservationModel?>>(
+final myNextReservationStreamProvider =
+    StreamProvider.autoDispose<List<ReservationModel?>>(
   (ref) {
     final database = ref.watch(databaseProvider);
     return database.myNextReservationStream();

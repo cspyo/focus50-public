@@ -181,6 +181,13 @@ class CalendarState extends ConsumerState<Calendar> {
   }
 
   @override
+  void dispose() {
+    reservationViewModel = ref.read(reservationViewModelProvider);
+    reservationViewModel.cancelListener();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isTabletSize = screenWidth < tabletBoundSize ? true : false;
