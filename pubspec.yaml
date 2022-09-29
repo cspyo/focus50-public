@@ -21,12 +21,12 @@ environment:
   sdk: '>=2.16.0 <3.0.0'
 
 dependencies:
-  firebase_analytics: 9.3.0
-  cloud_firestore: 3.4.2
-  firebase_auth: 3.6.1
-  firebase_core: 1.20.0
-  firebase_remote_config: 2.0.13
-  firebase_storage: 10.3.4
+  firebase_analytics: 9.3.6
+  cloud_firestore: 3.4.9
+  firebase_auth: 3.10.0
+  firebase_core: 1.23.0
+  firebase_remote_config: 2.0.18
+  firebase_storage: 10.3.9
   date_format: ^2.0.6
   email_validator: ^2.0.1
   flutter_timer_countdown: ^1.0.3
@@ -40,11 +40,16 @@ dependencies:
   video_player: ^2.4.5
   flutter:
     sdk: flutter
-  flutter_webrtc: ^0.8.9
+  flutter_webrtc: ^0.9.7
   syncfusion_flutter_calendar: ^20.1.61
-  url_launcher:
   universal_html: ^2.0.8
   flutter_svg: ^1.1.5
+  flutter_riverpod: ^1.0.4
+  rxdart: ^0.27.5
+  jitsi_meet: ^4.0.0
+  pointer_interceptor: ^0.9.3+3
+  url_launcher: ^6.1.5
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

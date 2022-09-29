@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/signaling.dart';
 import 'package:focus42/widgets/todo_popup_widget.dart';
@@ -27,7 +29,7 @@ class MobileSessionScreen extends StatelessWidget {
   }
 }
 
-class MobileSessionPage extends StatefulWidget {
+class MobileSessionPage extends ConsumerStatefulWidget {
   final ReservationModel session;
   MobileSessionPage({Key? key, required this.session}) : super(key: key);
 
@@ -36,7 +38,7 @@ class MobileSessionPage extends StatefulWidget {
       _MobileSessionPageState(session: session);
 }
 
-class _MobileSessionPageState extends State<MobileSessionPage> {
+class _MobileSessionPageState extends ConsumerState<MobileSessionPage> {
   final _formKey = GlobalKey<FormState>();
   Signaling signaling = Signaling();
   RTCVideoRenderer _localRenderer = RTCVideoRenderer();
@@ -51,8 +53,8 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
   final _user = FirebaseAuth.instance;
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
-            fromFirestore: TodoModel.fromFirestore,
-            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+            fromFirestore: TodoModel.fromMap,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toMap(),
           );
   late final Stream<QuerySnapshot> _myTodoColRef;
   List<TodoModel> myTodo = [];
@@ -63,8 +65,9 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
   void initState() {
     _localRenderer.initialize().then((value) {
       _remoteRenderer.initialize().then((value) {
-        MatchingMethods()
-            .enterRoom(session.pk!, signaling, _localRenderer, _remoteRenderer);
+        final database = ref.read(databaseProvider);
+        MatchingMethods(database: database)
+            .enterRoom(session.id!, signaling, _localRenderer, _remoteRenderer);
       });
     });
 
@@ -77,7 +80,7 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
     // myTodoColRef
     _myTodoColRef = _todoColRef
         .where('userUid', isEqualTo: _user.currentUser?.uid)
-        .where('assignedSessionId', isEqualTo: session.pk!)
+        .where('assignedSessionId', isEqualTo: session.id!)
         .orderBy('completedDate')
         .orderBy('modifiedDate', descending: true)
         .orderBy('createdDate', descending: true)
@@ -107,7 +110,7 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
         myTodo.clear();
         snapshot.data!.docs.forEach((doc) {
           final TodoModel todo = doc.data() as TodoModel;
-          todo.pk = doc.id;
+          todo.id = doc.id;
           myTodo.add(todo);
         });
         return Scaffold(
@@ -387,8 +390,8 @@ class _MobileSessionPageState extends State<MobileSessionPage> {
                   isComplete: myTodo[index].isComplete!,
                   createdDate: Timestamp.fromDate(myTodo[index].createdDate!),
                   userUid: myTodo[index].userUid!,
-                  docId: myTodo[index].pk!,
-                  assignedSessionId: session.pk!,
+                  docId: myTodo[index].id!,
+                  assignedSessionId: session.id!,
                 );
               }),
         ),

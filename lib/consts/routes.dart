@@ -6,4 +6,5 @@ abstract class Routes {
   static const ADD_PROFILE = '/add_profile';
   static const CALENDAR = '/calendar';
   static const SESSION = '/session';
+  static const MEET = '/meet';
 }

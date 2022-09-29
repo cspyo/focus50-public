@@ -6,7 +6,6 @@ import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/line.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:webviewx/webviewx.dart';
 
 class AboutScreen extends StatefulWidget {
   @override
@@ -15,18 +14,21 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen>
     with TickerProviderStateMixin {
-  late WebViewXController webviewController;
-
+  late AnimationController _controller;
+  double wavesStartPoint = 0.0;
+  List<double> wavesEndPoints = [2.5, -2, 2.2];
   @override
   void initState() {
     super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: Duration(seconds: 20))
+          ..repeat();
   }
 
-  Animation<double> spinAnimation(int seconds, bool reverse) {
-    AnimationController _controller =
-        AnimationController(vsync: this, duration: Duration(seconds: seconds))
-          ..repeat(reverse: reverse);
-    return CurvedAnimation(parent: _controller, curve: Curves.linear);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -181,7 +183,8 @@ class _AboutScreenState extends State<AboutScreen>
                   bottom: -screenWidth * 0.67,
                   left: -screenWidth * 0.2,
                   child: RotationTransition(
-                    turns: spinAnimation(4, false),
+                    turns: Tween(begin: wavesStartPoint, end: wavesEndPoints[0])
+                        .animate(_controller),
                     child: Container(
                       width: screenWidth * 0.7,
                       height: screenWidth * 0.7,
@@ -196,7 +199,8 @@ class _AboutScreenState extends State<AboutScreen>
                 Positioned(
                   bottom: -screenWidth * 0.96,
                   child: RotationTransition(
-                    turns: spinAnimation(8, true),
+                    turns: Tween(begin: wavesStartPoint, end: wavesEndPoints[1])
+                        .animate(_controller),
                     child: Container(
                       width: screenWidth,
                       height: screenWidth,
@@ -212,7 +216,8 @@ class _AboutScreenState extends State<AboutScreen>
                   bottom: -screenWidth * 0.77,
                   right: -screenWidth * 0.2,
                   child: RotationTransition(
-                    turns: spinAnimation(7, false),
+                    turns: Tween(begin: wavesStartPoint, end: wavesEndPoints[2])
+                        .animate(_controller),
                     child: Container(
                       width: screenWidth * 0.8,
                       height: screenWidth * 0.8,

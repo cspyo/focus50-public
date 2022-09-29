@@ -1,37 +1,29 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../widgets/line.dart';
 
-class MobileCalendarScreen extends StatefulWidget {
+class MobileCalendarScreen extends ConsumerStatefulWidget {
   MobileCalendarScreen({Key? key}) : super(key: key);
   @override
-  State<MobileCalendarScreen> createState() => _MobileCalendarScreenState();
+  _MobileCalendarScreenState createState() => _MobileCalendarScreenState();
 }
 
-class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
-  int remainingTime = 0;
-
-  DateTime now = new DateTime.now();
-
-  String fastReservation = '10시';
-
-  DateTime fastestReservation =
-      new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
-  final _auth = FirebaseAuth.instance;
-  final _authMethods = new AuthMethods();
-  bool isUserDifferentImg = false;
+class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
+  bool getUserInfo = false;
   String userPhotoUrl =
-      'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3';
+      'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
   String userNickname = '';
   String userJob = '';
   bool isNotificationOpen = true;
@@ -42,27 +34,24 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
   );
   CalendarController calendarController = CalendarController();
 
-  // void changeVisibleDates(List<DateTime> datesList) {
-  //   setState(() {
-  //     // visibleDates = datesList;
-  //     // print(datesList);
-  //     print('success');
-  //   });
-  // }
-
   Future<void> getUserData() async {
-    UserPublicModel user =
-        await AuthMethods().getUserPublic(_auth.currentUser!.uid);
-    userNickname = user.nickname!;
-    userJob = user.job!;
-    setState(() {
-      if (userPhotoUrl != user.photoUrl) {
-        userPhotoUrl = user.photoUrl!;
-        isUserDifferentImg = true;
-      } else {
-        isUserDifferentImg = false;
+    final usersNotifier = ref.read(usersProvider.notifier);
+    final database = ref.read(databaseProvider);
+    final auth = ref.read(firebaseAuthProvider);
+    final uid = auth.currentUser?.uid;
+    if (uid != null) {
+      if (!usersNotifier.containsKey(uid)) {
+        UserPublicModel user = await database.getUserPublic(othersUid: uid);
+        usersNotifier.addAll({uid: user});
       }
-    });
+      final users = ref.read(usersProvider);
+      userPhotoUrl = users[uid]!.photoUrl!;
+      userNickname = users[uid]!.nickname!;
+      userJob = users[uid]!.job!;
+      setState(() {
+        getUserInfo = true;
+      });
+    }
   }
 
   @override
@@ -72,8 +61,16 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
   }
 
   @override
+  void dispose() {
+    calendarController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    final authState = ref.watch(authStateChangesProvider).asData?.value;
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -109,7 +106,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                _auth.currentUser?.uid == null
+                authState == null
                     ? Container(
                         height: 60,
                         alignment: Alignment.center,
@@ -129,7 +126,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                       )
                     : SizedBox(
                         height: 60,
-                        child: isUserDifferentImg
+                        child: getUserInfo
                             ? Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -220,7 +217,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                (_auth.currentUser != null)
+                (authState != null)
                     ? SizedBox(
                         height: 40,
                         child: ElevatedButton(
@@ -232,7 +229,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                           ),
                           onPressed: () {
                             setState(() {
-                              _authMethods.signOut();
+                              AuthMethods().signOut();
                             });
                             AnalyticsMethod().mobileLogSignOut();
                             Get.rootDelegate.toNamed(Routes.LOGIN);
@@ -270,7 +267,7 @@ class _MobileCalendarScreenState extends State<MobileCalendarScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                (_auth.currentUser != null)
+                (authState != null)
                     ? Container()
                     : SizedBox(
                         height: 40,

@@ -25,8 +25,8 @@ class TodoState extends State<Todo> {
   String? userUid = _user.currentUser?.uid;
   final _todoColRef =
       FirebaseFirestore.instance.collection('todo').withConverter<TodoModel>(
-            fromFirestore: TodoModel.fromFirestore,
-            toFirestore: (TodoModel todoModel, _) => todoModel.toFirestore(),
+            fromFirestore: TodoModel.fromMap,
+            toFirestore: (TodoModel todoModel, _) => todoModel.toMap(),
           );
   late final Stream<QuerySnapshot> _myTodoColRef;
 
@@ -78,7 +78,7 @@ class TodoState extends State<Todo> {
         snapshot.data!.docs.forEach((doc) {
           // TODO: 효율적으로 todo list 보여주기
           final TodoModel todo = doc.data() as TodoModel;
-          todo.pk = doc.id;
+          todo.id = doc.id;
           myTodo.add(todo);
         });
         return Expanded(
@@ -212,7 +212,7 @@ class TodoState extends State<Todo> {
                                 createdDate:
                                     Timestamp.fromDate(myTodo[i].createdDate!),
                                 userUid: myTodo[i].userUid!,
-                                docId: myTodo[i].pk!)
+                                docId: myTodo[i].id!)
                     ],
                   ),
                 ),

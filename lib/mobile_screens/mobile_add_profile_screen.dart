@@ -131,7 +131,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
                                 radius: 64,
                                 backgroundColor: Colors.black38,
                                 backgroundImage: NetworkImage(
-                                    'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'),
+                                    'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e'),
                               ),
                         Positioned(
                           bottom: -10,

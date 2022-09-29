@@ -1,76 +1,210 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:focus42/models/reservation_user_info.dart';
 
 class ReservationModel {
-  String? pk;
+  String? id;
   final DateTime? startTime;
   final DateTime? endTime;
-  final String? user1Uid;
-  final String? user1Name;
-  final DateTime? user1EnterDTTM;
-  final String? user2Uid;
-  final String? user2Name;
-  final DateTime? user2EnterDTTM;
   final bool? isFull;
-  final String? room;
+  final String? roomId;
+  final int? headcount;
+  final int? maxHeadcount;
+  final List<String>? userIds;
+  final Map<String, ReservationUserInfo>? userInfos;
 
 //default Constructor
   ReservationModel({
-    this.pk,
+    this.id,
     this.startTime,
     this.endTime,
-    this.user1Uid,
-    this.user1Name,
-    this.user1EnterDTTM,
-    this.user2Uid,
-    this.user2Name,
-    this.user2EnterDTTM,
     this.isFull,
-    this.room,
+    this.roomId,
+    this.headcount,
+    this.maxHeadcount,
+    this.userIds,
+    this.userInfos,
   });
 
-  bool isEmptyUser1() {
-    return this.user1Uid == null;
+  ReservationModel addUser(String uid, ReservationUserInfo userInfo) {
+    int newHeadcount = headcount! + 1;
+    bool newIsFull = false;
+    if (newHeadcount >= maxHeadcount!) {
+      newIsFull = true;
+    }
+    List<String>? newUserIds = [...?userIds];
+    newUserIds.add(uid);
+
+    Map<String, ReservationUserInfo>? newUserInfos = {...?userInfos};
+    newUserInfos.addAll({uid: userInfo});
+
+    ReservationModel userAddedReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: newIsFull,
+      roomId: this.roomId,
+      headcount: newHeadcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: newUserIds,
+      userInfos: newUserInfos,
+    );
+    return userAddedReservation;
   }
 
-  bool isInUser1(String userId) {
-    return this.user1Uid == userId;
+  ReservationModel deleteUser(String uid) {
+    int newHeadcount = headcount! - 1;
+    bool newIsFull = false;
+
+    List<String>? newUserIds = [...userIds!];
+    newUserIds.remove(uid);
+
+    Map<String, ReservationUserInfo> newUserInfos = {...userInfos!};
+    newUserInfos.remove(uid);
+
+    ReservationModel userDeletedReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: newIsFull,
+      roomId: this.roomId,
+      headcount: newHeadcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: newUserIds,
+      userInfos: newUserInfos,
+    );
+    return userDeletedReservation;
   }
 
-  bool isInUser2(String userId) {
-    return this.user2Uid == userId;
+  ReservationModel updateUserInfo(String uid, ReservationUserInfo userInfo) {
+    Map<String, ReservationUserInfo> newUserInfos = {...userInfos!};
+    newUserInfos.remove(uid);
+    newUserInfos.addAll({uid: userInfo});
+
+    ReservationModel userUpdatedReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: this.isFull,
+      roomId: this.roomId,
+      headcount: this.headcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: this.userIds,
+      userInfos: newUserInfos,
+    );
+    return userUpdatedReservation;
   }
 
-  factory ReservationModel.fromFirestore(
+  ReservationModel doEnter(String uid) {
+    assert(this.userInfos!.containsKey(uid));
+    Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
+    updatedUserInfo!.update(
+      uid,
+      (value) => ReservationUserInfo(
+        enterDTTM: DateTime.now(),
+        leaveDTTM: value.leaveDTTM,
+        nickname: value.nickname,
+        uid: value.uid,
+      ),
+    );
+    ReservationModel enteredReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: this.isFull,
+      roomId: this.roomId,
+      headcount: this.headcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: this.userIds,
+      userInfos: updatedUserInfo,
+    );
+    return enteredReservation;
+  }
+
+  ReservationModel doLeave(String uid) {
+    assert(this.userInfos!.containsKey(uid));
+    Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
+    updatedUserInfo!.update(
+      uid,
+      (value) => ReservationUserInfo(
+        enterDTTM: value.enterDTTM,
+        leaveDTTM: DateTime.now(),
+        nickname: value.nickname,
+        uid: value.uid,
+      ),
+    );
+    ReservationModel leavedReservation = ReservationModel(
+      id: this.id,
+      startTime: this.startTime,
+      endTime: this.endTime,
+      isFull: this.isFull,
+      roomId: this.roomId,
+      headcount: this.headcount,
+      maxHeadcount: this.maxHeadcount,
+      userIds: this.userIds,
+      userInfos: updatedUserInfo,
+    );
+    return leavedReservation;
+  }
+
+  factory ReservationModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
-    final data = snapshot.data();
+    String documentId = snapshot.id;
+    final data = snapshot.data() as Map<String, dynamic>;
+
+    Map<String, dynamic> userInfos = data["userInfos"] as Map<String, dynamic>;
+    Map<String, ReservationUserInfo> userInfoMap =
+        <String, ReservationUserInfo>{};
+    userInfos.forEach((key, value) {
+      String uid = value['uid'] as String;
+      String? nickname = value['nickname'] as String;
+      DateTime? enterDTTM = value['enterDTTM'] != null
+          ? value['enterDTTM'].toDate() as DateTime
+          : null;
+      DateTime? leaveDTTM = value['leaveDTTM'] != null
+          ? value['leaveDTTM'].toDate() as DateTime
+          : null;
+
+      ReservationUserInfo reservationUserInfo = new ReservationUserInfo(
+        uid: uid,
+        nickname: nickname,
+        enterDTTM: enterDTTM,
+        leaveDTTM: leaveDTTM,
+      );
+      userInfoMap.addAll({uid: reservationUserInfo});
+    });
 
     return ReservationModel(
-      startTime: data?['startTime']?.toDate(),
-      endTime: data?['endTime']?.toDate(),
-      user1Uid: data?['user1Uid'],
-      user1Name: data?['user1Name'],
-      user1EnterDTTM: data?['user1EnterDTTM']?.toDate(),
-      user2Uid: data?['user2Uid'],
-      user2Name: data?['user2Name'],
-      user2EnterDTTM: data?['user2EnterDTTM']?.toDate(),
-      isFull: data?['isFull'],
-      room: data?['room'],
+      id: documentId,
+      startTime: data['startTime']?.toDate() as DateTime,
+      endTime: data['endTime']?.toDate() as DateTime,
+      isFull: data['isFull'],
+      roomId: data['roomId'],
+      headcount: data['headcount'],
+      maxHeadcount: 2,
+      userIds: data['userIds'] is Iterable ? List.from(data['userIds']) : null,
+      userInfos: userInfoMap,
     );
   }
-  Map<String, dynamic> toFirestore() {
-    return {
-      "startTime": startTime,
-      "endTime": endTime,
-      "user1Uid": user1Uid,
-      "user1Name": user1Name,
-      "user1EnterDTTM": user1EnterDTTM,
-      "user2Uid": user2Uid,
-      "user2Name": user2Name,
-      "user2EnterDTTM": user2EnterDTTM,
-      "isFull": isFull,
-      "room": room,
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic>? userInfoMap = {};
+
+    userInfos?.forEach((key, value) {
+      userInfoMap.addAll({key: value.toMap()});
+    });
+
+    return <String, dynamic>{
+      if (id != null) "id": id,
+      if (startTime != null) "startTime": startTime,
+      if (endTime != null) "endTime": endTime,
+      if (isFull != null) "isFull": isFull,
+      if (roomId != null) "roomId": roomId,
+      if (headcount != null) "headcount": headcount,
+      if (maxHeadcount != null) "maxHeadcount": maxHeadcount,
+      if (userIds != null) "userIds": userIds,
+      if (userInfoMap != null) "userInfos": userInfoMap,
     };
   }
 }

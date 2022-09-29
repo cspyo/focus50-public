@@ -13,7 +13,7 @@ class UserPrivateModel {
     this.phoneNumber,
   });
 
-  factory UserPrivateModel.fromFirestore(
+  factory UserPrivateModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
@@ -27,7 +27,7 @@ class UserPrivateModel {
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  Map<String, dynamic> toMap() {
     return {
       "uid": uid,
       "username": username,
