@@ -182,7 +182,7 @@ class ReservationModel {
       isFull: data['isFull'],
       roomId: data['roomId'],
       headcount: data['headcount'],
-      maxHeadcount: 2,
+      maxHeadcount: 4,
       userIds: data['userIds'] is Iterable ? List.from(data['userIds']) : null,
       userInfos: userInfoMap,
     );

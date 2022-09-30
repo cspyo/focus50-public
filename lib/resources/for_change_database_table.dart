@@ -267,4 +267,22 @@ class ForChangeDatabaseTable {
     };
     await _firestore.collection('reservation').doc(docId).update(updates);
   }
+
+  getNumberOfReservations() async {
+    final _firestore = FirebaseFirestore.instance;
+    QuerySnapshot<Map<String, dynamic>> querySnapshot =
+        await _firestore.collection('reservation').get();
+
+    print("생성된 모든 예약 수  : ${querySnapshot.docs.length}");
+
+    int count = 0;
+    querySnapshot.docs.forEach((element) {
+      Map<String, dynamic> data = element.data();
+      if (data["isFull"] == true) {
+        count++;
+      }
+    });
+
+    print("매칭된 모든 예약 수 : ${count}");
+  }
 }

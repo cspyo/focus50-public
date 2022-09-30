@@ -90,7 +90,9 @@ class ReservationViewModel {
         if (reservation.userIds!.contains(myUid)) {
           myReservations.add(reservation);
         } else {
-          othersReservations.add(reservation);
+          if (!reservation.isFull!) {
+            othersReservations.add(reservation);
+          }
         }
       });
 
@@ -105,14 +107,12 @@ class ReservationViewModel {
         Appointment appointment;
 
         // 매칭이 완료된 예약이라면
-        if (reservation.isFull!) {
-          List<String> othersUidList = [...reservation.userIds!];
-          othersUidList.remove(database.uid);
-          String partnerUid = othersUidList.first;
+        if (reservation.headcount! >= 2) {
+          String userIdsString = reservation.userIds!.join(',');
           appointment = Appointment(
             startTime: reservation.startTime!,
             endTime: reservation.endTime!,
-            notes: partnerUid,
+            notes: userIdsString,
             subject: MATCHED, // LOADING,MATCHING,MATCHED
             id: reservation.id,
           );
@@ -149,11 +149,12 @@ class ReservationViewModel {
       timeRegionNotifier.clearReservationRegions();
       for (ReservationModel reservation in othersReservations) {
         if (!(reservationTimeList.contains(reservation.startTime))) {
+          String userIdsString = reservation.userIds!.join(',');
           DateTime startTime = reservation.startTime!;
           timeRegionNotifier.addReservationRegions(TimeRegion(
             startTime: startTime,
             endTime: startTime.add(Duration(minutes: 30)),
-            text: reservation.userIds!.first,
+            text: userIdsString,
           ));
           reservationTimeList.add(reservation.startTime!);
         }

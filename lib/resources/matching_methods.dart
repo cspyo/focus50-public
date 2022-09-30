@@ -43,7 +43,7 @@ class MatchingMethods {
           endTime: endTime,
           headcount: 0,
           isFull: false,
-          maxHeadcount: 2,
+          maxHeadcount: 4,
           roomId: null,
           userIds: [],
           userInfos: {});
