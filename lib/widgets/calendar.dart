@@ -182,8 +182,6 @@ class CalendarState extends ConsumerState<Calendar> {
 
   @override
   void dispose() {
-    reservationViewModel = ref.read(reservationViewModelProvider);
-    reservationViewModel.cancelListener();
     super.dispose();
   }
 
@@ -312,8 +310,9 @@ class CalendarState extends ConsumerState<Calendar> {
       );
     } else {
       final users = ref.read(usersProvider);
-      String photoUrl = users[timeRegionDetails.region.text]!.photoUrl!;
-      String nickname = users[timeRegionDetails.region.text]!.nickname!;
+      List<String> userIds = timeRegionDetails.region.text!.split(',');
+      String photoUrl = users[userIds.first]!.photoUrl!;
+      String nickname = users[userIds.first]!.nickname!;
 
       // String job = users[timeRegionDetails.region.text]!.job!;
       return Container(
@@ -357,6 +356,7 @@ class CalendarState extends ConsumerState<Calendar> {
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
     final Appointment appointment = details.appointments.first;
     final String subject = appointment.subject;
+    final String? notes = appointment.notes;
     final DateTime startTime = appointment.startTime;
     final DateTime endTime = appointment.endTime;
     final String startTimeFormatted = DateFormat('Hm').format(startTime);
@@ -549,6 +549,8 @@ class CalendarState extends ConsumerState<Calendar> {
     // 예약 (매칭 완료 - 상대방 정보 보여주기)
     else if (subject == MATCHED) {
       final users = ref.read(usersProvider);
+      List<String> userIds = notes!.split(',');
+
       return Container(
         padding: EdgeInsets.all(4),
         decoration: BoxDecoration(
@@ -587,7 +589,7 @@ class CalendarState extends ConsumerState<Calendar> {
                           width: 4,
                         ),
                         Text(
-                          "${users[appointment.notes]!.nickname!}",
+                          "${users[userIds.first]!.nickname!}",
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 11,
