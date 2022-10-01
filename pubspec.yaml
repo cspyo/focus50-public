@@ -76,10 +76,11 @@ flutter:
     - assets/images/contributor3.jpeg
     - assets/images/instagram.svg
     - assets/images/kakao.svg
-    - assets/images/three_informations.svg
+    - assets/images/postit1.svg
+    - assets/images/postit2.svg
+    - assets/images/postit3.svg
     - assets/images/calendarClick.gif
     - assets/images/sessionTimer.gif
-
     - assets/sound/ring.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
