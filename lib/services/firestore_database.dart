@@ -100,6 +100,15 @@ class FirestoreDatabase {
   Future<void> deleteReservation(ReservationModel reservation) =>
       _service.deleteData(path: FirestorePath.reservation(reservation.id!));
 
+  Future<void> updateReservationUserInfo(
+          String docId, String uid, String field, dynamic updatedData) =>
+      _service.updateData(
+        path: FirestorePath.reservation(docId),
+        data: {
+          FirestorePath.updateReservationUserInfo(uid, field): updatedData
+        },
+      );
+
   // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
       {required DateTime startTime}) async {
