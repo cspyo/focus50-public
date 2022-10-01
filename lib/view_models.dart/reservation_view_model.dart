@@ -193,10 +193,11 @@ class ReservationViewModel {
     for (ReservationModel othersReservation in othersReservations) {
       if (!(reservationTimeList.contains(othersReservation.startTime))) {
         DateTime startTime = othersReservation.startTime!;
+        String userIdsString = othersReservation.userIds!.join(',');
         timeRegionNotifier.addReservationRegions(TimeRegion(
           startTime: startTime,
           endTime: startTime.add(Duration(minutes: 30)),
-          text: othersReservation.userIds!.first,
+          text: userIdsString,
         ));
         reservationTimeList.add(othersReservation.startTime!);
       }
