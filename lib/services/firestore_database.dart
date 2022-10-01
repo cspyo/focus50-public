@@ -149,7 +149,7 @@ class FirestoreDatabase {
             .where("userIds", arrayContains: uid)
             .where("startTime",
                 isGreaterThanOrEqualTo:
-                    DateTime.now().subtract(Duration(minutes: 10)))
+                    DateTime.now().subtract(Duration(minutes: 50)))
             .orderBy("startTime")
             .limit(1),
         builder: (snapshot, options) =>
@@ -175,7 +175,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query
             .where("startTime",
                 isGreaterThanOrEqualTo:
-                    DateTime.now().subtract(Duration(minutes: 10)))
+                    DateTime.now().subtract(Duration(minutes: 50)))
             .orderBy("startTime"),
         builder: (snapshot, options) =>
             ReservationModel.fromMap(snapshot, options),

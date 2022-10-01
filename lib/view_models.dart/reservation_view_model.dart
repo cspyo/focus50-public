@@ -147,6 +147,9 @@ class ReservationViewModel {
       }
 
       timeRegionNotifier.clearReservationRegions();
+      othersReservations.removeWhere((element) {
+        return element.startTime!.difference(DateTime.now()) < Duration.zero;
+      });
       for (ReservationModel reservation in othersReservations) {
         if (!(reservationTimeList.contains(reservation.startTime))) {
           String userIdsString = reservation.userIds!.join(',');

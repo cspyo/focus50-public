@@ -96,8 +96,8 @@ class ReservationModel {
 
   ReservationModel doEnter(String uid) {
     assert(this.userInfos!.containsKey(uid));
-    Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
-    updatedUserInfo!.update(
+    Map<String, ReservationUserInfo>? updatedUserInfo = {...userInfos!};
+    updatedUserInfo.update(
       uid,
       (value) => ReservationUserInfo(
         enterDTTM: DateTime.now(),
@@ -122,8 +122,8 @@ class ReservationModel {
 
   ReservationModel doLeave(String uid) {
     assert(this.userInfos!.containsKey(uid));
-    Map<String, ReservationUserInfo>? updatedUserInfo = this.userInfos;
-    updatedUserInfo!.update(
+    Map<String, ReservationUserInfo>? updatedUserInfo = {...userInfos!};
+    updatedUserInfo.update(
       uid,
       (value) => ReservationUserInfo(
         enterDTTM: value.enterDTTM,
