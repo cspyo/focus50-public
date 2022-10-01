@@ -15,6 +15,7 @@ import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
+import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
@@ -37,7 +38,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
   final JitsiMeetMethods _jitsiMeetMethods = JitsiMeetMethods();
   late final ReservationModel reservation;
   late final MyAuth myAuth;
-  late final database;
+  late final FirestoreDatabase database;
 
   @override
   void initState() {
@@ -61,14 +62,17 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
       );
     });
     html.window.onUnload.listen((event) async {
-      database.setReservation(reservation.doLeave(database.uid));
+      database.updateReservationUserInfo(
+          reservation.id!, database.uid, "leaveDTTM", DateTime.now());
+
       AnalyticsMethod().logForceExit();
     });
   }
 
   @override
   void dispose() {
-    database.setReservation(reservation.doLeave(database.uid));
+    database.updateReservationUserInfo(
+        reservation.id!, database.uid, "leaveDTTM", DateTime.now());
     JitsiMeet.removeAllListeners();
     super.dispose();
   }

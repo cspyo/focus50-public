@@ -100,6 +100,15 @@ class FirestoreDatabase {
   Future<void> deleteReservation(ReservationModel reservation) =>
       _service.deleteData(path: FirestorePath.reservation(reservation.id!));
 
+  Future<void> updateReservationUserInfo(
+          String docId, String uid, String field, dynamic updatedData) =>
+      _service.updateData(
+        path: FirestorePath.reservation(docId),
+        data: {
+          FirestorePath.updateReservationUserInfo(uid, field): updatedData
+        },
+      );
+
   // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
       {required DateTime startTime}) async {
@@ -149,7 +158,7 @@ class FirestoreDatabase {
             .where("userIds", arrayContains: uid)
             .where("startTime",
                 isGreaterThanOrEqualTo:
-                    DateTime.now().subtract(Duration(minutes: 10)))
+                    DateTime.now().subtract(Duration(minutes: 50)))
             .orderBy("startTime")
             .limit(1),
         builder: (snapshot, options) =>
@@ -175,7 +184,7 @@ class FirestoreDatabase {
         queryBuilder: (query) => query
             .where("startTime",
                 isGreaterThanOrEqualTo:
-                    DateTime.now().subtract(Duration(minutes: 10)))
+                    DateTime.now().subtract(Duration(minutes: 50)))
             .orderBy("startTime"),
         builder: (snapshot, options) =>
             ReservationModel.fromMap(snapshot, options),
