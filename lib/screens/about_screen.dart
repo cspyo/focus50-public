@@ -363,12 +363,25 @@ class _AboutScreenState extends State<AboutScreen>
                 ],
               ),
             ),
-            Container(
-              width: screenWidth,
-              height: screenHeight,
-              padding: EdgeInsets.only(top: 100),
-              child: SvgPicture.asset('assets/images/three_informations.svg'),
+            // Container(
+            //   width: screenWidth,
+            //   height: screenHeight,
+            //   padding: EdgeInsets.only(top: 100),
+            //   child: SvgPicture.asset('assets/images/three_informations.svg'),
+            // ),
+            SizedBox(
+              height: 500,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SvgPicture.asset('assets/images/postit1.svg'),
+                  SvgPicture.asset('assets/images/postit2.svg'),
+                  SvgPicture.asset('assets/images/postit3.svg'),
+                ],
+              ),
             ),
+
             Container(
               padding: EdgeInsets.only(left: 100, right: 100),
               width: screenWidth,

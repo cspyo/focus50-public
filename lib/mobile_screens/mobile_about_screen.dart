@@ -543,9 +543,12 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                 ],
               ),
             ),
-            Container(
-              width: screenWidth,
-              child: SvgPicture.asset('assets/images/three_informations.svg'),
+            Column(
+              children: [
+                SvgPicture.asset('assets/images/postit1.svg'),
+                SvgPicture.asset('assets/images/postit2.svg'),
+                SvgPicture.asset('assets/images/postit3.svg'),
+              ],
             ),
             Container(
               padding: EdgeInsets.only(left: 20, right: 20),

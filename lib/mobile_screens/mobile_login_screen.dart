@@ -1,9 +1,11 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
+import 'package:universal_html/html.dart' as html;
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
@@ -24,10 +26,13 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isLoading_email = false;
-  // bool _isLoading_google = false;
+  bool _isLoading_google = false;
 
+  String userAgent = html.window.navigator.userAgent.toString();
   @override
   void initState() {
+    // _scrollController.animateTo(1000,
+    //     duration: Duration(milliseconds: 300), curve: Curves.ease);
     super.initState();
   }
 
@@ -70,26 +75,35 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
   }
 
   // 구글로 로그인
-  // void signInWithGoogle() async {
-  //   setState(() {
-  //     _isLoading_google = true;
-  //   });
+  void signInWithGoogle() async {
+    setState(() {
+      _isLoading_google = true;
+    });
 
-  //   UserCredential cred = await AuthMethods().signInWithGoogle();
+    UserCredential cred = await AuthMethods().signInWithGoogle();
 
-  //   if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-  //     Get.rootDelegate.offNamed(Routes.CALENDAR);
-  //   } else {
-  //     Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
-  //   }
+    if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
+      Get.rootDelegate.offNamed(Routes.CALENDAR);
+    } else {
+      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
+    }
 
-  //   setState(() {
-  //     _isLoading_google = false;
-  //   });
-  // }
+    setState(() {
+      _isLoading_google = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    bool isKakao = userAgent.contains('KAKAOTALK') ? true : false;
+    bool isInsta = userAgent.contains('Instagram') ? true : false;
+    bool isIphone = userAgent.contains('iphone') ? true : false;
+    // ScrollPosition? scrollPosition;
+    // if (_scrollController.hasClients) {
+    //   scrollPosition = _scrollController.position;
+
+    // }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
@@ -140,7 +154,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                             SizedBox(
                               width: 450,
                               child: TextFormField(
-                                autofocus: true,
+                                autofocus: false,
                                 controller: _emailController,
                                 validator: (value) =>
                                     EmailValidator.validate(value!)
@@ -270,54 +284,101 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                             SizedBox(
                               height: 15,
                             ),
-                            // SizedBox(
-                            //   width: 450,
-                            //   height: 50,
-                            //   child: ElevatedButton(
-                            //     onPressed: () async {
-                            //       signInWithGoogle();
-                            //     },
-                            //     style: ElevatedButton.styleFrom(
-                            //       primary: Colors.white,
-                            //       fixedSize: Size.fromHeight(50),
-                            //       shape: RoundedRectangleBorder(
-                            //         borderRadius: BorderRadius.circular(8),
-                            //         side: BorderSide(
-                            //           color: Colors.black,
-                            //           width: 0.5,
-                            //         ),
-                            //       ),
-                            //       elevation: 0,
-                            //     ),
-                            //     child: _isLoading_google
-                            //         ? const Center(
-                            //             child: CircularProgressIndicator(
-                            //               color: purple200,
-                            //             ),
-                            //           )
-                            //         : Row(
-                            //             mainAxisAlignment:
-                            //                 MainAxisAlignment.center,
-                            //             children: [
-                            //               // SizedBox(
-                            //               //   width: 100,
-                            //               // ),
-                            //               Image.asset(
-                            //                 "assets/images/google_icon.png",
-                            //                 width: 30,
-                            //                 height: 30,
-                            //               ),
-                            //               SizedBox(
-                            //                 width: 30,
-                            //               ),
-                            //               const Text(
-                            //                 '구글 계정으로 로그인',
-                            //                 style: TextStyle(color: Colors.black),
-                            //               ),
-                            //             ],
-                            //           ),
-                            //   ),
-                            // ),
+                            SizedBox(
+                              width: 450,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  if (isKakao || isInsta) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                              '구글로 로그인해보세요!',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Text(
+                                                  isKakao
+                                                      ? '1. 우측 하단의 더보기 버튼을 눌러주세요'
+                                                      : '1. 우측 상단의 더보기 버튼을 눌러주세요',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w300),
+                                                ),
+                                                Text(
+                                                  isIphone
+                                                      ? '2. "사파리로 열기" 버튼을 눌러주세요'
+                                                      : '2. "다른 브라우저로 열기" 버튼을 눌러주세요',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w300),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text('Ok'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              )
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    signInWithGoogle();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: Colors.white,
+                                  fixedSize: Size.fromHeight(50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(
+                                      color: Colors.black,
+                                      width: 0.5,
+                                    ),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: _isLoading_google
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                          color: purple200,
+                                        ),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          // SizedBox(
+                                          //   width: 100,
+                                          // ),
+                                          Image.asset(
+                                            "assets/images/google_icon.png",
+                                            width: 30,
+                                            height: 30,
+                                          ),
+                                          SizedBox(
+                                            width: 30,
+                                          ),
+                                          const Text(
+                                            '구글 계정으로 로그인',
+                                            style:
+                                                TextStyle(color: Colors.black),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
                             SizedBox(
                               height: 20,
                             ),
@@ -342,9 +403,6 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                   ),
                                 ],
                               ),
-                            ),
-                            SizedBox(
-                              height: 700,
                             ),
                           ],
                         ),
