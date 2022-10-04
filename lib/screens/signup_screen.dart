@@ -6,6 +6,7 @@ import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
+import 'package:universal_html/html.dart' as html;
 
 import '../consts/colors.dart';
 import '../consts/routes.dart';
@@ -26,6 +27,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   // ignore: unused_field
   bool _isLoading_email = false;
   bool _isLoading_google = false;
+  String userAgent = html.window.navigator.userAgent.toString();
 
   @override
   void initState() {
@@ -86,6 +88,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool isKakao = userAgent.contains('KAKAOTALK') ? true : false;
+    bool isInsta = userAgent.contains('Instagram') ? true : false;
+    bool isIpad = userAgent.contains('iPad') ? true : false;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
@@ -278,13 +283,59 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             SizedBox(
                               height: 15,
                             ),
-                            // 구글 로그인 버튼
+                            // 구글 로그인 버
                             SizedBox(
                               width: 450,
                               height: 50,
                               child: ElevatedButton(
-                                onPressed: () {
-                                  signUpWithGoogle();
+                                onPressed: () async {
+                                  if (isKakao || isInsta) {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text(
+                                              '구글로 로그인해보세요!',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Text(
+                                                  isKakao
+                                                      ? '1. 우측 하단의 더보기 버튼을 눌러주세요'
+                                                      : '1. 우측 상단의 더보기 버튼을 눌러주세요',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w300),
+                                                ),
+                                                Text(
+                                                  isIpad
+                                                      ? '2. "사파리로 열기" 버튼을 눌러주세요'
+                                                      : '2. "다른 브라우저로 열기" 버튼을 눌러주세요',
+                                                  style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w300),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text('Ok'),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              )
+                                            ],
+                                          );
+                                        });
+                                  } else {
+                                    signUpWithGoogle();
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   primary: Colors.white,
