@@ -311,42 +311,68 @@ class CalendarState extends ConsumerState<Calendar> {
     } else {
       final users = ref.read(usersProvider);
       List<String> userIds = timeRegionDetails.region.text!.split(',');
-      String photoUrl = users[userIds.first]!.photoUrl!;
+      int reservedUserCount = userIds.length;
+      List<String> photoUrl = [users[userIds.first]!.photoUrl!];
+      for (int i = 0; i < reservedUserCount; i++) {
+        photoUrl.add(users[userIds[i]]!.photoUrl!);
+      }
       String nickname = users[userIds.first]!.nickname!;
 
-      // String job = users[timeRegionDetails.region.text]!.job!;
-      return Container(
-        padding: EdgeInsets.only(left: 10, right: 10),
-        child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          CircleAvatar(
-            radius: 13,
-            backgroundColor: Colors.black38,
-            backgroundImage: NetworkImage(
-              photoUrl,
-            ),
-          ),
+      return _buildCalendarItem(
+          context, users, userIds, reservedUserCount, nickname);
+    }
+  }
+
+  Widget _buildCalendarItem(
+      BuildContext context, users, userIds, reservedUserCount, nickname) {
+    return Container(
+      padding: EdgeInsets.only(
+        left: 8,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _buildUserProfileImage(reservedUserCount, users, userIds),
           Flexible(
             child: Container(
               padding: EdgeInsets.only(left: 8),
               height: 30,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    nickname,
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
-                    overflow: TextOverflow.fade,
-                    maxLines: 1,
-                    softWrap: false,
+                  Container(
+                    width: 60,
+                    alignment: Alignment.centerLeft,
+                    child: reservedUserCount == 1
+                        ? Text(
+                            "${nickname}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                                color: Colors.black),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          )
+                        : Text(
+                            "${nickname} 외 ${reservedUserCount - 1}명",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                                color: Colors.black),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          ),
                   ),
                 ],
               ),
             ),
           )
-        ]),
-      );
-    }
+        ],
+      ),
+    );
   }
 
   //
@@ -549,7 +575,10 @@ class CalendarState extends ConsumerState<Calendar> {
     // 예약 (매칭 완료 - 상대방 정보 보여주기)
     else if (subject == MATCHED) {
       final users = ref.read(usersProvider);
+      final database = ref.read(databaseProvider);
       List<String> userIds = notes!.split(',');
+      int reservedUserCount = userIds.length;
+      userIds.removeWhere((element) => element == database.uid);
 
       return Container(
         padding: EdgeInsets.all(4),
@@ -588,16 +617,27 @@ class CalendarState extends ConsumerState<Calendar> {
                         SizedBox(
                           width: 4,
                         ),
-                        Text(
-                          "${users[userIds.first]!.nickname!}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 11,
-                              color: purple200),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                        ),
+                        reservedUserCount == 1
+                            ? Text(
+                                "${users[userIds.first]!.nickname!}",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11,
+                                    color: purple200),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                "${users[userIds.first]!.nickname!} 외 ${reservedUserCount - 1}명",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 11,
+                                    color: purple200),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                              ),
                       ],
                     ),
                   ),
@@ -708,6 +748,123 @@ class CalendarState extends ConsumerState<Calendar> {
           ));
     } else {
       return Container();
+    }
+  }
+
+  Widget _buildUserProfileImage(
+    reservedUserCount,
+    users,
+    userIds,
+  ) {
+    assert([1, 2, 3].contains(reservedUserCount));
+    switch (reservedUserCount) {
+      case 1:
+        return Container(
+          width: 38,
+          height: 30,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                left: 0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    users[userIds.first]!.photoUrl!,
+                    fit: BoxFit.cover,
+                    width: 30,
+                    height: 30,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      case 2:
+        return Container(
+          width: 38,
+          height: 30,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 3,
+                left: 0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    users[userIds.first]!.photoUrl!,
+                    fit: BoxFit.cover,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 3,
+                left: 14,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    users[userIds[1]]!.photoUrl!,
+                    fit: BoxFit.cover,
+                    width: 24,
+                    height: 24,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      case 3:
+        return Container(
+          width: 38,
+          height: 30,
+          child: Stack(
+            children: [
+              Positioned(
+                top: 0,
+                left: 5,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    users[userIds[0]]!.photoUrl!,
+                    fit: BoxFit.cover,
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    users[userIds[1]]!.photoUrl!,
+                    fit: BoxFit.cover,
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    users[userIds[2]]!.photoUrl!,
+                    fit: BoxFit.cover,
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      default:
+        return Container();
     }
   }
 }
