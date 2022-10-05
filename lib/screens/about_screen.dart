@@ -626,7 +626,7 @@ class _AboutScreenState extends State<AboutScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Focus 50',
+                          '소마일',
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 30,
@@ -664,7 +664,7 @@ class _AboutScreenState extends State<AboutScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'SW 마에스트로 | Team : Focusmaker',
+                              '사업자등록번호 | 627-15-01905',
                               style: TextStyle(
                                 color: footerGreyColor,
                                 fontSize: 18,
@@ -672,7 +672,7 @@ class _AboutScreenState extends State<AboutScreen>
                               ),
                             ),
                             Text(
-                              '서울특별시 강남구 테헤란로 311 59-12 아남타워 7층',
+                              '남양주시 다산중앙로 82번길 15, 5101동 101호',
                               style: TextStyle(
                                 color: footerGreyColor,
                                 fontSize: 18,
