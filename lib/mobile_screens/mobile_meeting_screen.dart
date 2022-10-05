@@ -58,7 +58,8 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
       );
     });
     html.window.onUnload.listen((event) async {
-      database.setReservation(reservation.doLeave(database.uid));
+      database.updateReservationUserInfo(
+          reservation.id!, database.uid, "leaveDTTM", DateTime.now());
 
       AnalyticsMethod().mobileLogForceExit();
     });
@@ -66,7 +67,8 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
 
   @override
   void dispose() {
-    database.setReservation(reservation.doLeave(database.uid));
+    database.updateReservationUserInfo(
+        reservation.id!, database.uid, "leaveDTTM", DateTime.now());
     JitsiMeet.removeAllListeners();
     super.dispose();
   }
