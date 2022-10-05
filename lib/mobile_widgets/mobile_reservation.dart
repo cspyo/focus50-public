@@ -33,7 +33,8 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
   void enterReservation(ReservationModel nextReservation) {
     final database = ref.read(databaseProvider);
     final uid = database.uid;
-    database.setReservation(nextReservation.doEnter(uid));
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "enterDTTM", DateTime.now());
     AnalyticsMethod().mobileLogEnterSession();
     Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
   }
