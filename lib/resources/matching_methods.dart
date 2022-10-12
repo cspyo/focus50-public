@@ -34,35 +34,43 @@ class MatchingMethods {
     user = await database.getUserPublic();
     userName = user!.nickname;
 
-    ReservationModel? notFullReservation =
-        await database.findReservationForMatch(startTime: startTime);
-
-    if (notFullReservation == null) {
-      ReservationModel newReservation = ReservationModel(
-          startTime: startTime,
-          endTime: endTime,
-          headcount: 0,
-          isFull: false,
-          maxHeadcount: 4,
-          roomId: null,
-          userIds: [],
-          userInfos: {});
-      database.setReservation(newReservation.addUser(
-          userId, ReservationUserInfo(uid: userId, nickname: userName)));
-    } else {
-      database.setReservation(notFullReservation.addUser(
-          userId, ReservationUserInfo(uid: userId, nickname: userName)));
-    }
+    database.runTransaction((transaction) async {
+      ReservationModel? notFullReservation =
+          await database.findReservationForMatch(
+              startTime: startTime, transaction: transaction);
+      if (notFullReservation == null) {
+        ReservationModel newReservation = ReservationModel(
+            startTime: startTime,
+            endTime: endTime,
+            headcount: 0,
+            isFull: false,
+            maxHeadcount: 4,
+            roomId: null,
+            userIds: [],
+            userInfos: {});
+        database.setReservation(newReservation.addUser(
+            userId, ReservationUserInfo(uid: userId, nickname: userName)));
+      } else {
+        database.updateReservationInTransaction(
+          notFullReservation.addUser(
+              userId, ReservationUserInfo(uid: userId, nickname: userName)),
+          transaction,
+        );
+      }
+    });
   }
 
   Future<void> cancelRoom(String docId) async {
-    ReservationModel reservation = await database.getReservation(docId);
-    ReservationModel cancelReservation = reservation.deleteUser(userId);
-    if (cancelReservation.headcount == 0) {
-      database.deleteReservation(cancelReservation);
-    } else {
-      database.setReservation(cancelReservation);
-    }
+    database.runTransaction((transaction) async {
+      ReservationModel reservation =
+          await database.getReservationInTransaction(docId, transaction);
+      ReservationModel cancelReservation = reservation.deleteUser(userId);
+      if (cancelReservation.headcount == 0) {
+        database.deleteReservationInTransaction(cancelReservation, transaction);
+      } else {
+        database.updateReservationInTransaction(cancelReservation, transaction);
+      }
+    });
   }
 
   Future<void> enterRoom(

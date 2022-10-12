@@ -96,9 +96,39 @@ class FirestoreDatabase {
             ReservationModel.fromMap(snapshot, options));
   }
 
+  // document id가 같은 reservation 반환
+  Future<ReservationModel> getReservationInTransaction(
+      String docId, Transaction transaction) async {
+    return await _service.getDataInTransaction(
+      path: FirestorePath.reservation(docId),
+      builder: (snapshot, options) =>
+          ReservationModel.fromMap(snapshot, options),
+      transaction: transaction,
+    );
+  }
+
+  Future<void> updateReservationInTransaction(
+    ReservationModel reservation,
+    Transaction transaction,
+  ) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.reservation(reservation.id!),
+        data: reservation.toMap(),
+        transaction: transaction,
+      );
+
   // reservation 삭제 [예약한 사람 수(headcount)가 0이 되면]
   Future<void> deleteReservation(ReservationModel reservation) =>
       _service.deleteData(path: FirestorePath.reservation(reservation.id!));
+
+  Future<void> deleteReservationInTransaction(
+    ReservationModel reservation,
+    Transaction transaction,
+  ) =>
+      _service.deleteDataInTransaction(
+        path: FirestorePath.reservation(reservation.id!),
+        transaction: transaction,
+      );
 
   Future<void> updateReservationUserInfo(
           String docId, String uid, String field, dynamic updatedData) =>
@@ -111,20 +141,21 @@ class FirestoreDatabase {
 
   // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
-      {required DateTime startTime}) async {
-    List<ReservationModel?> findNotFullReservation =
-        await _service.getDataWithQuery(
+      {required DateTime startTime, required Transaction transaction}) async {
+    ReservationModel? findNotFullReservation =
+        await _service.getDataWithQueryInTransaction(
             path: FirestorePath.reservations(),
             queryBuilder: (query) => query
                 .where("startTime", isEqualTo: Timestamp.fromDate(startTime))
                 .where("isFull", isEqualTo: false)
                 .limit(1),
             builder: (snapshot, options) =>
-                ReservationModel.fromMap(snapshot, options));
-    if (findNotFullReservation.isEmpty) {
+                ReservationModel.fromMap(snapshot, options),
+            transaction: transaction);
+    if (findNotFullReservation == null) {
       return null;
     } else {
-      return findNotFullReservation.first;
+      return findNotFullReservation;
     }
   }
 
@@ -219,4 +250,8 @@ class FirestoreDatabase {
 
   Future<void> deleteTodo(TodoModel todo) =>
       _service.deleteData(path: FirestorePath.todo(todo.id!));
+
+  Future<void> runTransaction(TransactionHandler transactionHandler) async {
+    await _service.runTransaction(transactionHandler);
+  }
 }
