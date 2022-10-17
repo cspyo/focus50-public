@@ -21,12 +21,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading_email = false;
   bool _isLoading_google = false;
+  final _formKey = GlobalKey<FormState>();
   String userAgent = html.window.navigator.userAgent.toString();
+  String? invitedGroupId = Uri.base.queryParameters["g"];
   @override
   void initState() {
     super.initState();
@@ -57,11 +58,17 @@ class _LoginScreenState extends State<LoginScreen> {
       showSnackBar("비밀번호가 틀렸습니다.", context);
     } else if (res == NOT_CREATED_PROFILE) {
       AnalyticsMethod().logLogin("Email");
-      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
       AnalyticsMethod().logLogin("Email");
       AuthMethods().updateLastLogin();
-      Get.rootDelegate.offNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
     setState(() {
@@ -79,9 +86,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
       AuthMethods().updateLastLogin();
-      Get.rootDelegate.offNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.CALENDAR);
     } else {
-      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     }
     AnalyticsMethod().logLogin("Google");
     setState(() {
@@ -125,7 +138,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               primary: purple300,
                             ),
                             onPressed: () {
-                              Get.rootDelegate.toNamed(Routes.SIGNUP);
+                              invitedGroupId != null
+                                  ? Get.rootDelegate.toNamed(Routes.SIGNUP,
+                                      arguments: true,
+                                      parameters: {'g': invitedGroupId!})
+                                  : Get.rootDelegate.toNamed(Routes.SIGNUP);
                             },
                             child: const Text(
                               '   회원가입   ',
@@ -392,7 +409,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Get.rootDelegate.toNamed(Routes.SIGNUP);
+                                      invitedGroupId != null
+                                          ? Get.rootDelegate.toNamed(
+                                              Routes.SIGNUP,
+                                              arguments: true,
+                                              parameters: {
+                                                  'g': invitedGroupId!
+                                                })
+                                          : Get.rootDelegate
+                                              .toNamed(Routes.SIGNUP);
                                     },
                                     child: Text(
                                       "회원가입",

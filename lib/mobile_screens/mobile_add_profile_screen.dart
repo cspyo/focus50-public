@@ -28,6 +28,7 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
   Uint8List? _image;
 
   String? nicknameValidate = null;
+  String? invitedGroupId = Uri.base.queryParameters["g"];
 
   @override
   void initState() {
@@ -54,7 +55,10 @@ class _MobileAddProfileScreenState extends State<MobileAddProfileScreen> {
         job: _jobController.text,
         file: _image);
 
-    Get.rootDelegate.toNamed(Routes.CALENDAR);
+    invitedGroupId != null
+        ? Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR(),
+            arguments: true, parameters: {'g': invitedGroupId!})
+        : Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
     AnalyticsMethod().mobileLogCreateProfile();
     setState(() {
       _isLoading = false;

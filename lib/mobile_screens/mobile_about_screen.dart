@@ -768,7 +768,7 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.rootDelegate.toNamed(Routes.CALENDAR);
+                        Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: purple300,

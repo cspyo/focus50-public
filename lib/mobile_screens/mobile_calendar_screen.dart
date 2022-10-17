@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
+import 'package:focus42/mobile_widgets/mobile_group_widget.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
@@ -368,7 +369,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: border100)),
                   height: screenHeight - 165,
-                  child: Column(
+                  child: Stack(
                     children: [
                       // MobileCalendarHeader(
                       //   calendarController: calendarController,
@@ -378,6 +379,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                         calendarController: calendarController,
                         isNotificationOpen: isNotificationOpen,
                       ),
+                      Positioned(bottom: 10, right: 10, child: MobileGroup()),
                       // changeVisibleDates: changeVisibleDates),
                     ],
                   )),

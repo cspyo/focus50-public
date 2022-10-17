@@ -40,7 +40,6 @@ dependencies:
   video_player: ^2.4.5
   flutter:
     sdk: flutter
-  flutter_webrtc: ^0.9.7
   syncfusion_flutter_calendar: ^20.1.61
   universal_html: ^2.0.8
   flutter_svg: ^1.1.5
@@ -81,6 +80,7 @@ flutter:
     - assets/images/postit3.svg
     - assets/images/calendarClick.gif
     - assets/images/sessionTimer.gif
+    - assets/images/earth.png
     - assets/sound/ring.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/widgets/calendar.dart';
 import 'package:focus42/widgets/desktop_header.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:focus42/widgets/line.dart';
 import 'package:focus42/widgets/reservation.dart';
 import 'package:focus42/widgets/todo.dart';
@@ -145,8 +146,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      child: Calendar(),
+                    Column(
+                      children: [
+                        Container(
+                          width: screenWidth - 420,
+                          height: 50,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: border100, width: 1.5))),
+                          child: Group(),
+                        ),
+                        Container(
+                          height: screenHeight - 175,
+                          child: Calendar(),
+                        ),
+                      ],
                     ),
                   ],
                 ),

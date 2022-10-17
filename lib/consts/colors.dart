@@ -26,6 +26,7 @@ class MyColors {
   static const Color purple100 = Color.fromARGB(255, 236, 238, 253);
   static const Color border100 = Color(0xffF2F1F1);
   static const Color border200 = Color(0xff6A6A6A);
+  static const Color border300 = Color(0xffD9D9D9);
   static const Color black100 = Color(0xff696969);
   static const Color blackSession = Color(0xff1A222D);
   static const Color blackCustomized = Color.fromARGB(255, 147, 147, 147);
