@@ -20,13 +20,18 @@ class FirestoreDatabase {
   // 유저 저장 및 업데이트
   Future<void> setUser(UserModel user) async {
     if (user.userPublicModel != null)
-      _service.setData(
+      await _service.setData(
           path: FirestorePath.userPublic(uid),
           data: user.userPublicModel!.toMap());
     if (user.userPrivateModel != null)
-      _service.setData(
+      await _service.setData(
           path: FirestorePath.userPrivate(uid),
           data: user.userPrivateModel!.toMap());
+  }
+
+  Future<UserModel> getUser() async {
+    UserModel user = UserModel(await getUserPublic(), await getUserPrivate());
+    return user;
   }
 
   Future<UserPublicModel> getUserPublic({String? othersUid}) async {
@@ -45,6 +50,14 @@ class FirestoreDatabase {
         path: FirestorePath.userPrivate(uid),
         builder: (snapshot, options) =>
             UserPrivateModel.fromMap(snapshot, options));
+  }
+
+  Future<bool> possibleNickname(String nickname) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection(FirestorePath.users())
+        .where("nickname", isEqualTo: nickname)
+        .get();
+    return querySnapshot.size == 0;
   }
 
   // userPublic 스트림이랑 userPrivate 스트림이랑 combine

@@ -1,0 +1,291 @@
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:focus42/consts/colors.dart';
+import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
+import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/utils/utils.dart';
+import 'package:get/get.dart';
+
+class EmailLoginDialog extends ConsumerStatefulWidget {
+  const EmailLoginDialog({Key? key}) : super(key: key);
+
+  @override
+  _EmailLoginDialogState createState() => _EmailLoginDialogState();
+}
+
+class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  // 이메일로 로그인
+  void _loginWithEmail(String email, String password) async {
+    String res = await ref
+        .read(authViewModelProvider)
+        .loginWithEmail(email: email, password: password);
+    if (res == SUCCESS) {
+      Get.rootDelegate.offNamed(Routes.CALENDAR);
+      AnalyticsMethod().logLogin("Email");
+    } else if (res == USER_NOT_FOUND) {
+      showSnackBar("회원으로 등록되어있지 않습니다.", context);
+    } else if (res == WRONG_PASSWORD) {
+      showSnackBar("비밀번호가 틀렸습니다.", context);
+    } else {
+      showSnackBar(res, context);
+    }
+  }
+
+  // 이메일 텍스트 필드 확인
+  String? _emailValidator(String? email) {
+    if (email == null) {
+      return "이메일은 필수사항입니다";
+    }
+    if (!EmailValidator.validate(email)) {
+      return "이메일 형식으로 입력해주세요";
+    }
+    return null;
+  }
+
+  // 비밀번호 텍스트 필드 확인
+  String? _passwordValidator(String? password) {
+    if (password == null) {
+      return '비밀번호는 필수사항입니다';
+    } else if (password.length < 6) {
+      return '6자리 이상으로 입력해주세요';
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> _showSignUpDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SignUpDialog();
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      // <-- SEE HERE
+      title: _buildDialogTitle(),
+      content: _buildEmailLogin(),
+    );
+  }
+
+  // 다이얼로그 타이틀
+  Widget _buildDialogTitle() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const <Widget>[
+            Text(
+              'Focus',
+              style: TextStyle(
+                fontFamily: 'Okddung',
+                fontSize: 25,
+                color: Colors.black,
+              ),
+            ),
+            Text(
+              '50',
+              style: TextStyle(
+                fontFamily: 'Okddung',
+                fontSize: 25,
+                color: purple300,
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Text(
+          '로그인',
+          style: TextStyle(
+            fontSize: 25,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // 이메일 로그인 버튼 눌렀을 때
+  Widget _buildEmailLogin() {
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: 400,
+          child: ListBody(
+            children: [
+              // 이메일 필드
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: TextFormField(
+                      controller: _emailController,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      cursorColor: Colors.grey.shade600,
+                      cursorHeight: 18,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        hoverColor: purple300,
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: purple300)),
+                        labelText: '이메일',
+                        floatingLabelStyle: TextStyle(
+                          color: purple300,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      textInputAction: TextInputAction.next,
+                      validator: _emailValidator,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // 비밀번호
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      cursorColor: Colors.grey.shade600,
+                      cursorHeight: 18,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        hoverColor: purple300,
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: purple300)),
+                        labelText: '비밀번호',
+                        floatingLabelStyle: TextStyle(
+                          color: purple300,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      validator: _passwordValidator,
+                      onFieldSubmitted: (_) async {
+                        if (_formKey.currentState!.validate()) {
+                          String email = _emailController.text;
+                          String password = _passwordController.text;
+                          _loginWithEmail(email, password);
+                        }
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                ],
+              ),
+              // 로그인 버튼
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 100),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: Size(100, 40),
+                    primary: purple300,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(80),
+                    ),
+                    elevation: 4,
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      String email = _emailController.text;
+                      String password = _passwordController.text;
+                      _loginWithEmail(email, password);
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        '로그인',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 40),
+              // 회원가입 안했어?
+              _buildNotSignedUp(),
+              SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNotSignedUp() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "계정이 아직 없나요?",
+            style: TextStyle(
+              fontSize: 13,
+            ),
+          ),
+          SizedBox(width: 20),
+          InkWell(
+            onTap: () {
+              Navigator.of(context).pop();
+
+              _showSignUpDialog();
+            },
+            child: Text(
+              "회원가입",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
