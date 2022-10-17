@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/services/firestore_database.dart';
@@ -10,17 +11,35 @@ import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-final reservationViewModelProvider = Provider.autoDispose<ReservationViewModel>(
+final activatedGroupIdProvider = StateProvider<String>((ref) {
+  final _ret = "public";
+  return _ret;
+});
+
+final myActivatedGroupFutureProvider =
+    FutureProvider.autoDispose<GroupModel>((ref) async {
+  final database = ref.watch(databaseProvider);
+  final String activatedGroupId = ref.watch(activatedGroupIdProvider);
+  final GroupModel activatedGroup = await database.getGroup(activatedGroupId);
+  return activatedGroup;
+});
+
+final reservationViewModelProvider = Provider<ReservationViewModel>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    return ReservationViewModel(database: database, ref: ref);
+    final groupId = ref.watch(activatedGroupIdProvider);
+    return ReservationViewModel(database: database, ref: ref, groupId: groupId);
   },
 );
 
+// Todo: check -> groupId == null : isEqualTo 오퍼레이션 정상 작동?
+
 class ReservationViewModel {
-  ReservationViewModel({required this.database, required this.ref});
+  ReservationViewModel(
+      {required this.database, required this.ref, this.groupId = null});
   final FirestoreDatabase database;
   final Ref ref;
+  final String? groupId;
 
   List<Appointment> appointments = <Appointment>[];
 
@@ -67,7 +86,7 @@ class ReservationViewModel {
     }
 
     streamSubscription =
-        database.allReservationsStream().listen((reservations) async {
+        database.allReservationsStream(groupId).listen((reservations) async {
       final appointmentsNotifier = ref.read(appointmentsProvider.notifier);
       final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
       final usersNotifier = ref.read(usersProvider.notifier);
@@ -176,7 +195,7 @@ class ReservationViewModel {
     reservationTimeList.clear();
     // 다른 사람들의 예약을 만드는 부분
     List<ReservationModel> othersReservations =
-        await database.othersReservations();
+        await database.othersReservations(groupId);
 
     await Future.forEach(othersReservations,
         (ReservationModel othersReservation) async {
@@ -220,7 +239,7 @@ class ReservationViewModel {
     }
 
     streamSubscription =
-        database.myReservationsStream().listen((myReservations) async {
+        database.myReservationsStream(groupId).listen((myReservations) async {
       final appointmentsNotifier = ref.read(appointmentsProvider.notifier);
       final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
       final usersNotifier = ref.read(usersProvider.notifier);
@@ -238,7 +257,7 @@ class ReservationViewModel {
 
       // 다른 사람들의 예약을 만드는 부분
       List<ReservationModel> notFullReservations =
-          await database.othersReservations();
+          await database.othersReservations(groupId);
 
       // 내가 포함된 예약은 위에서 이미 처리했기에 필요없음 (복합쿼리로 가져올 수 없어서 로직으로 처리)
       List<ReservationModel> othersReservations = <ReservationModel>[];

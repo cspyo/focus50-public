@@ -28,6 +28,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   Uint8List? _image;
 
   String? nicknameValidate = null;
+  String? invitedGroupId = Uri.base.queryParameters["g"];
 
   @override
   void initState() {
@@ -55,7 +56,10 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
       file: _image,
     );
 
-    Get.rootDelegate.toNamed(Routes.CALENDAR);
+    invitedGroupId != null
+        ? Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR(),
+            arguments: true, parameters: {'g': invitedGroupId!})
+        : Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
     AnalyticsMethod().logCreateProfile();
     setState(() {
       _isLoading = false;
@@ -113,7 +117,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           primary: purple300,
                         ),
                         onPressed: () {
-                          Get.rootDelegate.offNamed(Routes.LOGIN);
+                          invitedGroupId != null
+                              ? Get.rootDelegate.offNamed(Routes.LOGIN,
+                                  arguments: true,
+                                  parameters: {'g': invitedGroupId!})
+                              : Get.rootDelegate.offNamed(Routes.LOGIN);
                         },
                         child: const Text(
                           '    로그인    ',

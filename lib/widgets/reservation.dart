@@ -9,6 +9,7 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -16,7 +17,8 @@ final myNextReservationStreamProvider =
     StreamProvider.autoDispose<List<ReservationModel?>>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    return database.myNextReservationStream();
+    final activatedGroupId = ref.watch(activatedGroupIdProvider);
+    return database.myNextReservationStream(activatedGroupId);
   },
 );
 

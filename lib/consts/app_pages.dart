@@ -6,12 +6,10 @@ import 'package:focus42/mobile_screens/mobile_add_profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
 import 'package:focus42/mobile_screens/mobile_login_screen.dart';
 import 'package:focus42/mobile_screens/mobile_meeting_screen.dart';
-import 'package:focus42/mobile_screens/mobile_session_screen.dart';
 import 'package:focus42/mobile_screens/mobile_signup_screen.dart';
 import 'package:focus42/screens/add_profile_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
 import 'package:focus42/screens/profile_screen.dart';
-import 'package:focus42/screens/session_screen.dart';
 import 'package:get/get.dart';
 
 import '../screens/about_screen.dart';
@@ -45,10 +43,8 @@ abstract class AppPages {
       page: () => CalendarScreen(),
     ),
     GetPage(
-      name: Routes.SESSION,
-      page: () => SessionScreen(
-        session: Get.rootDelegate.arguments(),
-      ),
+      name: Routes.GROUPCALENDAR,
+      page: () => CalendarScreen(),
     ),
     GetPage(
       name: Routes.MEET,
@@ -83,10 +79,8 @@ abstract class AppPages {
       page: () => MobileCalendarScreen(),
     ),
     GetPage(
-      name: Routes.SESSION,
-      page: () => MobileSessionScreen(
-        session: Get.rootDelegate.arguments(),
-      ),
+      name: Routes.GROUPCALENDAR,
+      page: () => MobileCalendarScreen(),
     ),
     GetPage(
       name: Routes.MEET,

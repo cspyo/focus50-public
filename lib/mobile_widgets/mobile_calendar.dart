@@ -50,6 +50,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   CalendarDetails? details;
 
+  late final database;
+  late String groupId;
+
   late ReservationViewModel reservationViewModel;
 
   void _calendarTapped(CalendarTapDetails calendarTapDetails) async {
@@ -111,15 +114,31 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     setState(() {});
   }
 
+  void _changeActivatedGroup(String newGroupId) {
+    ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    groupId = ref.read(activatedGroupIdProvider);
     reservationViewModel = ref.read(reservationViewModelProvider);
     reservationViewModel.startView();
+    database = ref.read(databaseProvider);
   }
 
   @override
   Widget build(BuildContext context) {
+    final _oldGroupId = groupId;
+    final _groupId = ref.watch(activatedGroupIdProvider);
+    if (_oldGroupId != _groupId) {
+      reservationViewModel.cancelListener();
+      reservationViewModel = ref.read(reservationViewModelProvider);
+      groupId = _groupId;
+      reservationViewModel.startView();
+    }
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -212,7 +231,8 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   timeRegionBuilder: _timeRegionBuilder,
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
-                  appointmentBuilder: _appointmentBuilder,
+                  appointmentBuilder: (context, details) =>
+                      _appointmentBuilder(context, details, _groupId),
                 ),
               ),
             ),
@@ -335,8 +355,8 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     );
   }
 
-  Widget _appointmentBuilder(
-      BuildContext context, CalendarAppointmentDetails details) {
+  Widget _appointmentBuilder(BuildContext context,
+      CalendarAppointmentDetails details, String _groupId) {
     final appointmentNotifier = ref.read(appointmentsProvider.notifier);
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
     final Appointment appointment = details.appointments.first;
@@ -395,10 +415,11 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   setState(() {
                     appointment.subject = LOADING_RESERVE;
                   });
-                  final database = ref.read(databaseProvider);
                   try {
-                    await MatchingMethods(database: database)
-                        .matchRoom(startTime: startTime, endTime: endTime);
+                    await MatchingMethods(database: database).matchRoom(
+                        startTime: startTime,
+                        endTime: endTime,
+                        groupId: _groupId);
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }

@@ -6,11 +6,11 @@ class ReservationModel {
   final DateTime? startTime;
   final DateTime? endTime;
   final bool? isFull;
-  final String? roomId;
   final int? headcount;
   final int? maxHeadcount;
   final List<String>? userIds;
   final Map<String, ReservationUserInfo>? userInfos;
+  final String? groupId;
 
 //default Constructor
   ReservationModel({
@@ -18,11 +18,11 @@ class ReservationModel {
     this.startTime,
     this.endTime,
     this.isFull,
-    this.roomId,
     this.headcount,
     this.maxHeadcount,
     this.userIds,
     this.userInfos,
+    this.groupId,
   });
 
   ReservationModel addUser(String uid, ReservationUserInfo userInfo) {
@@ -42,11 +42,11 @@ class ReservationModel {
       startTime: this.startTime,
       endTime: this.endTime,
       isFull: newIsFull,
-      roomId: this.roomId,
       headcount: newHeadcount,
       maxHeadcount: this.maxHeadcount,
       userIds: newUserIds,
       userInfos: newUserInfos,
+      groupId: this.groupId,
     );
     return userAddedReservation;
   }
@@ -66,11 +66,11 @@ class ReservationModel {
       startTime: this.startTime,
       endTime: this.endTime,
       isFull: newIsFull,
-      roomId: this.roomId,
       headcount: newHeadcount,
       maxHeadcount: this.maxHeadcount,
       userIds: newUserIds,
       userInfos: newUserInfos,
+      groupId: this.groupId,
     );
     return userDeletedReservation;
   }
@@ -85,65 +85,30 @@ class ReservationModel {
       startTime: this.startTime,
       endTime: this.endTime,
       isFull: this.isFull,
-      roomId: this.roomId,
       headcount: this.headcount,
       maxHeadcount: this.maxHeadcount,
       userIds: this.userIds,
       userInfos: newUserInfos,
+      groupId: this.groupId,
     );
     return userUpdatedReservation;
   }
 
-  ReservationModel doEnter(String uid) {
-    assert(this.userInfos!.containsKey(uid));
-    Map<String, ReservationUserInfo>? updatedUserInfo = {...userInfos!};
-    updatedUserInfo.update(
-      uid,
-      (value) => ReservationUserInfo(
-        enterDTTM: DateTime.now(),
-        leaveDTTM: value.leaveDTTM,
-        nickname: value.nickname,
-        uid: value.uid,
-      ),
+  factory ReservationModel.newReservation({
+    required DateTime startTime,
+    required DateTime endTime,
+    String? groupId,
+  }) {
+    return ReservationModel(
+      startTime: startTime,
+      endTime: endTime,
+      isFull: false,
+      headcount: 0,
+      maxHeadcount: 4,
+      userIds: [],
+      userInfos: {},
+      groupId: groupId,
     );
-    ReservationModel enteredReservation = ReservationModel(
-      id: this.id,
-      startTime: this.startTime,
-      endTime: this.endTime,
-      isFull: this.isFull,
-      roomId: this.roomId,
-      headcount: this.headcount,
-      maxHeadcount: this.maxHeadcount,
-      userIds: this.userIds,
-      userInfos: updatedUserInfo,
-    );
-    return enteredReservation;
-  }
-
-  ReservationModel doLeave(String uid) {
-    assert(this.userInfos!.containsKey(uid));
-    Map<String, ReservationUserInfo>? updatedUserInfo = {...userInfos!};
-    updatedUserInfo.update(
-      uid,
-      (value) => ReservationUserInfo(
-        enterDTTM: value.enterDTTM,
-        leaveDTTM: DateTime.now(),
-        nickname: value.nickname,
-        uid: value.uid,
-      ),
-    );
-    ReservationModel leavedReservation = ReservationModel(
-      id: this.id,
-      startTime: this.startTime,
-      endTime: this.endTime,
-      isFull: this.isFull,
-      roomId: this.roomId,
-      headcount: this.headcount,
-      maxHeadcount: this.maxHeadcount,
-      userIds: this.userIds,
-      userInfos: updatedUserInfo,
-    );
-    return leavedReservation;
   }
 
   factory ReservationModel.fromMap(
@@ -180,11 +145,11 @@ class ReservationModel {
       startTime: data['startTime']?.toDate() as DateTime,
       endTime: data['endTime']?.toDate() as DateTime,
       isFull: data['isFull'],
-      roomId: data['roomId'],
       headcount: data['headcount'],
       maxHeadcount: 4,
       userIds: data['userIds'] is Iterable ? List.from(data['userIds']) : null,
       userInfos: userInfoMap,
+      groupId: data['groupId'],
     );
   }
 
@@ -200,11 +165,11 @@ class ReservationModel {
       if (startTime != null) "startTime": startTime,
       if (endTime != null) "endTime": endTime,
       if (isFull != null) "isFull": isFull,
-      if (roomId != null) "roomId": roomId,
       if (headcount != null) "headcount": headcount,
       if (maxHeadcount != null) "maxHeadcount": maxHeadcount,
       if (userIds != null) "userIds": userIds,
       if (userInfoMap != null) "userInfos": userInfoMap,
+      if (groupId != null) "groupId": groupId,
     };
   }
 }

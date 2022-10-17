@@ -4,8 +4,8 @@ import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
-class ListItemsBuilder<T> extends ConsumerWidget {
-  const ListItemsBuilder({
+class ListItemsBuilder1<T> extends ConsumerWidget {
+  const ListItemsBuilder1({
     Key? key,
     required this.data,
     required this.itemBuilder,

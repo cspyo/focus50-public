@@ -30,6 +30,7 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
   bool _isLoading_email = false;
   bool _isLoading_google = false;
   String userAgent = html.window.navigator.userAgent.toString();
+  String? invitedGroupId = Uri.base.queryParameters["g"];
 
   @override
   void initState() {
@@ -60,7 +61,10 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
       showSnackBar("이미 존재하는 이메일입니다.", context);
     } else if (res == SUCCESS) {
       AnalyticsMethod().mobileLogSignUp("Email");
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.toNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     } else {
       showSnackBar(res, context);
     }
@@ -79,9 +83,15 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-      Get.rootDelegate.toNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR(),
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
     } else {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.toNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     }
     setState(() {
       _isLoading_google = false;
@@ -378,7 +388,15 @@ class _MobileSignUpScreenState extends State<MobileSignUpScreen> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Get.rootDelegate.toNamed(Routes.LOGIN);
+                                      invitedGroupId != null
+                                          ? Get.rootDelegate.toNamed(
+                                              Routes.LOGIN,
+                                              arguments: true,
+                                              parameters: {
+                                                  'g': invitedGroupId!
+                                                })
+                                          : Get.rootDelegate
+                                              .toNamed(Routes.LOGIN);
                                     },
                                     child: Text(
                                       "로그인",
