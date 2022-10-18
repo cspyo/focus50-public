@@ -80,6 +80,8 @@ flutter:
     - assets/images/postit3.svg
     - assets/images/calendarClick.gif
     - assets/images/sessionTimer.gif
+    - assets/images/photoInSession.png
+    - assets/images/report.png
     - assets/images/earth.png
     - assets/sound/ring.mp3
 
