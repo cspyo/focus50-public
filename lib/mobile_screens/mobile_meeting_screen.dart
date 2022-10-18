@@ -219,7 +219,7 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
         height: 40,
         child: TextButton(
           onPressed: () {
-            Get.rootDelegate.toNamed(Routes.CALENDAR);
+            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
             AnalyticsMethod().mobileLogPressExitButton();
           },
           style: ButtonStyle(

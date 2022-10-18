@@ -28,6 +28,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isLoading_email = false;
   bool _isLoading_google = false;
   String userAgent = html.window.navigator.userAgent.toString();
+  String? invitedGroupId = Uri.base.queryParameters["g"];
 
   @override
   void initState() {
@@ -55,7 +56,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       showSnackBar("이미 존재하는 이메일입니다.", context);
     } else if (res == SUCCESS) {
       AnalyticsMethod().logSignUp("Email");
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.toNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
     } else {
       showSnackBar(res, context);
     }
@@ -76,10 +80,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
       AnalyticsMethod().logLogin("Google");
       AuthMethods().updateLastLogin();
-      Get.rootDelegate.toNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR(),
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.toNamed(
+              DynamicRoutes.CALENDAR(),
+            );
     } else {
       AnalyticsMethod().logSignUp("Google");
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.toNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.toNamed(
+              Routes.ADD_PROFILE,
+            );
     }
     setState(() {
       _isLoading_google = false;
@@ -122,7 +136,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               primary: purple300,
                             ),
                             onPressed: () {
-                              Get.rootDelegate.offNamed(Routes.LOGIN);
+                              invitedGroupId != null
+                                  ? Get.rootDelegate.offNamed(Routes.LOGIN,
+                                      arguments: true,
+                                      parameters: {'g': invitedGroupId!})
+                                  : Get.rootDelegate.offNamed(Routes.LOGIN);
                             },
                             child: const Text(
                               '    로그인    ',
@@ -394,7 +412,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Get.rootDelegate.toNamed(Routes.LOGIN);
+                                      invitedGroupId != null
+                                          ? Get.rootDelegate.toNamed(
+                                              Routes.LOGIN,
+                                              arguments: true,
+                                              parameters: {
+                                                  'g': invitedGroupId!
+                                                })
+                                          : Get.rootDelegate
+                                              .toNamed(Routes.LOGIN);
                                     },
                                     child: Text(
                                       "로그인",

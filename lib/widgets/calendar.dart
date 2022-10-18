@@ -43,7 +43,10 @@ class CalendarState extends ConsumerState<Calendar> {
 
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   late ReservationViewModel reservationViewModel;
-
+  // String? groupId = Uri.base.queryParameters['id'];
+  // String? groupPw = Uri.base.queryParameters['pw'];
+  late final database;
+  late String groupId;
   //highlighter 위치 정하는 함수
   int _getFirstDayOfWeek(int highlighterPosition) {
     int currentDay = DateTime.now().weekday;
@@ -75,7 +78,7 @@ class CalendarState extends ConsumerState<Calendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.LOGIN);
+      Get.rootDelegate.toNamed(Routes.SIGNUP);
       return;
     }
 
@@ -176,8 +179,10 @@ class CalendarState extends ConsumerState<Calendar> {
   @override
   void initState() {
     super.initState();
+    groupId = ref.read(activatedGroupIdProvider);
     reservationViewModel = ref.read(reservationViewModelProvider);
     reservationViewModel.startView();
+    database = ref.read(databaseProvider);
   }
 
   @override
@@ -192,6 +197,15 @@ class CalendarState extends ConsumerState<Calendar> {
 
     final appointments = ref.watch(appointmentsProvider);
     final timeRegions = ref.watch(timeRegionsProvider);
+
+    final _oldGroupId = groupId;
+    final _groupId = ref.watch(activatedGroupIdProvider);
+    if (_oldGroupId != _groupId) {
+      reservationViewModel.cancelListener();
+      reservationViewModel = ref.read(reservationViewModelProvider);
+      groupId = _groupId;
+      reservationViewModel.startView();
+    }
 
     return Container(
         width: isTabletSize ? screenWidth : screenWidth - 440,
@@ -251,8 +265,8 @@ class CalendarState extends ConsumerState<Calendar> {
                       _timeRegionBuilder(context, details),
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
-                  appointmentBuilder: (context, details) =>
-                      _appointmentBuilder(context, details, isTabletSize),
+                  appointmentBuilder: (context, details) => _appointmentBuilder(
+                      context, details, isTabletSize, _groupId),
                 ),
               ),
             ),
@@ -376,8 +390,12 @@ class CalendarState extends ConsumerState<Calendar> {
   }
 
   //
-  Widget _appointmentBuilder(BuildContext context,
-      CalendarAppointmentDetails details, bool isTabletSize) {
+  Widget _appointmentBuilder(
+    BuildContext context,
+    CalendarAppointmentDetails details,
+    bool isTabletSize,
+    final String _groupId,
+  ) {
     final appointmentNotifier = ref.read(appointmentsProvider.notifier);
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
     final Appointment appointment = details.appointments.first;
@@ -388,7 +406,6 @@ class CalendarState extends ConsumerState<Calendar> {
     final String startTimeFormatted = DateFormat('Hm').format(startTime);
     final String endTimeFormatted =
         DateFormat('Hm').format(endTime.subtract(Duration(minutes: 10)));
-
     // 로딩중~
     if (subject == LOADING_RESERVE) {
       return Container(
@@ -437,10 +454,13 @@ class CalendarState extends ConsumerState<Calendar> {
                   setState(() {
                     appointment.subject = LOADING_RESERVE;
                   });
-                  final database = ref.read(databaseProvider);
+
                   try {
-                    await MatchingMethods(database: database)
-                        .matchRoom(startTime: startTime, endTime: endTime);
+                    await MatchingMethods(database: database).matchRoom(
+                      startTime: startTime,
+                      endTime: endTime,
+                      groupId: _groupId,
+                    );
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }

@@ -27,8 +27,8 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading_email = false;
   bool _isLoading_google = false;
-
   String userAgent = html.window.navigator.userAgent.toString();
+  String? invitedGroupId = Uri.base.queryParameters["g"];
   @override
   void initState() {
     // _scrollController.animateTo(1000,
@@ -62,11 +62,17 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
       showSnackBar("비밀번호가 틀렸습니다.", context);
     } else if (res == NOT_CREATED_PROFILE) {
       AnalyticsMethod().mobileLogLogin("Email");
-      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     } else {
       AnalyticsMethod().mobileLogLogin("Email");
       AuthMethods().updateLastLogin();
-      Get.rootDelegate.offNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.CALENDAR);
     }
 
     setState(() {
@@ -83,9 +89,15 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
     UserCredential cred = await AuthMethods().signInWithGoogle();
 
     if (await AuthMethods().isSignedUp(uid: cred.user!.uid)) {
-      Get.rootDelegate.offNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.CALENDAR);
     } else {
-      Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.ADD_PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.ADD_PROFILE);
     }
 
     setState(() {
@@ -392,7 +404,15 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Get.rootDelegate.toNamed(Routes.SIGNUP);
+                                      invitedGroupId != null
+                                          ? Get.rootDelegate.toNamed(
+                                              Routes.SIGNUP,
+                                              arguments: true,
+                                              parameters: {
+                                                  'g': invitedGroupId!
+                                                })
+                                          : Get.rootDelegate
+                                              .toNamed(Routes.SIGNUP);
                                     },
                                     child: Text(
                                       "회원가입",

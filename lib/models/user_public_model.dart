@@ -7,6 +7,7 @@ class UserPublicModel {
   DateTime? createdDate;
   DateTime? updatedDate;
   DateTime? lastLogin;
+  final List<String>? groups;
 
   UserPublicModel({
     this.nickname,
@@ -15,7 +16,24 @@ class UserPublicModel {
     this.createdDate,
     this.updatedDate,
     this.lastLogin,
+    this.groups,
   });
+
+  UserPublicModel addGroup(String groupId) {
+    List<String>? newGroups = [...?groups];
+    newGroups.add(groupId);
+
+    UserPublicModel groupAddedUser = UserPublicModel(
+      nickname: this.nickname,
+      photoUrl: this.photoUrl,
+      job: this.job,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      lastLogin: this.lastLogin,
+      groups: newGroups,
+    );
+    return groupAddedUser;
+  }
 
   factory UserPublicModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -43,6 +61,7 @@ class UserPublicModel {
       createdDate: createdDate,
       updatedDate: updatedDate,
       lastLogin: lastLogin,
+      groups: data?["groups"] is Iterable ? List.from(data?["groups"]) : null,
     );
   }
 
@@ -54,6 +73,7 @@ class UserPublicModel {
       if (createdDate != null) "createdDate": createdDate,
       if (updatedDate != null) "updatedDate": updatedDate,
       if (lastLogin != null) "lastLogin": lastLogin,
+      if (groups != null) "groups": groups,
     };
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -27,6 +28,13 @@ class FirestoreDatabase {
       _service.setData(
           path: FirestorePath.userPrivate(uid),
           data: user.userPrivateModel!.toMap());
+  }
+
+  Future<void> setUserPublic(UserPublicModel user) async {
+    _service.setData(
+      path: FirestorePath.userPublic(uid),
+      data: user.toMap(),
+    );
   }
 
   Future<UserPublicModel> getUserPublic({String? othersUid}) async {
@@ -96,9 +104,39 @@ class FirestoreDatabase {
             ReservationModel.fromMap(snapshot, options));
   }
 
+  // document id가 같은 reservation 반환
+  Future<ReservationModel> getReservationInTransaction(
+      String docId, Transaction transaction) async {
+    return await _service.getDataInTransaction(
+      path: FirestorePath.reservation(docId),
+      builder: (snapshot, options) =>
+          ReservationModel.fromMap(snapshot, options),
+      transaction: transaction,
+    );
+  }
+
+  Future<void> updateReservationInTransaction(
+    ReservationModel reservation,
+    Transaction transaction,
+  ) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.reservation(reservation.id!),
+        data: reservation.toMap(),
+        transaction: transaction,
+      );
+
   // reservation 삭제 [예약한 사람 수(headcount)가 0이 되면]
   Future<void> deleteReservation(ReservationModel reservation) =>
       _service.deleteData(path: FirestorePath.reservation(reservation.id!));
+
+  Future<void> deleteReservationInTransaction(
+    ReservationModel reservation,
+    Transaction transaction,
+  ) =>
+      _service.deleteDataInTransaction(
+        path: FirestorePath.reservation(reservation.id!),
+        transaction: transaction,
+      );
 
   Future<void> updateReservationUserInfo(
           String docId, String uid, String field, dynamic updatedData) =>
@@ -111,20 +149,26 @@ class FirestoreDatabase {
 
   // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
-      {required DateTime startTime}) async {
-    List<ReservationModel?> findNotFullReservation =
-        await _service.getDataWithQuery(
+      {required DateTime startTime,
+      String? groupId,
+      required Transaction transaction}) async {
+    // Todo: groupId null 일 때 isEqualTo 잘 되는지 확인해보아야 함.
+
+    ReservationModel? findNotFullReservation =
+        await _service.getDataWithQueryInTransaction(
             path: FirestorePath.reservations(),
             queryBuilder: (query) => query
                 .where("startTime", isEqualTo: Timestamp.fromDate(startTime))
+                .where("groupId", isEqualTo: groupId)
                 .where("isFull", isEqualTo: false)
                 .limit(1),
             builder: (snapshot, options) =>
-                ReservationModel.fromMap(snapshot, options));
-    if (findNotFullReservation.isEmpty) {
+                ReservationModel.fromMap(snapshot, options),
+            transaction: transaction);
+    if (findNotFullReservation == null) {
       return null;
     } else {
-      return findNotFullReservation.first;
+      return findNotFullReservation;
     }
   }
 
@@ -137,11 +181,12 @@ class FirestoreDatabase {
       );
 
   // 내 reservation (현재시간-10분 이후) 의 스트림
-  Stream<List<ReservationModel>> myReservationsStream() =>
+  Stream<List<ReservationModel>> myReservationsStream(String? groupId) =>
       _service.collectionStream(
         path: FirestorePath.reservations(),
         queryBuilder: (query) => query
             .where("userIds", arrayContains: uid)
+            .where("groupId", isEqualTo: groupId)
             .where("startTime",
                 isGreaterThanOrEqualTo:
                     DateTime.now().subtract(Duration(minutes: 10)))
@@ -151,7 +196,7 @@ class FirestoreDatabase {
       );
 
   // 내 가장 가까운 reservation 의 스트림
-  Stream<List<ReservationModel?>> myNextReservationStream() =>
+  Stream<List<ReservationModel?>> myNextReservationStream(String? groupId) =>
       _service.collectionStream(
         path: FirestorePath.reservations(),
         queryBuilder: (query) => query
@@ -159,6 +204,7 @@ class FirestoreDatabase {
             .where("startTime",
                 isGreaterThanOrEqualTo:
                     DateTime.now().subtract(Duration(minutes: 50)))
+            .where("groupId", isEqualTo: groupId)
             .orderBy("startTime")
             .limit(1),
         builder: (snapshot, options) =>
@@ -166,25 +212,27 @@ class FirestoreDatabase {
       );
 
   // isFull 이 false인 reservation
-  Future<List<ReservationModel>> othersReservations() =>
+  Future<List<ReservationModel>> othersReservations(String? groupId) =>
       _service.getDataWithQuery(
         path: FirestorePath.reservations(),
         // 복합쿼리에서 not-in과 > 쿼리는 같이 사용을 못함
         queryBuilder: (query) => query
             .where("isFull", isEqualTo: false)
+            .where("groupId", isEqualTo: groupId)
             .where("startTime", isGreaterThan: DateTime.now()),
         builder: (snapshot, options) =>
             ReservationModel.fromMap(snapshot, options),
       );
 
   // 현재 시간 이후 모든 reservation의 스트림 반환
-  Stream<List<ReservationModel>> allReservationsStream() =>
+  Stream<List<ReservationModel>> allReservationsStream(String? groupId) =>
       _service.collectionStream(
         path: FirestorePath.reservations(),
         queryBuilder: (query) => query
             .where("startTime",
                 isGreaterThanOrEqualTo:
                     DateTime.now().subtract(Duration(minutes: 50)))
+            .where("groupId", isEqualTo: groupId)
             .orderBy("startTime"),
         builder: (snapshot, options) =>
             ReservationModel.fromMap(snapshot, options),
@@ -219,4 +267,40 @@ class FirestoreDatabase {
 
   Future<void> deleteTodo(TodoModel todo) =>
       _service.deleteData(path: FirestorePath.todo(todo.id!));
+
+  //----------------------group----------------------//
+
+  Future<GroupModel> getGroup(String docId) async {
+    return await _service.getData(
+        path: FirestorePath.group(docId),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options));
+  }
+
+  Future<String> setGroup(GroupModel group) => _service.setData(
+        path: group.id != null
+            ? FirestorePath.group(group.id!)
+            : FirestorePath.groups(),
+        data: group.toMap(),
+        isAdd: group.id == null,
+      );
+
+  Future<void> deleteGroup(GroupModel group) =>
+      _service.deleteData(path: FirestorePath.group(group.id!));
+
+  Future<bool> findIfGroupNameOverlap(String name) async {
+    List<GroupModel?> findOverlapGroupNames = await _service.getDataWithQuery(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) => query.where("name", isEqualTo: name).limit(1),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options));
+    if (findOverlapGroupNames.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  //----------------------transaction----------------------//
+  Future<void> runTransaction(TransactionHandler transactionHandler) async {
+    await _service.runTransaction(transactionHandler);
+  }
 }

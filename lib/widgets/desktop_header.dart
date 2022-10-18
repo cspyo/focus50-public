@@ -32,7 +32,7 @@ class DesktopHeader extends ConsumerWidget {
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    Get.rootDelegate.toNamed(Routes.CALENDAR);
+                    Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                   },
                   child: const Text('캘린더',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
