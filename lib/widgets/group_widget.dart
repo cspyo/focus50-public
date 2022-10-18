@@ -42,6 +42,17 @@ final myGroupFutureProvider =
   return result;
 });
 
+Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
+  database.runTransaction((transaction) async {
+    final GroupModel myGroup = await database.getGroupInTransaction(
+        docId: docId, transaction: transaction);
+    database.updateGroupInTransaction(
+        myGroup.removeMember(database.uid), transaction);
+    final UserPublicModel myUser = await database.getUserPublic();
+    database.setUserPublic(myUser.leaveGroup(docId));
+  });
+}
+
 class Group extends ConsumerStatefulWidget {
   @override
   _GroupState createState() => _GroupState();

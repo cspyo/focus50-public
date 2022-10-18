@@ -123,4 +123,27 @@ class GroupModel {
     );
     return memberAddedGroup;
   }
+
+  GroupModel removeMember(String uid) {
+    int newHeadcount = headcount! - 1;
+    List<String>? newMemberUids = [...?memberUids];
+    newMemberUids.removeWhere((element) => element == uid);
+
+    GroupModel memberRemovedGroup = GroupModel(
+      id: this.id,
+      category: this.category,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      createdBy: this.createdBy,
+      updatedBy: uid,
+      name: this.name,
+      headcount: newHeadcount,
+      imageUrl: this.imageUrl,
+      introduction: this.introduction,
+      maxHeadcount: this.maxHeadcount,
+      memberUids: newMemberUids,
+      password: this.password,
+    );
+    return memberRemovedGroup;
+  }
 }
