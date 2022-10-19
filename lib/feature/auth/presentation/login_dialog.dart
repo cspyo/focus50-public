@@ -26,6 +26,10 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     }
   }
 
+  void _loginWithKakao() async {
+    await ref.read(authViewModelProvider).loginWithKakao();
+  }
+
   Future<void> _showEmailLoginDialog() async {
     Navigator.of(context).pop();
     return showDialog<void>(
@@ -137,7 +141,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
           ),
           elevation: 4,
         ),
-        onPressed: () {},
+        onPressed: _loginWithKakao,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
