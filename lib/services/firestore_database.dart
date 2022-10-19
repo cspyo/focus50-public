@@ -299,6 +299,18 @@ class FirestoreDatabase {
     }
   }
 
+  //----------------------version----------------------//
+  Stream<String> getVersion() {
+    Function(DocumentSnapshot<Map<String, dynamic>> snapshot,
+        SnapshotOptions? options) builder = (snapshot, options) {
+      final data = snapshot.data();
+      return data?['value'];
+    };
+    return _service.documentStream(
+        path: FirestorePath.version(),
+        builder: (snapshot, options) => builder(snapshot, options));
+  }
+
   //----------------------transaction----------------------//
   Future<void> runTransaction(TransactionHandler transactionHandler) async {
     await _service.runTransaction(transactionHandler);
