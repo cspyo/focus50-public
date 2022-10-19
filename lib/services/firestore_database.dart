@@ -285,6 +285,29 @@ class FirestoreDatabase {
     );
   }
 
+  Stream<List<GroupModel>> getGroupsOfName(String key) {
+    late final maxKey;
+    if (key.length == 0) {
+      return _service.collectionStream(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) =>
+            query.where("name", isGreaterThanOrEqualTo: key),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      );
+    } else {
+      List<int> codeUnits = [...key.codeUnits];
+      codeUnits.last++;
+      maxKey = String.fromCharCodes(codeUnits);
+      return _service.collectionStream(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) => query
+            .where("name", isGreaterThanOrEqualTo: key)
+            .where("name", isLessThanOrEqualTo: maxKey),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      );
+    }
+  }
+
   Future<String> setGroup(GroupModel group) => _service.setData(
         path: group.id != null
             ? FirestorePath.group(group.id!)

@@ -17,6 +17,7 @@ import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_search_widget.dart';
 import 'package:focus42/widgets/group_select_dialog_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -832,48 +833,14 @@ class _GroupState extends ConsumerState<Group> {
         });
   }
 
-  // Widget _buildSelectableMyGroupButton(BuildContext context, GroupModel group) {
-  //   String groupName = group.name ?? '전체';
-  //   int groupNameLength = groupName.length;
-  //   return Container(
-  //     width: groupNameLength * 10 + 68,
-  //     height: 34,
-  //     padding: EdgeInsets.all(0),
-  //     child: TextButton(
-  //       onPressed: () {
-  //         _changeActivatedGroup(group.id!);
-  //         Navigator.pop(context);
-  //       },
-  //       child: Row(
-  //         children: [
-  //           group.imageUrl != null
-  //               ? ClipRRect(
-  //                   borderRadius: BorderRadius.circular(10),
-  //                   child: Image.network(
-  //                     group.imageUrl!,
-  //                     fit: BoxFit.cover,
-  //                     width: 20,
-  //                     height: 20,
-  //                   ),
-  //                 )
-  //               : SizedBox.shrink(),
-  //           Text(
-  //             groupName,
-  //             style: MyTextStyle.CwS16W400,
-  //           ),
-  //         ],
-  //       ),
-  //       style: ButtonStyle(
-  //         backgroundColor: MaterialStateProperty.all<Color>(MyColors.purple300),
-  //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-  //           RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  Future<dynamic> _popupSearchGroupDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSearchAlertDialog();
+        });
+  }
 
   Future<GroupModel?> checkGroupIdAndPw(String id, String? pw) async {
     GroupModel? group = await database.getGroup(id);
