@@ -17,7 +17,7 @@ import 'package:url_strategy/url_strategy.dart';
 import 'consts/app_router_delegate.dart';
 import 'firebase_options.dart';
 
-const String VERSION = "1.6.0";
+const String VERSION = "1.6.1";
 
 Future<void> versionCheck(FirestoreDatabase databse) async {
   const version = VERSION;
