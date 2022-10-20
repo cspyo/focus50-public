@@ -36,11 +36,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   DateTime fastestReservation =
       new DateTime.fromMicrosecondsSinceEpoch(10000000000000000);
   bool isNotificationOpen = true;
-  final Uri toLaunch = Uri(
-    scheme: 'https',
-    host: 'forms.gle',
-    path: '/3bGecKhsiAwtyk4k9',
-  );
 
   @override
   void initState() {
@@ -57,79 +52,163 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         body: SingleChildScrollView(
       child: Column(//페이지 전체 구성
           children: <Widget>[
-        SizedBox(
-          height: 50,
-          width: screenWidth,
-          child: noticeStream.when(
-            loading: () => Text("로딩중입니다"),
-            error: (_, __) => Text("에러가 발생하였습니다"),
-            data: (notices) => (notices.length > 1)
-                ? CarouselSlider(
-                    options: CarouselOptions(
-                      autoPlay: true,
-                      autoPlayInterval: Duration(seconds: 7),
-                    ),
-                    items: notices
-                        .map(
-                          (notice) => InkWell(
-                            onTap: () {
-                              _launchURL(notice!.url!);
-                            },
-                            child: Container(
-                              width: screenWidth,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                  colors: [
-                                    hexToColor(notice!.startColor!),
-                                    hexToColor(notice.endColor!),
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  notice.text!,
-                                  style: TextStyle(
-                                    // color: Colors.black,
-                                    color: hexToColor(notice.fontColor!),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  )
-                : InkWell(
-                    onTap: () {
-                      _launchURL(notices.first!.url!);
-                    },
-                    child: Container(
-                      width: screenWidth,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            hexToColor(notices.first!.startColor!),
-                            hexToColor(notices.first!.endColor!),
-                          ],
-                        ),
+        isNotificationOpen
+            ? SizedBox(
+                height: 50,
+                width: screenWidth,
+                child: noticeStream.when(
+                  loading: () => Container(
+                    width: screenWidth,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          hexToColor('#6087FF'),
+                          hexToColor('#8365FF'),
+                        ],
                       ),
-                      child: Center(
-                        child: Text(
-                          notices.first!.text!,
-                          style: TextStyle(
-                            // color: Colors.black,
-                            color: hexToColor(notices.first!.fontColor!),
-                          ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '로딩중입니다',
+                        style: TextStyle(
+                          // color: Colors.black,
+                          color: hexToColor('#FFFFFF'),
                         ),
                       ),
                     ),
                   ),
-          ),
-        ),
+                  error: (_, __) => Container(
+                    width: screenWidth,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          hexToColor('#6087FF'),
+                          hexToColor('#8365FF'),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '에러가 발생했습니다. 새로고침 해주세요',
+                        style: TextStyle(
+                          // color: Colors.black,
+                          color: hexToColor('#FFFFFF'),
+                        ),
+                      ),
+                    ),
+                  ),
+                  data: (notices) => (notices.length > 1)
+                      ? CarouselSlider(
+                          options: CarouselOptions(
+                            autoPlay: true,
+                            autoPlayInterval: Duration(seconds: 7),
+                            viewportFraction: 1.0,
+                          ),
+                          items: notices
+                              .map(
+                                (notice) => Container(
+                                  width: screenWidth,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                      colors: [
+                                        hexToColor(notice!.startColor!),
+                                        hexToColor(notice.endColor!),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          _launchURL(notice.url!);
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              child: Center(
+                                                child: Text(
+                                                  notice.text!,
+                                                  style: TextStyle(
+                                                    // color: Colors.black,
+                                                    color: hexToColor(
+                                                        notice.fontColor!),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Icon(
+                                              Icons.arrow_right,
+                                              color:
+                                                  hexToColor(notice.fontColor!),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              isNotificationOpen = false;
+                                            });
+                                          },
+                                          hoverColor: Colors.transparent,
+                                          icon: Icon(
+                                            Icons.close,
+                                            color:
+                                                hexToColor(notice.fontColor!),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        )
+                      : InkWell(
+                          onTap: () {
+                            _launchURL(notices.first!.url!);
+                          },
+                          child: Container(
+                            width: screenWidth,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  hexToColor(notices.first!.startColor!),
+                                  hexToColor(notices.first!.endColor!),
+                                ],
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                notices.first!.text!,
+                                style: TextStyle(
+                                  // color: Colors.black,
+                                  color: hexToColor(notices.first!.fontColor!),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              )
+            : SizedBox.shrink(), //carousel
         DesktopHeader(),
         const Line(),
         Container(
@@ -176,7 +255,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           child: Group(),
                         ),
                         Container(
-                          height: screenHeight - 175,
+                          height: isNotificationOpen
+                              ? screenHeight - 175
+                              : screenHeight - 125,
                           child: Calendar(),
                         ),
                       ],
