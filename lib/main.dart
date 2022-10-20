@@ -10,6 +10,7 @@ import 'package:focus42/consts/app_pages.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/utils/version_compare.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_strategy/url_strategy.dart';
@@ -19,12 +20,11 @@ import 'firebase_options.dart';
 
 const String VERSION = "1.6.1";
 
-Future<void> versionCheck(FirestoreDatabase databse) async {
+Future<void> versionCheck() async {
   const version = VERSION;
-  final remoteVersionStream = await databse.getVersion();
+  final remoteVersionStream = await FirestoreDatabase(uid: "none").getVersion();
   remoteVersionStream.listen((v) {
-    print("[DEBUG] stream listen $v");
-    if (version != v) {
+    if (version.isLessThan(v)) {
       html.window.location.reload();
     }
   });
@@ -58,9 +58,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final databse = ref.watch(databaseProvider);
-    versionCheck(databse);
-
+    versionCheck();
     final firebaseAuth = ref.watch(firebaseAuthProvider);
     int screenWidth = window.screen!.width!;
 
