@@ -2,15 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/consts/routes.dart';
-import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/resources/matching_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/view_models.dart/appointments_notifier.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -52,6 +51,15 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   late ReservationViewModel reservationViewModel;
 
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
+
   void _calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = _auth.currentUser?.uid;
     DateTime? tappedDate = calendarTapDetails.date;
@@ -61,13 +69,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.LOGIN);
-      return;
-    }
-
-    // 프로필 작성이 안되어 있으면 add profile 페이지로
-    if (!reservationViewModel.isSignedUp) {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      _showLoginDialog();
       return;
     }
 
@@ -397,7 +399,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   });
                   final database = ref.read(databaseProvider);
                   try {
-                    await MatchingMethods(database: database)
+                    await MatchingMethod(database: database)
                         .matchRoom(startTime: startTime, endTime: endTime);
                   } catch (err) {
                     appointment.subject = RESERVE;
@@ -644,7 +646,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                     setState(() {});
                     final database = ref.read(databaseProvider);
                     try {
-                      await MatchingMethods(database: database)
+                      await MatchingMethod(database: database)
                           .cancelRoom(docId);
                     } catch (e) {
                       if (appointment.notes == null) {

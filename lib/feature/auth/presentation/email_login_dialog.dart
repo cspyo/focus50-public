@@ -7,7 +7,6 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
-import 'package:focus42/utils/utils.dart';
 import 'package:get/get.dart';
 
 class EmailLoginDialog extends ConsumerStatefulWidget {
@@ -22,8 +21,12 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool _isLoading = false;
+  String _errorMessage = "";
+
   // 이메일로 로그인
   void _loginWithEmail(String email, String password) async {
+    setState(() => _isLoading = true);
     String res = await ref
         .read(authViewModelProvider)
         .loginWithEmail(email: email, password: password);
@@ -31,12 +34,13 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
       Get.rootDelegate.offNamed(Routes.CALENDAR);
       AnalyticsMethod().logLogin("Email");
     } else if (res == USER_NOT_FOUND) {
-      showSnackBar("회원으로 등록되어있지 않습니다.", context);
+      setState(() => _errorMessage = "회원으로 등록되어있지 않습니다");
     } else if (res == WRONG_PASSWORD) {
-      showSnackBar("비밀번호가 틀렸습니다.", context);
+      setState(() => _errorMessage = "비밀번호가 틀렸습니다");
     } else {
-      showSnackBar(res, context);
+      setState(() => _errorMessage = "로그인을 다시 진행해주세요");
     }
+    setState(() => _isLoading = false);
   }
 
   // 이메일 텍스트 필드 확인
@@ -143,6 +147,9 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
               // 이메일 필드
               Column(
                 children: [
+                  _errorMessage != ""
+                      ? _buildErrorMessage(context)
+                      : Container(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: TextFormField(
@@ -214,11 +221,10 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
                 ],
               ),
               // 로그인 버튼
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 100),
+              Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    fixedSize: Size(100, 40),
+                    fixedSize: Size(180, 40),
                     primary: purple300,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(80),
@@ -235,14 +241,16 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        '로그인',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      ),
+                      _isLoading
+                          ? _buildCircularIndicator()
+                          : const Text(
+                              '로그인',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
                     ],
                   ),
                 ),
@@ -287,5 +295,31 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
         ],
       ),
     );
+  }
+
+  Widget _buildErrorMessage(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Text(
+            _errorMessage,
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        SizedBox(height: 20)
+      ],
+    );
+  }
+
+  Widget _buildCircularIndicator() {
+    return Center(
+        child: SizedBox(
+      width: 22,
+      height: 22,
+      child: CircularProgressIndicator(color: Colors.white),
+    ));
   }
 }

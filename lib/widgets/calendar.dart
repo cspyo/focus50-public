@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/consts/routes.dart';
-import 'package:focus42/resources/matching_methods.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/resources/matching_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/view_models.dart/appointments_notifier.dart';
@@ -11,7 +11,6 @@ import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -44,6 +43,15 @@ class CalendarState extends ConsumerState<Calendar> {
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   late ReservationViewModel reservationViewModel;
 
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
+
   //highlighter 위치 정하는 함수
   int _getFirstDayOfWeek(int highlighterPosition) {
     int currentDay = DateTime.now().weekday;
@@ -75,13 +83,7 @@ class CalendarState extends ConsumerState<Calendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.LOGIN);
-      return;
-    }
-
-    // 프로필 작성이 안되어 있으면 add profile 페이지로
-    if (!reservationViewModel.isSignedUp) {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      _showLoginDialog();
       return;
     }
 
@@ -439,7 +441,7 @@ class CalendarState extends ConsumerState<Calendar> {
                   });
                   final database = ref.read(databaseProvider);
                   try {
-                    await MatchingMethods(database: database)
+                    await MatchingMethod(database: database)
                         .matchRoom(startTime: startTime, endTime: endTime);
                   } catch (err) {
                     appointment.subject = RESERVE;
@@ -689,7 +691,7 @@ class CalendarState extends ConsumerState<Calendar> {
                     setState(() {});
                     final database = ref.read(databaseProvider);
                     try {
-                      await MatchingMethods(database: database)
+                      await MatchingMethod(database: database)
                           .cancelRoom(docId);
                     } catch (e) {
                       if (appointment.notes == null) {

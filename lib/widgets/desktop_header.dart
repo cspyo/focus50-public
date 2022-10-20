@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
-import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
@@ -86,7 +86,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                         primary: purple300,
                       ),
                       onPressed: () {
-                        AuthMethods().signOut();
+                        ref.read(authViewModelProvider).signOut();
                         AnalyticsMethod().logSignOut();
                         Get.rootDelegate.toNamed(Routes.ABOUT);
                       },

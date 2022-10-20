@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
-import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 import '../consts/colors.dart';
@@ -32,6 +31,15 @@ class TodoState extends State<Todo> {
 
   List<TodoModel> myTodo = [];
   bool isTodoCompleted = false;
+
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -146,7 +154,7 @@ class TodoState extends State<Todo> {
                                 AnalyticsMethod().logMakeTodoInCalendar();
                               });
                             } else {
-                              Get.rootDelegate.toNamed(Routes.LOGIN);
+                              _showLoginDialog();
                             }
                           },
                           decoration: InputDecoration(

@@ -82,20 +82,58 @@ class AuthViewModel {
     return res;
   }
 
+  String? _substringPhoneNumber(String? phoneNumber) {
+    if (phoneNumber != null) {
+      String first = phoneNumber.substring(0, 3);
+      String second = phoneNumber.substring(4, 6);
+      String third = phoneNumber.substring(7, 11);
+      String fourth = phoneNumber.substring(12);
+      return first + second + third + fourth;
+    }
+    return null;
+  }
+
   // 로그인 (카카오)
-  Future<void> loginWithKakao() async {
+  Future<String> loginWithKakao() async {
+    String res = ERROR;
     if (await _kakaoLoginProcess()) {
       kakao.User user = await kakao.UserApi.instance.me();
 
+      String uid = user.id.toString();
+      String? nickname = user.kakaoAccount?.profile?.nickname;
+      String? email = user.kakaoAccount?.email;
+      String? photoURL = user.kakaoAccount?.profile?.profileImageUrl;
+      String? phoneNumber = user.kakaoAccount?.phoneNumber;
+
+      // print(uid);
+      // print(nickname);
+      // print(email);
+      // print(photoURL);
+
+      // print(user.kakaoAccount!.name);
+
       final token = await _firebaseAuthRemoteDataSource.createCustomToken({
-        "uid": user.id.toString(),
-        "displayName": user.kakaoAccount!.profile!.nickname,
-        "email": user.kakaoAccount!.email,
-        "photoURL": user.kakaoAccount!.profile!.profileImageUrl,
+        "uid": uid,
+        "displayName": nickname,
+        "email": email,
+        "photoURL": photoURL,
+        "phoneNumber": _substringPhoneNumber(phoneNumber),
       });
 
-      await _auth.signInWithCustomToken(token);
+      if (token == EMAIL_ALREADY_EXISTS) {
+        res = token;
+      } else {
+        try {
+          await _auth.signInWithCustomToken(token);
+          res = SUCCESS;
+        } catch (e) {
+          res = e.toString();
+        }
+      }
+    } else {
+      res = ERROR;
     }
+    return res;
   }
 
   // 로그인 (카카오)
@@ -106,24 +144,16 @@ class AuthViewModel {
       kakao.OAuthToken token = talkInstalled
           ? await kakao.UserApi.instance.loginWithKakaoTalk()
           : await kakao.UserApi.instance.loginWithKakaoAccount();
-      print('로그인 성공 ${token.accessToken}');
       return true;
     } on kakao.KakaoClientException {
-      print('클라이언트 에러');
       return false;
     } on kakao.KakaoAuthException catch (e) {
       if (e.error == kakao.AuthErrorCause.accessDenied) {
-        print('취소됨 (동의 취소), ${e}');
       } else if (e.error == kakao.AuthErrorCause.misconfigured) {
-        print(
-            '개발자사이트 앱 설정에 키 해시 또는 번들 ID를 등록하세요. 현재 값: ${await kakao.KakaoSdk.origin}, ${e}');
-      } else {
-        print('기타 인증 에러, ${e}');
-      }
+      } else {}
       return false;
     } catch (e) {
       // 에러처리에 대한 개선사항이 필요하면 데브톡(https://devtalk.kakao.com)으로 문의해주세요.
-      print('기타 에러 (네트워크 장애 등..), ${e}');
       return false;
     }
   }
@@ -132,12 +162,17 @@ class AuthViewModel {
   Future<String> saveUserProfile({
     required String? nickname,
     required Uint8List? file,
+    String? phoneNumber,
   }) async {
     String res = ERROR;
     try {
       String uid = _auth.currentUser!.uid;
       String? email = _auth.currentUser!.email;
       String? photoUrl;
+
+      if (phoneNumber == null) {
+        phoneNumber = _auth.currentUser?.phoneNumber;
+      }
 
       if (nickname == null) {
         nickname = _auth.currentUser!.displayName;
@@ -165,6 +200,7 @@ class AuthViewModel {
       UserPrivateModel userPrivate = UserPrivateModel(
         uid: uid,
         email: email,
+        phoneNumber: phoneNumber,
       );
 
       UserModel userModel = UserModel(userPublic, userPrivate);
@@ -188,9 +224,9 @@ class AuthViewModel {
   }
 
   Future<void> signOut() async {
-    // if (_auth.currentUser!.uid.contains('kakao')) {
-    //   await kakao.UserApi.instance.unlink();
-    // }
+    if (_auth.currentUser!.uid.contains('kakao')) {
+      await kakao.UserApi.instance.unlink();
+    }
     await _auth.signOut();
   }
 }

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
@@ -33,6 +35,24 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
     path: '/3bGecKhsiAwtyk4k9',
   );
   CalendarController calendarController = CalendarController();
+
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
+
+  Future<void> _showSignUpDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SignUpDialog();
+      },
+    );
+  }
 
   Future<void> getUserData() async {
     final usersNotifier = ref.read(usersProvider.notifier);
@@ -112,7 +132,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                         alignment: Alignment.center,
                         child: TextButton(
                           onPressed: () {
-                            Get.rootDelegate.toNamed(Routes.LOGIN);
+                            _showLoginDialog();
                           },
                           child: const Text(
                             '로그인 해주세요',
@@ -185,14 +205,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                                         )
                                       ],
                                     )
-                                  ])
-                        // : Container(
-                        //     alignment: Alignment.center,
-                        //     width: 20,
-                        //     height: 20,
-                        //     child:
-                        //         CircularProgressIndicator(color: Colors.white)),
-                        ),
+                                  ])),
                 SizedBox(
                   height: 10,
                 ),
@@ -228,11 +241,9 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                                 borderRadius: BorderRadius.circular(16)),
                           ),
                           onPressed: () {
-                            setState(() {
-                              AuthMethods().signOut();
-                            });
+                            ref.read(authViewModelProvider).signOut();
+                            setState(() {});
                             AnalyticsMethod().mobileLogSignOut();
-                            Get.rootDelegate.toNamed(Routes.LOGIN);
                           },
                           child: const Text(
                             '  로그아웃  ',
@@ -253,7 +264,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                                 borderRadius: BorderRadius.circular(16)),
                           ),
                           onPressed: () {
-                            Get.rootDelegate.toNamed(Routes.SIGNUP);
+                            _showSignUpDialog();
                           },
                           child: const Text(
                             '  회원가입  ',
@@ -283,7 +294,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                                 borderRadius: BorderRadius.circular(16)),
                           ),
                           onPressed: () {
-                            Get.rootDelegate.toNamed(Routes.LOGIN);
+                            _showLoginDialog();
                           },
                           child: const Text(
                             '  로그인  ',
@@ -300,66 +311,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
           child: Column(//페이지 전체 구성
               children: <Widget>[
             const Line(),
-            // isNotificationOpen
-            //     ? Container(
-            //         height: 50,
-            //         padding: EdgeInsets.only(left: 30, right: 30),
-            //         width: double.infinity,
-            //         decoration: BoxDecoration(
-            //           gradient: LinearGradient(
-            //             begin: Alignment.centerLeft,
-            //             end: Alignment.centerRight,
-            //             colors: [
-            //               Color(0xff5E88FF),
-            //               Color(0xff8465FF),
-            //             ],
-            //           ),
-            //         ),
-            //         child: Row(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           children: [
-            //             InkWell(
-            //               onTap: () {
-            //                 launchUrl(toLaunch);
-            //               },
-            //               child: Row(
-            //                 children: [
-            //                   Text(
-            //                     '더 나은 Focus50 이 되겠습니다. ',
-            //                     style: TextStyle(
-            //                         color: Colors.white, fontSize: 12),
-            //                   ),
-            //                   Text(
-            //                     '설문하러 가기',
-            //                     style: TextStyle(
-            //                         color: Colors.white,
-            //                         fontSize: 12,
-            //                         fontWeight: FontWeight.w700),
-            //                   )
-            //                 ],
-            //               ),
-            //             ),
-            //             Icon(
-            //               Icons.arrow_right_alt_rounded,
-            //               color: Colors.white,
-            //             ),
-            //             SizedBox(width: 20),
-            //             IconButton(
-            //               onPressed: () {
-            //                 setState(() {
-            //                   isNotificationOpen = false;
-            //                 });
-            //               },
-            //               hoverColor: Colors.transparent,
-            //               icon: Icon(
-            //                 Icons.close,
-            //                 color: Colors.white,
-            //               ),
-            //             )
-            //           ],
-            //         ),
-            //       )
-            //     : SizedBox(),
             Column(children: <Widget>[
               Container(
                 child: MobileReservation(),
@@ -370,15 +321,10 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                   height: screenHeight - 165,
                   child: Column(
                     children: [
-                      // MobileCalendarHeader(
-                      //   calendarController: calendarController,
-                      //   // visibleDates: visibleDates,
-                      // ),
                       MobileCalendar(
                         calendarController: calendarController,
                         isNotificationOpen: isNotificationOpen,
                       ),
-                      // changeVisibleDates: changeVisibleDates),
                     ],
                   )),
             ])

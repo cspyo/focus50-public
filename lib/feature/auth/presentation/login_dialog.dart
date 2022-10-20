@@ -5,6 +5,7 @@ import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/email_login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/utils/utils.dart';
 
 class LoginDialog extends ConsumerStatefulWidget {
   const LoginDialog({Key? key}) : super(key: key);
@@ -14,8 +15,12 @@ class LoginDialog extends ConsumerStatefulWidget {
 }
 
 class _LoginDialogState extends ConsumerState<LoginDialog> {
+  bool _isLoading = false;
+  String _errorMessage = "";
+
   // 구글로 로그인
   void _loginWithGoogle() async {
+    setState(() => _isLoading = true);
     String res = await ref.read(authViewModelProvider).loginWithGoogle();
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
@@ -23,11 +28,29 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         await authViewModel.saveUserProfile(nickname: null, file: null);
       }
       Navigator.of(context).pop();
+    } else {
+      setState(() => _errorMessage = "로그인을 다시 진행해주세요");
     }
+    setState(() => _isLoading = false);
   }
 
+  // 카카오로 로그인
   void _loginWithKakao() async {
-    await ref.read(authViewModelProvider).loginWithKakao();
+    setState(() => _isLoading = true);
+    String res = await ref.read(authViewModelProvider).loginWithKakao();
+    if (res == SUCCESS) {
+      final authViewModel = ref.read(authViewModelProvider);
+      if (!await authViewModel.isSignedUp()) {
+        await authViewModel.saveUserProfile(nickname: null, file: null);
+      }
+      Navigator.of(context).pop();
+    } else if (res == EMAIL_ALREADY_EXISTS) {
+      showSnackBar("이미 가입한 이메일입니다. 다른 카카오 계정을 이용해주세요.", context);
+      setState(() => _errorMessage = "이미 가입한 이메일입니다");
+    } else {
+      showSnackBar(res, context);
+    }
+    setState(() => _isLoading = false);
   }
 
   Future<void> _showEmailLoginDialog() async {
@@ -64,7 +87,8 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
     return AlertDialog(
       // <-- SEE HERE
       title: _buildDialogTitle(),
-      content: _buildLogin(context),
+      content:
+          _isLoading ? _buildCircularIndicator(context) : _buildLogin(context),
     );
   }
 
@@ -115,6 +139,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         width: 400,
         child: ListBody(
           children: <Widget>[
+            _errorMessage != "" ? _buildErrorMessage(context) : Container(),
             _buildGoogleLoginButton(),
             SizedBox(height: 20),
             _buildKakaoLoginButton(),
@@ -273,6 +298,41 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCircularIndicator(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        child: ListBody(
+          children: [
+            Center(
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(color: purple300),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorMessage(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Text(
+            _errorMessage,
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        SizedBox(height: 20)
+      ],
     );
   }
 }

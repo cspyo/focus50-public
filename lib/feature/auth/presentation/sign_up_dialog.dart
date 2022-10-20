@@ -14,8 +14,12 @@ class SignUpDialog extends ConsumerStatefulWidget {
 }
 
 class _SignUpDialogState extends ConsumerState<SignUpDialog> {
+  bool _isLoading = false;
+  String _errorMessage = "";
+
   // 구글로 회원가입
   void _signUpWithGoogle() async {
+    setState(() => _isLoading = true);
     String res = await ref.read(authViewModelProvider).loginWithGoogle();
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
@@ -23,7 +27,28 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
         await authViewModel.saveUserProfile(nickname: null, file: null);
       }
       Navigator.of(context).pop();
+    } else {
+      setState(() => _errorMessage = "로그인을 다시 진행해주세요");
     }
+    setState(() => _isLoading = false);
+  }
+
+  // 카카오로 회원가입
+  void _signUpWithKakao() async {
+    setState(() => _isLoading = true);
+    String res = await ref.read(authViewModelProvider).loginWithKakao();
+    if (res == SUCCESS) {
+      final authViewModel = ref.read(authViewModelProvider);
+      if (!await authViewModel.isSignedUp()) {
+        await authViewModel.saveUserProfile(nickname: null, file: null);
+      }
+      Navigator.of(context).pop();
+    } else if (res == EMAIL_ALREADY_EXISTS) {
+      setState(() => _errorMessage = "이미 가입한 이메일입니다");
+    } else {
+      setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
+    }
+    setState(() => _isLoading = false);
   }
 
   // 이메일 회원가입 다이얼로그
@@ -62,7 +87,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     return AlertDialog(
       // <-- SEE HERE
       title: _buildDialogTitle(),
-      content: _buildSignUp(context),
+      content:
+          _isLoading ? _buildCircularIndicator(context) : _buildSignUp(context),
     );
   }
 
@@ -113,6 +139,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
         width: 400,
         child: ListBody(
           children: <Widget>[
+            _errorMessage != "" ? _buildErrorMessage(context) : Container(),
             _buildGoogleSignUpButton(),
             SizedBox(height: 20),
             _buildKakaoSignUpButton(),
@@ -139,7 +166,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           ),
           elevation: 4,
         ),
-        onPressed: () {},
+        onPressed: _signUpWithKakao,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -271,6 +298,43 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCircularIndicator(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        child: ListBody(
+          children: [
+            Center(
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(
+                  color: purple300,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorMessage(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Text(
+            _errorMessage,
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        SizedBox(height: 20)
+      ],
     );
   }
 }

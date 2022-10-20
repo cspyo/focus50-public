@@ -1,105 +1,71 @@
 import 'dart:typed_data';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:focus42/models/user_model.dart';
+import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../consts/colors.dart';
-import '../resources/auth_method.dart';
 import '../resources/storage_method.dart';
 import '../utils/utils.dart';
 import '../widgets/line.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
-
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
-  final TextEditingController _jobController = TextEditingController();
 
   Uint8List? _image;
+  late UserModel myAuth;
 
   bool isUpdating = false;
   bool isLoading = true;
 
-  CollectionReference _userPublicColRef = AuthMethods().getUserPublicColRef();
-
-  var userData = {};
-
   @override
   void initState() {
     super.initState();
-    getData();
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
     _nicknameController.dispose();
-    _jobController.dispose();
-
     super.dispose();
   }
 
-  void getData() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      var userSnap = await _firestore
-          .collection('users')
-          .doc(_auth.currentUser!.uid)
-          .get();
-
-      userData = userSnap.data()!;
-
-      _nameController.text = userData['username'];
-      _nicknameController.text = userData['nickname'];
-      _jobController.text = userData['job'];
-
-      setState(() {});
-    } catch (e) {
-      showSnackBar(e.toString(), context);
-    }
-
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  void updateProfile(String nickname, String job) async {
+  void _updateProfile(String photoUrl, String nickname) async {
+    final database = ref.read(databaseProvider);
     setState(() {
       isUpdating = true;
     });
 
-    String photoUrl;
+    String newPhotoUrl;
     if (_image == null) {
-      photoUrl = userData['photoUrl'];
+      newPhotoUrl = photoUrl;
     } else {
-      photoUrl =
+      newPhotoUrl =
           await StorageMethods().uploadImageToStorage('profilePics', _image!);
     }
 
-    UserPublicModel user = new UserPublicModel(
+    UserPublicModel userPublic = UserPublicModel(
       nickname: nickname,
-      photoUrl: photoUrl,
-      job: job,
+      photoUrl: newPhotoUrl,
       updatedDate: DateTime.now(),
     );
 
-    await _userPublicColRef.doc(_auth.currentUser!.uid).update(user.toMap());
+    UserPrivateModel userPrivate = UserPrivateModel();
+
+    UserModel updateUser = UserModel(userPublic, userPrivate);
+
+    await database.setUser(updateUser);
 
     showSnackBar("업데이트 완료", context);
 
@@ -108,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void selectImage() async {
+  void _selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
     setState(() {
       _image = im;
@@ -117,263 +83,198 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AsyncValue<UserModel> user = ref.watch(userProvider);
+
+    return user.when(
+        data: (user) {
+          return _buildContent(user);
+        },
+        error: (_, __) => Text('Error'),
+        loading: () => const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ));
+  }
+
+  Widget _buildContent(UserModel user) {
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          DesktopHeader(),
-          const Line(),
-          isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Column(
+              children: <Widget>[
+                DesktopHeader(),
+                const Line(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  alignment: Alignment.center,
                   width: double.infinity,
                   child: SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 80,
-                        ),
-                        Stack(
-                          children: [
-                            _image != null
-                                ? CircleAvatar(
-                                    radius: 64,
-                                    backgroundColor: Colors.black38,
-                                    backgroundImage: MemoryImage(_image!),
-                                  )
-                                : CircleAvatar(
-                                    radius: 64,
-                                    backgroundColor: Colors.black38,
-                                    backgroundImage: NetworkImage(
-                                      userData['photoUrl'],
-                                    ),
-                                  ),
-                            Positioned(
-                              bottom: -10,
-                              left: 80,
-                              child: IconButton(
-                                onPressed: selectImage,
-                                icon: const Icon(
-                                  Icons.add_a_photo,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 24,
-                        ),
-                        SizedBox(
-                          height: 30,
-                        ),
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              // 이름 텍스트 필드
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 80,
-                                    child: Text(
-                                      "이름",
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: purple300,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 400,
-                                    child: TextFormField(
-                                      controller: _nameController,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return '이름을 입력해주세요';
-                                        }
-                                        return null;
-                                      },
-                                      onSaved: (val) {},
-                                      onFieldSubmitted: (text) async {
-                                        final username = _nameController.text;
-                                        final nickname =
-                                            _nicknameController.text;
-                                        final job = _jobController.text;
-
-                                        updateProfile(
-                                          nickname,
-                                          job,
-                                        );
-                                      },
-                                      maxLines: 1,
-                                      keyboardType: TextInputType.text,
-                                      decoration: InputDecoration(
-                                        prefixIcon: const Icon(Icons.person),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              // 닉네임 텍스트 필드
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 80,
-                                    child: Text(
-                                      "닉네임",
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: purple300,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 400,
-                                    child: TextFormField(
-                                      controller: _nicknameController,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return '닉네임을 입력해주세요';
-                                        }
-                                        return null;
-                                      },
-                                      onSaved: (val) {},
-                                      onFieldSubmitted: (text) async {
-                                        final username = _nameController.text;
-                                        final nickname =
-                                            _nicknameController.text;
-                                        final job = _jobController.text;
-
-                                        updateProfile(
-                                          nickname,
-                                          job,
-                                        );
-                                      },
-                                      maxLines: 1,
-                                      keyboardType: TextInputType.text,
-                                      decoration: InputDecoration(
-                                        prefixIcon: const Icon(
-                                            Icons.co_present_rounded),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              // job 텍스트 필드
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 80,
-                                    child: Text(
-                                      "직업",
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: purple300,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 400,
-                                    child: TextFormField(
-                                      controller: _jobController,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return '직업을 입력해주세요';
-                                        }
-                                        return null;
-                                      },
-                                      onSaved: (val) {},
-                                      onFieldSubmitted: (text) async {
-                                        final username = _nameController.text;
-                                        final nickname =
-                                            _nicknameController.text;
-                                        final job = _jobController.text;
-
-                                        updateProfile(
-                                          nickname,
-                                          job,
-                                        );
-                                      },
-                                      maxLines: 1,
-                                      keyboardType: TextInputType.text,
-                                      decoration: InputDecoration(
-                                        prefixIcon: const Icon(Icons.article),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                    child: Container(
+                      width: 300,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 40,
                           ),
-                        ),
-                        SizedBox(
-                          height: 40,
-                        ),
-                        SizedBox(
-                          width: 250,
-                          height: 40,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              final username = _nameController.text;
-                              final nickname = _nicknameController.text;
-                              final job = _jobController.text;
-
-                              updateProfile(
-                                nickname,
-                                job,
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              primary: purple300,
-                            ),
-                            child: isUpdating
-                                ? const Center(
-                                    child: CircularProgressIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : const Text(
-                                    '업데이트',
-                                    style: TextStyle(),
-                                  ),
+                          _buildProfileImage(user),
+                          SizedBox(
+                            height: 24,
                           ),
-                        ),
-                      ],
+                          _buildTextFields(),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          _buildUpdateButton(user),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          // _buildKakaoButton(user),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileImage(UserModel user) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _image != null
+            ? CircleAvatar(
+                radius: 38,
+                backgroundColor: Colors.black38,
+                backgroundImage: MemoryImage(_image!),
+              )
+            : CircleAvatar(
+                radius: 38,
+                backgroundColor: Colors.black38,
+                backgroundImage: NetworkImage(
+                  user.userPublicModel!.photoUrl!,
+                ),
+              ),
+        SizedBox(width: 20),
+        Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                "프로필 사진",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              ),
+              SizedBox(height: 6),
+              SizedBox(
+                width: 65,
+                height: 20,
+                child: ElevatedButton(
+                  onPressed: _selectImage,
+                  style: ElevatedButton.styleFrom(
+                    primary: purple300,
+                  ),
+                  child: const Text(
+                    '업로드',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextFields() {
+    double textFieldsWidth = 300;
+    double textFieldsHeight = 40;
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          // 닉네임 텍스트 필드
+          SizedBox(
+            width: textFieldsWidth,
+            height: textFieldsHeight,
+            child: TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: '닉네임을 입력해주세요',
+                hintStyle: TextStyle(fontSize: 13),
+                labelText: '닉네임*',
+                labelStyle: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              onSaved: (String? value) {},
+              validator: (_) {
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildKakaoButton(UserModel user) {
+    return SizedBox(
+      width: 250,
+      height: 40,
+      child: ElevatedButton(
+        onPressed: () async {},
+        style: ElevatedButton.styleFrom(
+          primary: purple300,
+        ),
+        child: const Text(
+          '연동하기',
+          style: TextStyle(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUpdateButton(UserModel user) {
+    return SizedBox(
+      width: 250,
+      height: 40,
+      child: ElevatedButton(
+        onPressed: () async {
+          final nickname = _nicknameController.text;
+          final photoUrl = user.userPublicModel!.photoUrl!;
+
+          _updateProfile(
+            photoUrl,
+            nickname,
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          primary: purple300,
+        ),
+        child: isUpdating
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              )
+            : const Text(
+                '변경사항 수정',
+                style: TextStyle(),
+              ),
       ),
     );
   }

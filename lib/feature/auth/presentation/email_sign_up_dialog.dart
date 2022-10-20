@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/error_message.dart';
-import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
-import 'package:focus42/utils/utils.dart';
-import 'package:get/get.dart';
 
 class EmailSignUpDialog extends ConsumerStatefulWidget {
   const EmailSignUpDialog({Key? key}) : super(key: key);
@@ -24,28 +21,33 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool _isLoading = false;
+  String _errorMessage = "";
+
   // 이메일로 회원가입
   void _signUpWithEmail() async {
+    setState(() => _isLoading = true);
     String res = await ref.read(authViewModelProvider).signUpWithEmail(
         nickname: _nicknameController.text,
         email: _emailController.text,
         password: _passwordController.text);
 
     if (res == EMAIL_ALREADY_IN_USE) {
-      showSnackBar("이미 존재하는 이메일입니다.", context);
+      setState(() => _errorMessage = "이미 존재하는 이메일입니다");
     } else if (res == SUCCESS) {
       await ref
           .read(authViewModelProvider)
           .saveUserProfile(nickname: _nicknameController.text, file: null);
       AnalyticsMethod().logSignUp("Email");
-      // Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
-      showSnackBar(res, context);
+      Navigator.of(context).pop();
     } else {
-      showSnackBar(res, context);
+      setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }
+    setState(() => _isLoading = false);
   }
 
   Future<void> _nicknameValidator() async {
+    setState(() => _isLoading = true);
     String nickname = _nicknameController.text;
     if (nickname.isEmpty) {
       nicknameValidate = '닉네임은 필수사항입니다';
@@ -56,7 +58,7 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     } else {
       nicknameValidate = null;
     }
-    setState(() {});
+    setState(() => _isLoading = false);
   }
 
   String? _emailValidator(String? email) {
@@ -162,6 +164,9 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
             children: [
               Column(
                 children: [
+                  _errorMessage != ""
+                      ? _buildErrorMessage(context)
+                      : Container(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
                     child: TextFormField(
@@ -265,11 +270,10 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
                 ],
               ),
               // 회원가입 버튼
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 100),
+              Center(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    fixedSize: Size(100, 40),
+                    fixedSize: Size(180, 40),
                     primary: purple300,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(80),
@@ -285,14 +289,16 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        '회원가입',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      ),
+                      _isLoading
+                          ? _buildCircularIndicator()
+                          : const Text(
+                              '회원가입',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                fontSize: 15,
+                              ),
+                            ),
                     ],
                   ),
                 ),
@@ -336,5 +342,31 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
         ],
       ),
     );
+  }
+
+  Widget _buildErrorMessage(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: Text(
+            _errorMessage,
+            style: TextStyle(
+              color: Colors.red,
+              fontSize: 15,
+            ),
+          ),
+        ),
+        SizedBox(height: 20)
+      ],
+    );
+  }
+
+  Widget _buildCircularIndicator() {
+    return Center(
+        child: SizedBox(
+      width: 22,
+      height: 22,
+      child: CircularProgressIndicator(color: Colors.white),
+    ));
   }
 }
