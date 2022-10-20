@@ -1,5 +1,10 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/models/notice_model.dart';
+import 'package:focus42/top_level_providers.dart';
+import 'package:focus42/utils/color_convert.dart';
 import 'package:focus42/widgets/calendar.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/group_widget.dart';
@@ -8,14 +13,20 @@ import 'package:focus42/widgets/reservation.dart';
 import 'package:focus42/widgets/todo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+final noticeStreamProvider =
+    StreamProvider.autoDispose<List<NoticeModel?>>((ref) {
+  final database = ref.watch(databaseProvider);
+  return database.getNotices();
+});
+
 // ignore: use_key_in_widget_constructors
-class CalendarScreen extends StatefulWidget {
+class CalendarScreen extends ConsumerStatefulWidget {
   CalendarScreen({Key? key}) : super(key: key);
   @override
-  State<CalendarScreen> createState() => _CalendarScreenState();
+  _CalendarScreenState createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   int remainingTime = 0;
   int tabletBoundSize = 1200;
   DateTime now = new DateTime.now();
@@ -36,17 +47,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
   }
 
-  Future<void> _launchInBrowser(Uri url) async {
-    if (!await launchUrl(
-      url,
-      mode: LaunchMode.externalApplication,
-    )) {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final noticeStream = ref.watch(noticeStreamProvider);
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     bool isTabletSize = screenWidth < 1200 ? true : false;
@@ -54,64 +57,79 @@ class _CalendarScreenState extends State<CalendarScreen> {
         body: SingleChildScrollView(
       child: Column(//페이지 전체 구성
           children: <Widget>[
-        isNotificationOpen
-            ? Container(
-                height: 50,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      Color(0xff5E88FF),
-                      Color(0xff8465FF),
-                    ],
+        SizedBox(
+          height: 50,
+          width: screenWidth,
+          child: noticeStream.when(
+            loading: () => Text("로딩중입니다"),
+            error: (_, __) => Text("에러가 발생하였습니다"),
+            data: (notices) => (notices.length > 1)
+                ? CarouselSlider(
+                    options: CarouselOptions(
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 7),
+                    ),
+                    items: notices
+                        .map(
+                          (notice) => InkWell(
+                            onTap: () {
+                              _launchURL(notice!.url!);
+                            },
+                            child: Container(
+                              width: screenWidth,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    hexToColor(notice!.startColor!),
+                                    hexToColor(notice.endColor!),
+                                  ],
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  notice.text!,
+                                  style: TextStyle(
+                                    // color: Colors.black,
+                                    color: hexToColor(notice.fontColor!),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  )
+                : InkWell(
+                    onTap: () {
+                      _launchURL(notices.first!.url!);
+                    },
+                    child: Container(
+                      width: screenWidth,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            hexToColor(notices.first!.startColor!),
+                            hexToColor(notices.first!.endColor!),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          notices.first!.text!,
+                          style: TextStyle(
+                            // color: Colors.black,
+                            color: hexToColor(notices.first!.fontColor!),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(width: isTabletSize ? 10 : 210),
-                    InkWell(
-                      onTap: () {
-                        launchUrl(toLaunch);
-                      },
-                      child: Row(
-                        children: [
-                          Text(
-                            '더 나은 Focus50 이 되겠습니다. 아이스 아메리카노 받아가세요!  ',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            '설문하러 가기',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_right_alt_rounded,
-                      color: Colors.white,
-                    ),
-                    SizedBox(width: isTabletSize ? 10 : 200),
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isNotificationOpen = false;
-                        });
-                      },
-                      hoverColor: Colors.transparent,
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                ),
-              )
-            : SizedBox(),
+          ),
+        ),
         DesktopHeader(),
         const Line(),
         Container(
@@ -168,5 +186,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ]),
     ));
+  }
+
+  void _launchURL(String url) async {
+    final _url = url;
+    if (await canLaunchUrl(Uri.parse(_url))) {
+      await launchUrl(Uri.parse(_url));
+    } else {
+      throw 'Could not launch $_url';
+    }
   }
 }
