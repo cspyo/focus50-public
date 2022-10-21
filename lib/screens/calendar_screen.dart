@@ -146,11 +146,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         ],
                       ),
                     ),
-                    Column(
+                    Row(
                       children: [
                         Container(
-                          width: screenWidth - 420,
-                          height: 50,
+                          width: 100,
+                          height: isNotificationOpen
+                              ? screenHeight - 125
+                              : screenHeight - 75,
                           decoration: BoxDecoration(
                               border: Border(
                                   bottom: BorderSide(
@@ -158,7 +160,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           child: Group(),
                         ),
                         Container(
-                          height: screenHeight - 175,
+                          width: screenWidth - 520,
+                          height: isNotificationOpen
+                              ? screenHeight - 125
+                              : screenHeight - 75,
                           child: Calendar(),
                         ),
                       ],

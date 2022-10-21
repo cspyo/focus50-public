@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
+import 'package:focus42/feature/jitsi/presentation/list_items_builder_2.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -88,44 +88,95 @@ class _GroupState extends ConsumerState<Group> {
   Widget build(BuildContext context) {
     groupId = ref.read(activatedGroupIdProvider);
     return Container(
-      padding: EdgeInsets.only(left: 8, right: 8),
-      child: Row(
+      // padding: EdgeInsets.only(left: 8, right: 8),
+      // decoration: BoxDecoration(
+      //     border: Border(right: BorderSide(color: border100, width: 1))),
+      child: Column(
         children: [
+          // SizedBox(
+          //   width: 80,
+          //   height: 34,
+          //   child: TextButton(
+          //     onPressed: () {
+          //       if (uid != null) {
+          //         AnalyticsMethod().logPressGroupSelectButton();
+          //         _popupInviteOthersDialog(context);
+          //       } else {
+          //         AnalyticsMethod().logPressGroupSelectButtonWithoutSignIn();
+          //         Get.rootDelegate.toNamed(Routes.SIGNUP);
+          //       }
+          //     },
+          //     child: Text(
+          //       '그룹 선택',
+          //       style: MyTextStyle.CwS12W600,
+          //     ),
+          //     style: ButtonStyle(
+          //       backgroundColor:
+          //           MaterialStateProperty.all<Color>(MyColors.purple300),
+          //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          //         RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(12),
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          // SizedBox(
+          //   width: 5,
+          // ),
+          // Container(
+          //   alignment: Alignment.topCenter,
+          //   width: 100,
+          //   height: 101,
+          //   decoration: BoxDecoration(
+          //       border: Border(
+          //     bottom: BorderSide(color: Color(0xffECECEC), width: 1),
+          //     right: BorderSide(color: Color(0xffECECEC), width: 1),
+          //   )),
+          //   child: Text(
+          //     '그룹',
+          //     style: MyTextStyle.CbS20W600,
+          //   ),
+          // ),
+
+          Container(
+            alignment: Alignment.center,
+            height: 100,
+            child: Text(
+              '그룹',
+              style: MyTextStyle.CbS20W600,
+            ),
+          ),
           SizedBox(
             width: 80,
             height: 34,
             child: TextButton(
               onPressed: () {
                 if (uid != null) {
-                  AnalyticsMethod().logPressGroupSelectButton();
-                  _popupInviteOthersDialog(context);
+                  AnalyticsMethod().logPressGroupCreateButton();
+                  _popupCreateGroupDialog(context);
                 } else {
-                  AnalyticsMethod().logPressGroupSelectButtonWithoutSignIn();
+                  AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
                   Get.rootDelegate.toNamed(Routes.SIGNUP);
                 }
               },
               child: Text(
-                '그룹 선택',
-                style: MyTextStyle.CwS12W600,
+                '그룹 검색',
+                style: MyTextStyle.CpS12W600,
               ),
               style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(MyColors.purple300),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(width: 1, color: MyColors.purple300),
                   ),
                 ),
               ),
             ),
           ),
           SizedBox(
-            width: 5,
-          ),
-          _buildMyGroupIndicator(context, groupId),
-          Spacer(),
-          SizedBox(
-            width: 5,
+            height: 5,
           ),
           SizedBox(
             width: 80,
@@ -155,34 +206,52 @@ class _GroupState extends ConsumerState<Group> {
               ),
             ),
           ),
+
+          SizedBox(
+            height: 5,
+          ),
+          _buildColumnGroupToggleButton(context),
+          // Spacer(),
         ],
       ),
     );
   }
 
-  // Widget _buildGroupToggleButton(BuildContext context) {
-  //   // TODO: 1. ListItemBuilder empty 케이스 일반화하기 / 2. itemBuilder 수정하기
-  //   final _myGroupStream = ref.watch(myGroupFutureProvider);
-  //   return ListItemsBuilder<GroupModel>(
-  //     data: _myGroupStream,
-  //     itemBuilder: (context, model) => _buildToggleButtonUi(context, model),
-  //     axis: Axis.horizontal,
-  //   );
-  // }
-
-  Widget _buildMyGroupIndicator(BuildContext context, String groupId) {
-    final _myGroupStream = ref.watch(myActivatedGroupFutureProvider);
-    return _myGroupStream.when(
-      data: (data) => _buildToggleButtonUi(context, data),
-      loading: () => const Center(
-          child: CircularProgressIndicator(
-        color: MyColors.purple300,
-      )),
-      error: (_, __) => EmptyContent(
-        title: '오류가 발생하였습니다',
+  Widget _buildColumnGroupToggleButton(BuildContext context) {
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
+    return SizedBox(
+      width: 80,
+      height: 400,
+      child: ListItemsBuilder2<GroupModel>(
+        data: _myGroupStream,
+        itemBuilder: (context, model) => _buildToggleButtonUi(
+          context,
+          model,
+          _myActivatedGroupId == model.id ? true : false,
+        ),
+        creator: () => new GroupModel(
+          id: 'public',
+          name: '전체',
+        ),
+        axis: Axis.vertical,
       ),
     );
   }
+
+  // Widget _buildMyGroupIndicator(BuildContext context, String groupId) {
+  //   final _myGroupStream = ref.watch(myActivatedGroupFutureProvider);
+  //   return _myGroupStream.when(
+  //     data: (data) => _buildToggleButtonUi(context, data),
+  //     loading: () => const Center(
+  //         child: CircularProgressIndicator(
+  //       color: MyColors.purple300,
+  //     )),
+  //     error: (_, __) => EmptyContent(
+  //       title: '오류가 발생하였습니다',
+  //     ),
+  //   );
+  // }
 
   Widget _buildCreateGroupSuccess(BuildContext context, String groupName,
       String groupPassword, String groupDocId) {
@@ -249,54 +318,59 @@ class _GroupState extends ConsumerState<Group> {
     );
   }
 
-  Widget _buildToggleButtonUi(BuildContext context, GroupModel group) {
-    String groupName = group.name ?? '전체';
+  Widget _buildToggleButtonUi(
+      BuildContext context, GroupModel group, bool isThisGroupActivated) {
     return Container(
-      width: group.id == 'public' ? 46 : 84 + groupName.length * 11,
-      height: 34,
+      height: 80,
       child: TextButton(
         onPressed: () {
           _changeActivatedGroup(group.id!);
         },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(MyColors.purple100),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: MyColors.purple300, width: 1),
-            ),
-          ),
-        ),
+        style: isThisGroupActivated
+            ? ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(MyColors.purple100),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: MyColors.purple300, width: 1),
+                  ),
+                ),
+              )
+            : ButtonStyle(),
         child: Container(
-          child: Row(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              group.imageUrl != null
+              group.id != 'public'
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         group.imageUrl!,
                         fit: BoxFit.cover,
-                        width: 20,
-                        height: 20,
+                        width: 24,
+                        height: 24,
                       ),
                     )
-                  : SizedBox.shrink(),
-              SizedBox(
-                width: 4,
-              ),
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/images/earth.png',
+                        fit: BoxFit.cover,
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
               Text(
-                groupName,
+                group.name!,
                 softWrap: true,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 12,
+                  fontSize: group.name!.length > 5 ? 10 : 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(
-                width: 4,
-              ),
-              groupName != '전체'
+              isThisGroupActivated
                   ? SizedBox(
                       height: 22,
                       width: 38,
@@ -314,8 +388,8 @@ class _GroupState extends ConsumerState<Group> {
                         onPressed: () {
                           Uri uri = Uri.parse(Uri.base.toString());
                           String quote = group.password != ''
-                              ? '귀하는 ${groupName}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                              : '귀하는 ${groupName}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
+                              ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
+                              : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
                           showDialog(
                               context: context,
                               builder: (context) {

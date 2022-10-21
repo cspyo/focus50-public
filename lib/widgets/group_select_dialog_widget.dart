@@ -129,7 +129,7 @@ class GroupSelectAlertDialog extends ConsumerWidget {
               child: Container(
                 child: Row(
                   children: [
-                    group.imageUrl != null
+                    group.imageUrl != null //TODO: 여기서 널 생겨서 다른 그룹들도 사진이 동일해진거임!
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.network(
