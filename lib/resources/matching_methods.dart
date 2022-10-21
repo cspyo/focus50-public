@@ -1,3 +1,4 @@
+import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/reservation_user_info.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -28,7 +29,6 @@ class MatchingMethods {
     database.runTransaction((transaction) async {
       ReservationModel? notFullReservation =
           await database.findReservationForMatch(
-
               startTime: startTime, groupId: groupId, transaction: transaction);
       if (notFullReservation == null) {
         ReservationModel newReservation = ReservationModel.newReservation(
@@ -37,11 +37,21 @@ class MatchingMethods {
           groupId: groupId,
         );
         database.setReservation(newReservation.addUser(
-            userId, ReservationUserInfo(uid: userId, nickname: userName)));
+            userId,
+            ReservationUserInfo(
+                uid: userId,
+                nickname: userName,
+                reservationAgent: AGENT,
+                reservationVersion: VERSION)));
       } else {
         database.updateReservationInTransaction(
           notFullReservation.addUser(
-              userId, ReservationUserInfo(uid: userId, nickname: userName)),
+              userId,
+              ReservationUserInfo(
+                  uid: userId,
+                  nickname: userName,
+                  reservationAgent: AGENT,
+                  reservationVersion: VERSION)),
           transaction,
         );
       }

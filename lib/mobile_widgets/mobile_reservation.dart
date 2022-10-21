@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -35,6 +36,10 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
     final uid = database.uid;
     database.updateReservationUserInfo(
         nextReservation.id!, uid, "enterDTTM", DateTime.now());
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "sessionVersion", VERSION);
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "sessionAgent", AGENT);
     AnalyticsMethod().mobileLogEnterSession();
     Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
   }
