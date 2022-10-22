@@ -1,3 +1,4 @@
+import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/reservation_user_info.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -28,7 +29,6 @@ class MatchingMethods {
     database.runTransaction((transaction) async {
       ReservationModel? notFullReservation =
           await database.findReservationForMatch(
-
               startTime: startTime, groupId: groupId, transaction: transaction);
       if (notFullReservation == null) {
         ReservationModel newReservation = ReservationModel.newReservation(
@@ -37,11 +37,25 @@ class MatchingMethods {
           groupId: groupId,
         );
         database.setReservation(newReservation.addUser(
-            userId, ReservationUserInfo(uid: userId, nickname: userName)));
+            userId,
+            ReservationUserInfo(
+              uid: userId,
+              nickname: userName,
+              reservationAgent: AGENT,
+              reservationVersion: VERSION,
+              reserveDTTM: DateTime.now(),
+            )));
       } else {
         database.updateReservationInTransaction(
           notFullReservation.addUser(
-              userId, ReservationUserInfo(uid: userId, nickname: userName)),
+              userId,
+              ReservationUserInfo(
+                uid: userId,
+                nickname: userName,
+                reservationAgent: AGENT,
+                reservationVersion: VERSION,
+                reserveDTTM: DateTime.now(),
+              )),
           transaction,
         );
       }
@@ -59,5 +73,14 @@ class MatchingMethods {
         database.updateReservationInTransaction(cancelReservation, transaction);
       }
     });
+  }
+
+  Future<void> leaveRoom(String docId) async {
+    final ReservationModel reservation = await database.getReservation(docId);
+    if (reservation.userInfos != null &&
+        reservation.userInfos!.containsKey(database.uid)) {
+      database.updateReservationUserInfo(
+          docId, database.uid, "leaveDTTM", DateTime.now());
+    }
   }
 }

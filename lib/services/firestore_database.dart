@@ -147,6 +147,21 @@ class FirestoreDatabase {
         },
       );
 
+  Future<void> updateReservationUserInfoInTransaction(
+    String docId,
+    String uid,
+    String field,
+    dynamic updatedData,
+    Transaction transaction,
+  ) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.reservation(docId),
+        data: {
+          FirestorePath.updateReservationUserInfo(uid, field): updatedData
+        },
+        transaction: transaction,
+      );
+
   // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
       {required DateTime startTime,
