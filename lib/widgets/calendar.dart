@@ -58,7 +58,7 @@ class CalendarState extends ConsumerState<Calendar> {
   double _getCurrentDayPosition(screenWidth) {
     int defaultPositionValue = 49;
     int currentDay = DateTime.tuesday;
-    int oneBoxWidth = ((screenWidth - 489.5) / 7).round();
+    int oneBoxWidth = ((screenWidth - 560) / 7).round();
     return defaultPositionValue + oneBoxWidth * (currentDay - 1);
   }
 

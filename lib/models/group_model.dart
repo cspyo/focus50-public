@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class GroupModel {
   String? id;
-  final String? category;
   final DateTime? createdDate;
   final DateTime? updatedDate;
   final String? createdBy;
@@ -19,7 +18,6 @@ class GroupModel {
 //default Constructor
   GroupModel({
     this.id,
-    this.category,
     this.createdDate,
     this.updatedDate,
     this.createdBy,
@@ -36,14 +34,12 @@ class GroupModel {
   factory GroupModel.newGroup({
     String? uid,
     String? name,
-    String? category,
     String? imageUrl,
     int? maxHeadcount,
     String? password,
     String? introduction,
   }) {
     return GroupModel(
-      category: category,
       createdDate: DateTime.now(),
       updatedDate: DateTime.now(),
       createdBy: uid,
@@ -66,7 +62,6 @@ class GroupModel {
 
     return GroupModel(
       id: snapshot.id,
-      category: data?['category'],
       createdDate: data?['createdDate'].toDate(),
       updatedDate: data?['updatedDate'].toDate(),
       createdBy: data?['createdBy'],
@@ -86,7 +81,6 @@ class GroupModel {
   Map<String, dynamic> toMap() {
     return {
       "id": id,
-      "category": category,
       "createdDate": createdDate,
       "updatedDate": updatedDate,
       "createdBy": createdBy,
@@ -108,7 +102,6 @@ class GroupModel {
 
     GroupModel memberAddedGroup = GroupModel(
       id: this.id,
-      category: this.category,
       createdDate: this.createdDate,
       updatedDate: DateTime.now(),
       createdBy: this.createdBy,
@@ -131,7 +124,6 @@ class GroupModel {
 
     GroupModel memberRemovedGroup = GroupModel(
       id: this.id,
-      category: this.category,
       createdDate: this.createdDate,
       updatedDate: DateTime.now(),
       createdBy: this.createdBy,

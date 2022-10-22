@@ -28,7 +28,6 @@ class MatchingMethods {
     database.runTransaction((transaction) async {
       ReservationModel? notFullReservation =
           await database.findReservationForMatch(
-
               startTime: startTime, groupId: groupId, transaction: transaction);
       if (notFullReservation == null) {
         ReservationModel newReservation = ReservationModel.newReservation(

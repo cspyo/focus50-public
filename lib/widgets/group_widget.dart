@@ -19,6 +19,7 @@ import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_search_widget.dart';
 import 'package:focus42/widgets/group_select_dialog_widget.dart';
+import 'package:focus42/widgets/group_setting_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -43,17 +44,6 @@ final myGroupFutureProvider =
   return result;
 });
 
-Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
-  database.runTransaction((transaction) async {
-    final GroupModel myGroup = await database.getGroupInTransaction(
-        docId: docId, transaction: transaction);
-    database.updateGroupInTransaction(
-        myGroup.removeMember(database.uid), transaction);
-    final UserPublicModel myUser = await database.getUserPublic();
-    database.setUserPublic(myUser.leaveGroup(docId));
-  });
-}
-
 class Group extends ConsumerStatefulWidget {
   @override
   _GroupState createState() => _GroupState();
@@ -62,7 +52,6 @@ class Group extends ConsumerStatefulWidget {
 class _GroupState extends ConsumerState<Group> {
   late final FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _maxHeadcountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
@@ -88,7 +77,6 @@ class _GroupState extends ConsumerState<Group> {
   @override
   void dispose() {
     _nameController.dispose();
-    _categoryController.dispose();
     _maxHeadcountController.dispose();
     _passwordController.dispose();
     _introductionController.dispose();
@@ -105,94 +93,49 @@ class _GroupState extends ConsumerState<Group> {
       //     border: Border(right: BorderSide(color: border100, width: 1))),
       child: Column(
         children: [
-          // SizedBox(
-          //   width: 80,
-          //   height: 34,
-          //   child: TextButton(
-          //     onPressed: () {
-          //       if (uid != null) {
-          //         AnalyticsMethod().logPressGroupSelectButton();
-          //         _popupInviteOthersDialog(context);
-          //       } else {
-          //         AnalyticsMethod().logPressGroupSelectButtonWithoutSignIn();
-          //         Get.rootDelegate.toNamed(Routes.SIGNUP);
-          //       }
-          //     },
-          //     child: Text(
-          //       '그룹 선택',
-          //       style: MyTextStyle.CwS12W600,
-          //     ),
-          //     style: ButtonStyle(
-          //       backgroundColor:
-          //           MaterialStateProperty.all<Color>(MyColors.purple300),
-          //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          //         RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(12),
-          //         ),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // SizedBox(
-          //   width: 5,
-          // ),
-          // Container(
-          //   alignment: Alignment.topCenter,
-          //   width: 100,
-          //   height: 101,
-          //   decoration: BoxDecoration(
-          //       border: Border(
-          //     bottom: BorderSide(color: Color(0xffECECEC), width: 1),
-          //     right: BorderSide(color: Color(0xffECECEC), width: 1),
-          //   )),
-          //   child: Text(
-          //     '그룹',
-          //     style: MyTextStyle.CbS20W600,
-          //   ),
-          // ),
-
-          Container(
-            alignment: Alignment.center,
-            height: 100,
-            child: Text(
-              '그룹',
-              style: MyTextStyle.CbS20W600,
-            ),
-          ),
           SizedBox(
-            width: 80,
-            height: 34,
-            child: TextButton(
-              onPressed: () {
-                if (uid != null) {
-                  AnalyticsMethod().logPressGroupCreateButton();
-                  _popupCreateGroupDialog(context);
-                } else {
-                  AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
-                  Get.rootDelegate.toNamed(Routes.SIGNUP);
-                }
-              },
-              child: Text(
-                '그룹 검색',
-                style: MyTextStyle.CpS12W600,
-              ),
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(width: 1, color: MyColors.purple300),
+            height: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  child: Text(
+                    '그룹',
+                    style: MyTextStyle.CbS20W600,
                   ),
                 ),
-              ),
+                SizedBox(
+                  width: 80,
+                  height: 30,
+                  child: TextButton(
+                    onPressed: () {
+                      _popupSearchGroupDialog(context); //TODO: GA 달기
+                    },
+                    child: Icon(
+                      Icons.search,
+                      color: MyColors.purple300,
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(width: 1, color: MyColors.purple300),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(
-            height: 5,
-          ),
+          _buildColumnGroupToggleButton(context),
           SizedBox(
             width: 80,
-            height: 34,
+            height: 30,
             child: TextButton(
               onPressed: () {
                 if (uid != null) {
@@ -203,9 +146,10 @@ class _GroupState extends ConsumerState<Group> {
                   Get.rootDelegate.toNamed(Routes.SIGNUP);
                 }
               },
-              child: Text(
-                '그룹 만들기',
-                style: MyTextStyle.CwS12W600,
+              child: Icon(
+                Icons.add,
+                size: 24,
+                color: Colors.white,
               ),
               style: ButtonStyle(
                 backgroundColor:
@@ -218,11 +162,9 @@ class _GroupState extends ConsumerState<Group> {
               ),
             ),
           ),
-
           SizedBox(
             height: 5,
           ),
-          _buildColumnGroupToggleButton(context),
           // Spacer(),
         ],
       ),
@@ -232,9 +174,10 @@ class _GroupState extends ConsumerState<Group> {
   Widget _buildColumnGroupToggleButton(BuildContext context) {
     final _myGroupStream = ref.watch(myGroupFutureProvider);
     final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
+    double screenHeight = MediaQuery.of(context).size.height;
     return SizedBox(
       width: 80,
-      height: 400,
+      height: screenHeight - 267,
       child: ListItemsBuilder2<GroupModel>(
         data: _myGroupStream,
         itemBuilder: (context, model) => _buildToggleButtonUi(
@@ -332,184 +275,221 @@ class _GroupState extends ConsumerState<Group> {
 
   Widget _buildToggleButtonUi(
       BuildContext context, GroupModel group, bool isThisGroupActivated) {
-    return Container(
-      height: 80,
-      child: TextButton(
-        onPressed: () {
-          _changeActivatedGroup(group.id!);
-        },
-        style: isThisGroupActivated
-            ? ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(MyColors.purple100),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: MyColors.purple300, width: 1),
-                  ),
-                ),
-              )
-            : ButtonStyle(),
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              group.id != 'public'
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        group.imageUrl!,
-                        fit: BoxFit.cover,
-                        width: 24,
-                        height: 24,
-                      ),
-                    )
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(
-                        'assets/images/earth.png',
-                        fit: BoxFit.cover,
-                        width: 24,
-                        height: 24,
+    return Stack(
+      children: [
+        Container(
+          height: 80,
+          child: TextButton(
+            onPressed: () {
+              _changeActivatedGroup(group.id!);
+            },
+            style: isThisGroupActivated
+                ? ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(MyColors.purple100),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: MyColors.purple300, width: 1),
                       ),
                     ),
-              Text(
-                group.name!,
-                softWrap: true,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: group.name!.length > 5 ? 10 : 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              isThisGroupActivated
-                  ? SizedBox(
-                      height: 22,
-                      width: 38,
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                  )
+                : ButtonStyle(),
+            child: Container(
+              width: 80,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  group.id != 'public'
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            group.imageUrl!,
+                            fit: BoxFit.cover,
+                            width: 24,
+                            height: 24,
+                          ),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            'assets/images/earth.png',
+                            fit: BoxFit.cover,
+                            width: 24,
+                            height: 24,
                           ),
                         ),
-                        onPressed: () {
-                          Uri uri = Uri.parse(Uri.base.toString());
-                          String quote = group.password != ''
-                              ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                              : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                bool isCopied = false;
-                                return StatefulBuilder(
-                                    builder: (context, setState) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(16.0))),
-                                    content: SizedBox(
-                                      height: 264,
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerRight,
-                                            child: SizedBox(
-                                              width: 36,
-                                              height: 36,
-                                              child: IconButton(
-                                                padding: EdgeInsets.all(0),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                icon: Icon(
-                                                  Icons.close,
-                                                  color: Colors.black,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Text('이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
-                                              style: MyTextStyle.CbS18W400),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  width: 1, color: border300),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                            child: SelectableText(quote),
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 80,
-                                            height: 44,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                Clipboard.setData(
-                                                    ClipboardData(text: quote));
-                                                setState(() => isCopied = true);
-                                              },
-                                              child: !isCopied
-                                                  ? Text(
-                                                      '복사하기',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    )
-                                                  : Icon(
-                                                      Icons.check,
-                                                      color: Colors.white,
+                  Text(
+                    group.name!,
+                    softWrap: true,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: group.name!.length > 5 ? 10 : 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  isThisGroupActivated
+                      ? SizedBox(
+                          height: 22,
+                          width: 38,
+                          child: TextButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  MyColors.purple300),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              Uri uri = Uri.parse(Uri.base.toString());
+                              String quote = group.password != ''
+                                  ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
+                                  : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    bool isCopied = false;
+                                    return StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(16.0))),
+                                        content: SizedBox(
+                                          height: 264,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: SizedBox(
+                                                  width: 36,
+                                                  height: 36,
+                                                  child: IconButton(
+                                                    padding: EdgeInsets.all(0),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                      color: Colors.black,
+                                                      size: 30,
                                                     ),
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all<
-                                                            Color>(
-                                                        MyColors.purple300),
-                                                shape:
-                                                    MaterialStateProperty.all<
-                                                        RoundedRectangleBorder>(
-                                                  RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                });
-                              });
-                        },
-                        child: Text(
-                          '초대',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                                              Text('이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
+                                                  style: MyTextStyle.CbS18W400),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: border300),
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                child: SelectableText(quote),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              SizedBox(
+                                                width: 80,
+                                                height: 44,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    Clipboard.setData(
+                                                        ClipboardData(
+                                                            text: quote));
+                                                    setState(
+                                                        () => isCopied = true);
+                                                  },
+                                                  child: !isCopied
+                                                      ? Text(
+                                                          '복사하기',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )
+                                                      : Icon(
+                                                          Icons.check,
+                                                          color: Colors.white,
+                                                        ),
+                                                  style: ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(MyColors
+                                                                .purple300),
+                                                    shape: MaterialStateProperty
+                                                        .all<
+                                                            RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    });
+                                  });
+                            },
+                            child: Text(
+                              '초대',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
+                        )
+                      : SizedBox(
+                          height: 22,
+                          width: 38,
                         ),
-                      ),
-                    )
-                  : SizedBox.shrink(),
-            ],
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+        isThisGroupActivated && group.id != 'public'
+            ? Positioned(
+                top: 4,
+                left: 4,
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: IconButton(
+                    hoverColor: Colors.transparent,
+                    focusColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onPressed: () {
+                      _popupGroupSettingDialog(context, group);
+                    },
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.settings,
+                      size: 16,
+                      color: MyColors.purple300,
+                    ),
+                  ),
+                ),
+              )
+            : SizedBox.shrink(),
+      ],
     );
   }
 
@@ -588,19 +568,16 @@ class _GroupState extends ConsumerState<Group> {
     String groupDocId = '';
     List<String> titles = [
       '그룹 명',
-      '카테고리',
       '최대 구성원 수',
       '비밀번호',
     ];
     List<String> hintTexts = [
       '그룹 명을 적어주세요',
-      '카테고리를 입력해주세요',
       '10(숫자만 입력해주세요)',
       '비밀번호(선택)',
     ];
     List<TextEditingController> controllers = [
       _nameController,
-      _categoryController,
       _maxHeadcountController,
       _passwordController,
     ];
@@ -617,6 +594,7 @@ class _GroupState extends ConsumerState<Group> {
                   ? Form(
                       key: _createGroupFormKey,
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             alignment: Alignment.centerRight,
@@ -690,7 +668,6 @@ class _GroupState extends ConsumerState<Group> {
                                 hintTexts[i],
                                 controllers[i],
                                 i), //for 문 안쓰고 어케 하지??
-                          // _buildCategoryField(context),
                           Container(
                             width: 410,
                             height: 50,
@@ -751,7 +728,6 @@ class _GroupState extends ConsumerState<Group> {
                                   });
                                   groupDocId = await createGroup(
                                     _nameController.text,
-                                    _categoryController.text,
                                     int.parse(_maxHeadcountController.text),
                                     _passwordController.text,
                                     _introductionController.text,
@@ -839,6 +815,16 @@ class _GroupState extends ConsumerState<Group> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return GroupSearchAlertDialog();
+        });
+  }
+
+  Future<dynamic> _popupGroupSettingDialog(
+      BuildContext context, GroupModel group) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSettingAlertDialog(database: database, group: group);
         });
   }
 
@@ -1013,7 +999,6 @@ class _GroupState extends ConsumerState<Group> {
 
   Future<String> createGroup(
     String name,
-    String category,
     int maxHeadcount,
     String password,
     String introduction,
@@ -1026,7 +1011,6 @@ class _GroupState extends ConsumerState<Group> {
     final createdGroup = GroupModel.newGroup(
       uid: database.uid,
       name: name,
-      category: category,
       imageUrl: imageUrl,
       maxHeadcount: maxHeadcount,
       introduction: introduction,

@@ -71,7 +71,7 @@ class _GroupSearchAlertDialogState
                       SizedBox(
                         width: 36,
                       ),
-                      Text('그룹을 검색해보아요', style: MyTextStyle.CbS18W400),
+                      Text('그룹을 검색해보세요', style: MyTextStyle.CbS18W400),
                       SizedBox(
                         width: 36,
                         height: 36,
@@ -91,26 +91,29 @@ class _GroupSearchAlertDialogState
                   ),
                 ),
                 Container(
+                  height: 68,
+                  width: 240,
+                  padding: EdgeInsets.all(8),
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: '그룹 이름을 검색해보세요',
-                      hintStyle: TextStyle(
-                        color: Color.fromARGB(255, 121, 121, 136),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.grey,
                       ),
+                      hintText: '그룹 이름을 검색해보세요',
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                       filled: true,
-                      fillColor: MyColors.purple100,
-                      focusColor: MyColors.purple100,
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      fillColor: Colors.white,
+                      focusColor: Colors.black,
+                      enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: MyColors.purple300,
+                          color: MyColors.border300,
                           width: 1,
                         ),
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                          color: MyColors.purple300,
+                          color: Colors.black,
                           width: 1,
                         ),
                       ),
@@ -125,7 +128,7 @@ class _GroupSearchAlertDialogState
                 Container(
                   width: 250,
                   padding: EdgeInsets.all(10),
-                  height: 440,
+                  height: 432,
                   decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.only(bottomLeft: Radius.circular(16)),
@@ -234,10 +237,11 @@ class _GroupSearchAlertDialogState
       builder: (BuildContext context) {
         return AlertDialog(
           content: Container(
-            height: 260,
+            // height: 260,
             child: Form(
               // key: _invitementFormKey,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
@@ -397,7 +401,8 @@ class _GroupSearchAlertDialogState
                     height: 20,
                   ),
                   SizedBox(
-                    height: 40,
+                    width: 100,
+                    height: 46,
                     child: TextButton(
                       onPressed: () {
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
@@ -472,6 +477,7 @@ class _GroupSearchAlertDialogState
                       height: 20,
                     ),
                     SizedBox(
+                      width: 100,
                       height: 46,
                       child: TextButton(
                         onPressed: () {
@@ -541,6 +547,7 @@ class _GroupSearchAlertDialogState
                     ),
                     SizedBox(
                       height: 46,
+                      width: 100,
                       child: TextButton(
                         onPressed: () {
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());

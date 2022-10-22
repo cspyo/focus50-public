@@ -50,7 +50,6 @@ class MobileGroup extends ConsumerStatefulWidget {
 class _MobileGroupState extends ConsumerState<MobileGroup> {
   late final FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _maxHeadcountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
@@ -76,7 +75,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
   @override
   void dispose() {
     _nameController.dispose();
-    _categoryController.dispose();
     _maxHeadcountController.dispose();
     _passwordController.dispose();
     _introductionController.dispose();
@@ -469,7 +467,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
     ];
     List<TextEditingController> controllers = [
       _nameController,
-      _categoryController,
       _maxHeadcountController,
       _passwordController,
     ];
@@ -559,7 +556,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
                                 hintTexts[i],
                                 controllers[i],
                                 i), //for 문 안쓰고 어케 하지??
-                          // _buildCategoryField(context),
                           Container(
                             width: 410,
                             height: 50,
@@ -620,7 +616,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
                                   });
                                   groupDocId = await createGroup(
                                     _nameController.text,
-                                    _categoryController.text,
                                     int.parse(_maxHeadcountController.text),
                                     _passwordController.text,
                                     _introductionController.text,
@@ -929,7 +924,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
 
   Future<String> createGroup(
     String name,
-    String category,
     int maxHeadcount,
     String password,
     String introduction,
@@ -942,7 +936,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
     final createdGroup = GroupModel.newGroup(
       uid: database.uid,
       name: name,
-      category: category,
       imageUrl: imageUrl,
       maxHeadcount: maxHeadcount,
       introduction: introduction,
