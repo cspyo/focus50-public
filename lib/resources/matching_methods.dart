@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/reservation_user_info.dart';
@@ -67,6 +68,24 @@ class MatchingMethods {
         database.deleteReservationInTransaction(cancelReservation, transaction);
       } else {
         database.updateReservationInTransaction(cancelReservation, transaction);
+      }
+    });
+  }
+
+  Future<void> leaveRoom(String docId) async {
+    database.runTransaction((transaction) async {
+      late ReservationModel reservation;
+      try {
+        reservation =
+            await database.getReservationInTransaction(docId, transaction);
+      } catch (e) {
+        debugPrint("${e}");
+        return;
+      }
+      if (reservation.userInfos != null &&
+          reservation.userInfos!.containsKey(database.uid)) {
+        database.updateReservationUserInfoInTransaction(
+            docId, database.uid, "leaveDTTM", DateTime.now(), transaction);
       }
     });
   }
