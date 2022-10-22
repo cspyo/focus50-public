@@ -22,6 +22,32 @@ Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
   });
 }
 
+Future<void> modifyGroup({
+  required FirestoreDatabase database,
+  required GroupModel group,
+  required String newName,
+  required String newImageUrl,
+  required int newMaxHeadcount,
+  required String newPassword,
+  required String newIntroduction,
+}) async {
+  final String groupId = group.id!;
+  database.runTransaction((transaction) async {
+    final GroupModel myGroup = await database.getGroupInTransaction(
+        docId: groupId, transaction: transaction);
+    database.updateGroupInTransaction(
+        myGroup.modifyInfo(
+          newName: newName,
+          newImageUrl: newImageUrl,
+          newMaxHeadcount: newMaxHeadcount,
+          newPassword: newPassword,
+          newIntroduction: newIntroduction,
+          newUpdatedBy: database.uid,
+        ),
+        transaction);
+  });
+}
+
 class GroupSettingAlertDialog extends ConsumerStatefulWidget {
   final FirestoreDatabase database;
   final GroupModel group;

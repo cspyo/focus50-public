@@ -138,4 +138,29 @@ class GroupModel {
     );
     return memberRemovedGroup;
   }
+
+  GroupModel modifyInfo({
+    required String newName,
+    required String newImageUrl,
+    required int newMaxHeadcount,
+    required String newPassword,
+    required String newIntroduction,
+    required String newUpdatedBy,
+  }) {
+    GroupModel modifiedGroup = GroupModel(
+      id: this.id,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      createdBy: this.createdBy,
+      updatedBy: newUpdatedBy,
+      name: newName,
+      headcount: this.headcount,
+      imageUrl: newImageUrl,
+      introduction: newIntroduction,
+      maxHeadcount: newMaxHeadcount,
+      memberUids: this.memberUids,
+      password: newPassword,
+    );
+    return modifiedGroup;
+  }
 }
