@@ -418,7 +418,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
                     : FilteringTextInputFormatter.singleLineFormatter,
               ],
               validator: (value) {
-                return (value == null || value.isEmpty) && index != 3
+                return (value == null || value.isEmpty) && index != 2
                     ? '$title를 입력해주세요'
                     : index == 0 && isGroupNameOverlap!
                         ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'

@@ -218,6 +218,7 @@ class _GroupState extends ConsumerState<Group> {
     return StatefulBuilder(
       builder: ((context, setState) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -345,9 +346,11 @@ class _GroupState extends ConsumerState<Group> {
                             ),
                             onPressed: () {
                               Uri uri = Uri.parse(Uri.base.toString());
-                              String quote = group.password != ''
-                                  ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                                  : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
+                              String quote = group.id == 'public'
+                                  ? '같이 집중해봅시다!! \n자꾸 미룰 때, 할 일이 많을 때, 혼자 공부하기 싫을 때 사용해보시면 많은 도움이 될 거예요. \n아래 링크를 눌러 입장해주세요! \nhttps://focus50.day'
+                                  : group.password != ''
+                                      ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
+                                      : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
                               showDialog(
                                   context: context,
                                   builder: (context) {
@@ -526,12 +529,12 @@ class _GroupState extends ConsumerState<Group> {
             padding: EdgeInsets.only(left: 8, right: 8),
             child: TextFormField(
               inputFormatters: <TextInputFormatter>[
-                index == 2
+                index == 1
                     ? FilteringTextInputFormatter.digitsOnly
                     : FilteringTextInputFormatter.singleLineFormatter,
               ],
               validator: (value) {
-                return (value == null || value.isEmpty) && index != 3
+                return (value == null || value.isEmpty) && index != 2
                     ? '$title를 입력해주세요'
                     : index == 0 && isGroupNameOverlap!
                         ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'
@@ -589,7 +592,6 @@ class _GroupState extends ConsumerState<Group> {
           return AlertDialog(
             content: Container(
               width: 626,
-              height: !isCreateGroupFinished ? 800 : 300,
               child: !isCreateGroupFinished
                   ? Form(
                       key: _createGroupFormKey,

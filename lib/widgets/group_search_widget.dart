@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
@@ -27,6 +28,7 @@ class _GroupSearchAlertDialogState
   String query = '';
   late final database;
   final TextEditingController _invitePwController = TextEditingController();
+  String? uid = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
@@ -170,7 +172,11 @@ class _GroupSearchAlertDialogState
             child: TextButton(
               onPressed: () {
                 // Navigator.pop(context);
-                _popupRegisterDialog(context, group);
+                if (uid != null) {
+                  _popupRegisterDialog(context, group);
+                } else {
+                  Get.rootDelegate.toNamed(Routes.SIGNUP);
+                }
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
