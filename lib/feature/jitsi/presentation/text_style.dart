@@ -7,6 +7,12 @@ class MyTextStyle {
       fontWeight: FontWeight.w400,
       color: Colors.black,
       decoration: TextDecoration.none);
+
+  static const TextStyle CbS14W600 = TextStyle(
+      fontSize: 14.0,
+      fontWeight: FontWeight.w600,
+      color: Colors.black,
+      decoration: TextDecoration.none);
   static const TextStyle CbS16W400 = TextStyle(
       fontSize: 16.0,
       fontWeight: FontWeight.w400,

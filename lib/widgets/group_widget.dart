@@ -769,6 +769,7 @@ class _GroupState extends ConsumerState<Group> {
                       ),
                     )
                   : Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           alignment: Alignment.centerRight,

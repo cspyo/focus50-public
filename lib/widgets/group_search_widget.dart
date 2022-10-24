@@ -73,7 +73,7 @@ class _GroupSearchAlertDialogState
                       SizedBox(
                         width: 36,
                       ),
-                      Text('그룹을 검색해보세요', style: MyTextStyle.CbS18W400),
+                      Text('그룹 검색', style: MyTextStyle.CbS18W400),
                       SizedBox(
                         width: 36,
                         height: 36,

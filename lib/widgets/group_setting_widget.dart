@@ -421,7 +421,7 @@ class _GroupSettingAlertDialogState
                     ),
                     style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.red),
+                          MaterialStateProperty.all<Color>(MyColors.purple300),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
