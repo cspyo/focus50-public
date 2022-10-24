@@ -30,7 +30,6 @@ Future<void> modifyGroup({
   required GroupModel group,
   required String newName,
   required String newImageUrl,
-  required int newMaxHeadcount,
   required String newPassword,
   required String newIntroduction,
 }) async {
@@ -42,7 +41,6 @@ Future<void> modifyGroup({
         myGroup.modifyInfo(
           newName: newName,
           newImageUrl: newImageUrl,
-          newMaxHeadcount: newMaxHeadcount,
           newPassword: newPassword,
           newIntroduction: newIntroduction,
           newUpdatedBy: database.uid,
@@ -66,7 +64,6 @@ class GroupSettingAlertDialog extends ConsumerStatefulWidget {
 class _GroupSettingAlertDialogState
     extends ConsumerState<GroupSettingAlertDialog> {
   late final TextEditingController _nameController;
-  late final TextEditingController _maxHeadcountController;
   late final TextEditingController _passwordController;
   late final TextEditingController _introductionController;
   late final database;
@@ -82,8 +79,6 @@ class _GroupSettingAlertDialogState
 
     currentGroupImageUrl = widget.group.imageUrl!;
     _nameController = TextEditingController(text: widget.group.name);
-    _maxHeadcountController =
-        TextEditingController(text: widget.group.maxHeadcount.toString());
     _passwordController = TextEditingController(text: widget.group.password);
     _introductionController =
         TextEditingController(text: widget.group.introduction);
@@ -99,7 +94,6 @@ class _GroupSettingAlertDialogState
   @override
   void dispose() {
     _nameController.dispose();
-    _maxHeadcountController.dispose();
     _passwordController.dispose();
     _introductionController.dispose();
     super.dispose();
@@ -117,7 +111,6 @@ class _GroupSettingAlertDialogState
     ];
     List<TextEditingController> controllers = [
       _nameController,
-      _maxHeadcountController,
       _passwordController,
     ];
     return StatefulBuilder(builder: (parentContext, setState) {
@@ -309,8 +302,6 @@ class _GroupSettingAlertDialogState
                                     group: widget.group,
                                     newName: _nameController.text,
                                     newImageUrl: imageUrl,
-                                    newMaxHeadcount:
-                                        int.parse(_maxHeadcountController.text),
                                     newIntroduction:
                                         _introductionController.text,
                                     newPassword: _passwordController.text,

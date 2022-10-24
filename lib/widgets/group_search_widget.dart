@@ -218,7 +218,7 @@ class _GroupSearchAlertDialogState
                       width: 8,
                     ),
                     Text(
-                      '${group.headcount} / ${group.maxHeadcount}',
+                      '정원 : ${group.headcount} 명',
                       style: MyTextStyle.CgS12W400,
                     ),
                   ],
@@ -437,151 +437,80 @@ class _GroupSearchAlertDialogState
         },
       );
     } else {
-      if (group.headcount! < group.maxHeadcount!) {
-        final UserModel? user = await ref.read(userStreamProvider.future);
-        database.setGroup(group.addMember(database.uid));
-        database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
-        return showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            _changeActivatedGroup(group.id!);
-                            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '환영합니다',
-                      style: MyTextStyle.CbS20W600,
-                    ),
-                    Text(
-                      '성공적으로 가입되었습니다',
-                      style: MyTextStyle.CbS18W400,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      width: 100,
-                      height: 46,
-                      child: TextButton(
+      final UserModel? user = await ref.read(userStreamProvider.future);
+      database.setGroup(group.addMember(database.uid));
+      database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SizedBox(
+              height: 160,
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
                         onPressed: () {
+                          _changeActivatedGroup(group.id!);
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
-                        },
-                        child: Text(
-                          '확인',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      } else {
-        return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '그룹 가입',
-                      style: MyTextStyle.CbS20W600,
-                    ),
-                    Text(
-                      '정원이 모두 찼습니다.',
-                      style: MyTextStyle.CbS18W400,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      height: 46,
-                      width: 100,
-                      child: TextButton(
-                        onPressed: () {
-                          Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
-                        child: Text(
-                          '확인',
-                          style: TextStyle(color: Colors.white),
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.black,
+                          size: 30,
                         ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '환영합니다',
+                    style: MyTextStyle.CbS20W600,
+                  ),
+                  Text(
+                    '성공적으로 가입되었습니다',
+                    style: MyTextStyle.CbS18W400,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    width: 100,
+                    height: 46,
+                    child: TextButton(
+                      onPressed: () {
+                        Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        '확인',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            MyColors.purple300),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
-            );
-          },
-        );
-      }
+            ),
+          );
+        },
+      );
     }
   }
 

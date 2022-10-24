@@ -52,7 +52,6 @@ class Group extends ConsumerStatefulWidget {
 class _GroupState extends ConsumerState<Group> {
   late final FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _maxHeadcountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
   final TextEditingController _invitePwController = TextEditingController();
@@ -77,7 +76,6 @@ class _GroupState extends ConsumerState<Group> {
   @override
   void dispose() {
     _nameController.dispose();
-    _maxHeadcountController.dispose();
     _passwordController.dispose();
     _introductionController.dispose();
     _invitePwController.dispose();
@@ -579,7 +577,6 @@ class _GroupState extends ConsumerState<Group> {
     ];
     List<TextEditingController> controllers = [
       _nameController,
-      _maxHeadcountController,
       _passwordController,
     ];
     return showDialog(
@@ -728,7 +725,6 @@ class _GroupState extends ConsumerState<Group> {
                                   });
                                   groupDocId = await createGroup(
                                     _nameController.text,
-                                    int.parse(_maxHeadcountController.text),
                                     _passwordController.text,
                                     _introductionController.text,
                                   );
@@ -738,6 +734,10 @@ class _GroupState extends ConsumerState<Group> {
                                     groupName = _nameController.text;
                                     groupPassword = _passwordController.text;
                                   });
+                                  _nameController.clear();
+                                  _passwordController.clear();
+                                  _introductionController.clear();
+                                  _invitePwController.clear();
                                 }
                               },
                               child: !isCreateGroupLoading
@@ -1000,7 +1000,6 @@ class _GroupState extends ConsumerState<Group> {
 
   Future<String> createGroup(
     String name,
-    int maxHeadcount,
     String password,
     String introduction,
   ) async {
@@ -1013,7 +1012,6 @@ class _GroupState extends ConsumerState<Group> {
       uid: database.uid,
       name: name,
       imageUrl: imageUrl,
-      maxHeadcount: maxHeadcount,
       introduction: introduction,
       password: password,
     );
@@ -1095,148 +1093,78 @@ class _GroupState extends ConsumerState<Group> {
         },
       );
     } else {
-      if (group.headcount! < group.maxHeadcount!) {
-        final UserModel? user = await ref.read(userStreamProvider.future);
-        database.setGroup(group.addMember(database.uid));
-        database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
-        return showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            _changeActivatedGroup(group.id!);
-                            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '환영합니다',
-                      style: MyTextStyle.CbS20W600,
-                    ),
-                    Text(
-                      '성공적으로 가입되었습니다',
-                      style: MyTextStyle.CbS18W400,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      height: 46,
-                      child: TextButton(
+      final UserModel? user = await ref.read(userStreamProvider.future);
+      database.setGroup(group.addMember(database.uid));
+      database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SizedBox(
+              height: 160,
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
                         onPressed: () {
+                          _changeActivatedGroup(group.id!);
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
-                        child: Text(
-                          '확인',
-                          style: TextStyle(color: Colors.white),
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.black,
+                          size: 30,
                         ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '환영합니다',
+                    style: MyTextStyle.CbS20W600,
+                  ),
+                  Text(
+                    '성공적으로 가입되었습니다',
+                    style: MyTextStyle.CbS18W400,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    height: 46,
+                    child: TextButton(
+                      onPressed: () {
+                        Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        '확인',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            MyColors.purple300),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
-            );
-          },
-        );
-      } else {
-        return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '그룹 가입',
-                      style: MyTextStyle.CbS20W600,
-                    ),
-                    Text(
-                      '정원이 모두 찼습니다.',
-                      style: MyTextStyle.CbS18W400,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      height: 46,
-                      child: TextButton(
-                        onPressed: () {
-                          Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          '확인',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      }
+            ),
+          );
+        },
+      );
     }
   }
 

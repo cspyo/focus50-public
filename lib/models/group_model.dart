@@ -10,7 +10,6 @@ class GroupModel {
   final int? headcount;
   final String? imageUrl;
   final String? introduction;
-  final int? maxHeadcount;
   final List<dynamic>? memberUids; //왜 자꾸 dynamic으로 뜨지? string은 왜 안되는 걸까??
   final String? password;
   // 통상적으로 password 보관하는 방법 다시 찾아보기(그냥 String으로 해도 되는 거 맞아??)
@@ -26,7 +25,6 @@ class GroupModel {
     this.headcount,
     this.imageUrl,
     this.introduction,
-    this.maxHeadcount,
     this.memberUids,
     this.password,
   });
@@ -35,7 +33,6 @@ class GroupModel {
     String? uid,
     String? name,
     String? imageUrl,
-    int? maxHeadcount,
     String? password,
     String? introduction,
   }) {
@@ -48,7 +45,6 @@ class GroupModel {
       headcount: 1,
       imageUrl: imageUrl,
       introduction: introduction,
-      maxHeadcount: maxHeadcount,
       memberUids: [uid!],
       password: password,
     );
@@ -70,7 +66,6 @@ class GroupModel {
       headcount: data?['headcount'],
       imageUrl: data?['imageUrl'],
       introduction: data?['introduction'],
-      maxHeadcount: data?['maxHeadcount'],
       memberUids: data?['memberUids'] is Iterable
           ? List.from(data?['memberUids'])
           : null,
@@ -89,7 +84,6 @@ class GroupModel {
       "headcount": headcount,
       "imageUrl": imageUrl,
       "introduction": introduction,
-      "maxHeadcount": maxHeadcount,
       "memberUids": memberUids,
       "password": password,
     };
@@ -110,7 +104,6 @@ class GroupModel {
       headcount: newHeadcount,
       imageUrl: this.imageUrl,
       introduction: this.introduction,
-      maxHeadcount: this.maxHeadcount,
       memberUids: newMemberUids,
       password: this.password,
     );
@@ -132,7 +125,6 @@ class GroupModel {
       headcount: newHeadcount,
       imageUrl: this.imageUrl,
       introduction: this.introduction,
-      maxHeadcount: this.maxHeadcount,
       memberUids: newMemberUids,
       password: this.password,
     );
@@ -142,7 +134,6 @@ class GroupModel {
   GroupModel modifyInfo({
     required String newName,
     required String newImageUrl,
-    required int newMaxHeadcount,
     required String newPassword,
     required String newIntroduction,
     required String newUpdatedBy,
@@ -157,7 +148,6 @@ class GroupModel {
       headcount: this.headcount,
       imageUrl: newImageUrl,
       introduction: newIntroduction,
-      maxHeadcount: newMaxHeadcount,
       memberUids: this.memberUids,
       password: newPassword,
     );
