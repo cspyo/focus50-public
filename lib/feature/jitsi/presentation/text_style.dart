@@ -24,6 +24,12 @@ class MyTextStyle {
       color: Colors.black,
       decoration: TextDecoration.none);
 
+  static const TextStyle CbS18W600 = TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w600,
+      color: Colors.black,
+      decoration: TextDecoration.none);
+
   static const TextStyle CbS20W600 = TextStyle(
       fontSize: 20.0,
       fontWeight: FontWeight.w600,
@@ -37,7 +43,7 @@ class MyTextStyle {
   );
 
   static const TextStyle CgS18W500 = TextStyle(
-      color: MyColors.border300,
+      color: Color.fromARGB(255, 114, 114, 114),
       fontSize: 18,
       fontWeight: FontWeight.w500,
       decoration: TextDecoration.none);

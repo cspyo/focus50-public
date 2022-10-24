@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
@@ -8,6 +7,7 @@ import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_group_widget.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
+import 'package:focus42/mobile_widgets/mobile_row_group_toggle_button_widget.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
@@ -16,7 +16,6 @@ import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
-import 'package:focus42/widgets/group_setting_widget.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -66,7 +65,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   @override
   void initState() {
     getUserData();
-    database = ref.read(databaseProvider);
     super.initState();
   }
 
@@ -79,10 +77,13 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     final authState = ref.watch(authStateChangesProvider).asData?.value;
-
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
     return Scaffold(
         appBar: AppBar(
+          elevation: 0,
           centerTitle: true,
           title: Row(
             mainAxisSize: MainAxisSize.min,
@@ -307,28 +308,72 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
               ]),
         ),
         body: SingleChildScrollView(
-          child: Column(//페이지 전체 구성
-              children: <Widget>[
-            const Line(),
-            Column(children: <Widget>[
-              Container(
-                child: MobileReservation(),
-              ),
-              Container(
+          child: Column(
+            //페이지 전체 구성
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const Line(),
+              Column(children: <Widget>[
+                // Container(
+                //   child: MobileReservation(),
+                // ),
+                SizedBox(
+                  height: 5,
+                ),
+                SizedBox(
+                  width: screenWidth - 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '그룹',
+                        style: MyTextStyle.CgS18W500,
+                      ),
+                      Container(width: 68, height: 32, child: MobileGroup()),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: screenWidth - 40,
+                  height: 80,
+                  child: ListItemsBuilder2<GroupModel>(
+                    data: _myGroupStream,
+                    itemBuilder: (context, model) =>
+                        MobilRowGroupToggleButtonWidget(
+                      group: model,
+                      isThisGroupActivated:
+                          _myActivatedGroupId == model.id ? true : false,
+                    ),
+                    creator: () => new GroupModel(
+                      id: 'public',
+                      name: '전체',
+                    ),
+                    axis: Axis.horizontal,
+                  ),
+                ),
+                Container(
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: border100)),
-                  height: screenHeight - 165,
-                  child: Stack(
-                    children: [
-                      MobileCalendar(
-                        calendarController: calendarController,
-                        isNotificationOpen: isNotificationOpen,
-                      ),
-                      Positioned(bottom: 10, right: 10, child: MobileGroup()),
-                    ],
-                  )),
-            ])
-          ]),
+                  height: screenHeight - 245,
+                  child: MobileCalendar(
+                    calendarController: calendarController,
+                    isNotificationOpen: isNotificationOpen,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    color: MyColors.purple300,
+                  ),
+                  child: MobileReservation(),
+                ),
+              ])
+            ],
+          ),
         ));
   }
 
@@ -347,261 +392,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
           text,
           style: TextStyle(color: color),
         ));
-  }
-
-  Widget _buildColumnGroupToggleButton(BuildContext context) {
-    final _myGroupStream = ref.watch(myGroupFutureProvider);
-    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
-    double screenWidth = MediaQuery.of(context).size.width;
-    return SizedBox(
-      width: screenWidth - 40,
-      height: 50,
-      child: ListItemsBuilder2<GroupModel>(
-        data: _myGroupStream,
-        itemBuilder: (context, model) => _buildToggleButtonUi(
-          context,
-          model,
-          _myActivatedGroupId == model.id ? true : false,
-        ),
-        creator: () => new GroupModel(
-          id: 'public',
-          name: '전체',
-        ),
-        axis: Axis.horizontal,
-      ),
-    );
-  }
-
-  Widget _buildToggleButtonUi(
-      BuildContext context, GroupModel group, bool isThisGroupActivated) {
-    return Stack(
-      children: [
-        Container(
-          height: 80,
-          child: TextButton(
-            onPressed: () {
-              _changeActivatedGroup(group.id!);
-            },
-            style: isThisGroupActivated
-                ? ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(MyColors.purple100),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: BorderSide(color: MyColors.purple300, width: 1),
-                      ),
-                    ),
-                  )
-                : ButtonStyle(),
-            child: Container(
-              width: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  group.id != 'public'
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            group.imageUrl!,
-                            fit: BoxFit.cover,
-                            width: 24,
-                            height: 24,
-                          ),
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            'assets/images/earth.png',
-                            fit: BoxFit.cover,
-                            width: 24,
-                            height: 24,
-                          ),
-                        ),
-                  Text(
-                    group.name!,
-                    softWrap: true,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: group.name!.length > 5 ? 10 : 12,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  isThisGroupActivated
-                      ? SizedBox(
-                          height: 22,
-                          width: 38,
-                          child: TextButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  MyColors.purple300),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                            onPressed: () {
-                              Uri uri = Uri.parse(Uri.base.toString());
-                              String quote = group.id == 'public'
-                                  ? '같이 집중해봅시다!! \n자꾸 미룰 때, 할 일이 많을 때, 혼자 공부하기 싫을 때 사용해보시면 많은 도움이 될 거예요. \n아래 링크를 눌러 입장해주세요! \nhttps://focus50.day'
-                                  : group.password != ''
-                                      ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                                      : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    bool isCopied = false;
-                                    return StatefulBuilder(
-                                        builder: (context, setState) {
-                                      return AlertDialog(
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(16.0))),
-                                        content: SizedBox(
-                                          height: 264,
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                alignment:
-                                                    Alignment.centerRight,
-                                                child: SizedBox(
-                                                  width: 36,
-                                                  height: 36,
-                                                  child: IconButton(
-                                                    padding: EdgeInsets.all(0),
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.close,
-                                                      color: Colors.black,
-                                                      size: 30,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Text('이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
-                                                  style: MyTextStyle.CbS18W400),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      width: 1,
-                                                      color: border300),
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                ),
-                                                child: SelectableText(quote),
-                                              ),
-                                              SizedBox(
-                                                height: 20,
-                                              ),
-                                              SizedBox(
-                                                width: 80,
-                                                height: 44,
-                                                child: TextButton(
-                                                  onPressed: () {
-                                                    Clipboard.setData(
-                                                        ClipboardData(
-                                                            text: quote));
-                                                    setState(
-                                                        () => isCopied = true);
-                                                  },
-                                                  child: !isCopied
-                                                      ? Text(
-                                                          '복사하기',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        )
-                                                      : Icon(
-                                                          Icons.check,
-                                                          color: Colors.white,
-                                                        ),
-                                                  style: ButtonStyle(
-                                                    backgroundColor:
-                                                        MaterialStateProperty
-                                                            .all<Color>(MyColors
-                                                                .purple300),
-                                                    shape: MaterialStateProperty
-                                                        .all<
-                                                            RoundedRectangleBorder>(
-                                                      RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    });
-                                  });
-                            },
-                            child: Text(
-                              '초대',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        )
-                      : SizedBox(
-                          height: 22,
-                          width: 38,
-                        ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        isThisGroupActivated && group.id != 'public'
-            ? Positioned(
-                top: 4,
-                left: 4,
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: IconButton(
-                    hoverColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    onPressed: () {
-                      _popupGroupSettingDialog(context, group);
-                    },
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      Icons.settings,
-                      size: 16,
-                      color: MyColors.purple300,
-                    ),
-                  ),
-                ),
-              )
-            : SizedBox.shrink(),
-      ],
-    );
-  }
-
-  Future<dynamic> _popupGroupSettingDialog(
-      BuildContext context, GroupModel group) {
-    return showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return GroupSettingAlertDialog(database: database, group: group);
-        });
   }
 
   void _changeActivatedGroup(String newGroupId) {

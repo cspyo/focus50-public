@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/models/group_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -10,6 +11,8 @@ import 'package:focus42/view_models.dart/appointments_notifier.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
+import 'package:focus42/widgets/group_setting_widget.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -130,6 +133,8 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   @override
   Widget build(BuildContext context) {
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
     final _oldGroupId = groupId;
     final _groupId = ref.watch(activatedGroupIdProvider);
     if (_oldGroupId != _groupId) {
@@ -147,11 +152,13 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
     return Container(
       width: screenWidth - 40,
-      height: screenHeight - 177,
+      // height: screenHeight - 235,
+      // height: screenHeight - 267,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
+            height: 40,
             decoration: BoxDecoration(
                 color: purple300,
                 borderRadius: BorderRadius.only(
@@ -189,6 +196,21 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                     });
                   },
                 ),
+                // Expanded(
+                //   child: ListItemsBuilder2<GroupModel>(
+                //     data: _myGroupStream,
+                //     itemBuilder: (context, model) => _buildToggleButtonUi(
+                //       context,
+                //       model,
+                //       _myActivatedGroupId == model.id ? true : false,
+                //     ),
+                //     creator: () => new GroupModel(
+                //       id: 'public',
+                //       name: '전체',
+                //     ),
+                //     axis: Axis.horizontal,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -240,6 +262,19 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
         ],
       ),
     );
+  }
+
+  // Widget _buildToggleButtonUi(
+  //     BuildContext context, GroupModel group, bool isThisGroupActivated) {}
+
+  Future<dynamic> _popupGroupSettingDialog(
+      BuildContext context, GroupModel group) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSettingAlertDialog(database: database, group: group);
+        });
   }
 
   Widget _timeRegionBuilder(

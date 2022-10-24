@@ -534,7 +534,7 @@ class _GroupState extends ConsumerState<Group> {
                     : FilteringTextInputFormatter.singleLineFormatter,
               ],
               validator: (value) {
-                return (value == null || value.isEmpty) && index != 2
+                return (value == null || value.isEmpty) && index != 1
                     ? '$title를 입력해주세요'
                     : index == 0 && isGroupNameOverlap!
                         ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'
@@ -571,12 +571,10 @@ class _GroupState extends ConsumerState<Group> {
     String groupDocId = '';
     List<String> titles = [
       '그룹 명',
-      '최대 구성원 수',
       '비밀번호',
     ];
     List<String> hintTexts = [
       '그룹 명을 적어주세요',
-      '10(숫자만 입력해주세요)',
       '비밀번호(선택)',
     ];
     List<TextEditingController> controllers = [

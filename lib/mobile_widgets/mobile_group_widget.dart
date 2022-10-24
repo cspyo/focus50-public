@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
@@ -86,41 +85,65 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
   @override
   Widget build(BuildContext context) {
     groupId = ref.read(activatedGroupIdProvider);
-    return SpeedDial(
-      child: Text(
-        '그룹',
-        style: MyTextStyle.CwS12W600,
-      ),
-      backgroundColor: MyColors.purple300,
-      childPadding: EdgeInsets.zero,
-      children: [
-        SpeedDialChild(
-            child: const Icon(
-              Icons.search,
-              color: MyColors.purple300,
+    return Container(
+      // decoration: BoxDecoration(border: Border.all(width: 1)),
+      width: 68,
+      height: 32,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 32,
+            height: 32,
+            child: TextButton(
+              child: Icon(
+                Icons.search,
+                color: MyColors.purple300,
+                size: 18,
+              ),
+              onPressed: () => _popupSearchGroupDialog(context),
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(width: 1, color: MyColors.purple300),
+                  ),
+                ),
+              ),
             ),
-            backgroundColor: Colors.white,
-            label: '그룸 검색',
-            onTap: () => _popupSearchGroupDialog(context)),
-        SpeedDialChild(
-          child: const Icon(
-            Icons.add,
-            color: MyColors.purple300,
           ),
-          backgroundColor: Colors.white,
-          label: '그룹 만들기',
-          onTap: () {
-            if (uid != null) {
-              AnalyticsMethod().logPressGroupCreateButton();
-              _popupCreateGroupDialog(context);
-            } else {
-              AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
-              Get.rootDelegate.toNamed(Routes.SIGNUP);
-            }
-          },
-        ),
-      ],
-      spaceBetweenChildren: 8,
+          SizedBox(
+            width: 32,
+            height: 32,
+            child: TextButton(
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+                size: 18,
+              ),
+              onPressed: () {
+                if (uid != null) {
+                  AnalyticsMethod().logPressGroupCreateButton();
+                  _popupCreateGroupDialog(context);
+                } else {
+                  AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
+                  Get.rootDelegate.toNamed(Routes.SIGNUP);
+                }
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(MyColors.purple300),
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -241,7 +264,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                     : FilteringTextInputFormatter.singleLineFormatter,
               ],
               validator: (value) {
-                return (value == null || value.isEmpty) && index != 2
+                return (value == null || value.isEmpty) && index != 1
                     ? '$title를 입력해주세요'
                     : index == 0 && isGroupNameOverlap!
                         ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'
@@ -278,12 +301,10 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
     String groupDocId = '';
     List<String> titles = [
       '그룹 명',
-      '최대 구성원 수',
       '비밀번호',
     ];
     List<String> hintTexts = [
       '그룹 명을 적어주세요',
-      '10(숫자만 입력해주세요)',
       '비밀번호(선택)',
     ];
     List<TextEditingController> controllers = [
