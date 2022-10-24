@@ -229,8 +229,7 @@ class AuthMethods {
         String? phoneNumber;
 
         if (file == null) {
-          photoUrl =
-              'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
+          photoUrl = StorageMethods.defaultImageUrl;
         } else {
           photoUrl =
               await StorageMethods().uploadImageToStorage('profilePics', file);
