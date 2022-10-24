@@ -10,7 +10,6 @@ import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
-import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
@@ -18,29 +17,9 @@ import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_select_dialog_widget.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-
-final myGroupIdFutureProvider =
-    FutureProvider.autoDispose<List<String>>((ref) async {
-  final database = ref.watch(databaseProvider);
-  final UserPublicModel userPublic = await database.getUserPublic();
-  List<String> groups = [];
-  if (userPublic.groups != null) groups = userPublic.groups!;
-  return groups;
-});
-
-final myGroupFutureProvider =
-    FutureProvider.autoDispose<List<GroupModel>>((ref) async {
-  final database = ref.watch(databaseProvider);
-  final List<String> myGroupIds =
-      await ref.watch(myGroupIdFutureProvider.future);
-  final List<GroupModel> result = [];
-  await Future.forEach(myGroupIds, (String groupId) async {
-    result.add(await database.getGroup(groupId));
-  });
-  return result;
-});
 
 class MobileGroup extends ConsumerStatefulWidget {
   @override
@@ -494,10 +473,10 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
                                 onPressed: () {
                                   if (groupDocId != '') {
                                     _changeActivatedGroup(groupDocId);
+                                    ref.refresh(myGroupIdFutureProvider);
                                   } else {
                                     Navigator.pop(context);
                                   }
-                                  setState(() {});
                                 },
                                 icon: Icon(
                                   Icons.close,
@@ -665,6 +644,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup> {
                               padding: EdgeInsets.all(0),
                               onPressed: () {
                                 _changeActivatedGroup(groupDocId);
+                                ref.refresh(myGroupIdFutureProvider);
                                 Navigator.pop(context);
                               },
                               icon: Icon(

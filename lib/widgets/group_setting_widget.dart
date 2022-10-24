@@ -12,6 +12,7 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
 Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
@@ -297,7 +298,7 @@ class _GroupSettingAlertDialogState
                               newPassword: _passwordController.text,
                             );
                             Navigator.pop(parentContext);
-                            setState(() {});
+                            ref.refresh(myGroupFutureProvider);
                           },
                           child: Text(
                             '그룹 정보 수정',
@@ -349,9 +350,13 @@ class _GroupSettingAlertDialogState
                                           SizedBox(
                                             height: 36,
                                             child: TextButton(
-                                              onPressed: () {
-                                                leaveGroup(
+                                              onPressed: () async {
+                                                await leaveGroup(
                                                     database, widget.group.id!);
+                                                _changeActivatedGroup('public');
+                                                ref.refresh(
+                                                    myGroupIdFutureProvider);
+
                                                 Navigator.pop(context);
                                                 Navigator.pop(parentContext);
                                               },

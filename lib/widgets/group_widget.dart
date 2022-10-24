@@ -608,10 +608,10 @@ class _GroupState extends ConsumerState<Group> {
                                 onPressed: () {
                                   if (groupDocId != '') {
                                     _changeActivatedGroup(groupDocId);
+                                    ref.refresh(myGroupIdFutureProvider);
                                   } else {
                                     Navigator.pop(context);
                                   }
-                                  setState(() {});
                                 },
                                 icon: Icon(
                                   Icons.close,
@@ -779,6 +779,8 @@ class _GroupState extends ConsumerState<Group> {
                               padding: EdgeInsets.all(0),
                               onPressed: () {
                                 _changeActivatedGroup(groupDocId);
+                                ref.refresh(myGroupIdFutureProvider);
+                                debugPrint("[DEBUG] onPressed / $groupDocId");
                                 Navigator.pop(context);
                               },
                               icon: Icon(
