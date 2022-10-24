@@ -195,14 +195,57 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                                 ],
                               ),
                             ),
-                            child: Center(
-                              child: Text(
-                                notices.first!.text!,
-                                style: TextStyle(
-                                  // color: Colors.black,
-                                  color: hexToColor(notices.first!.fontColor!),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SizedBox(
+                                  width: 50,
+                                  height: 50,
                                 ),
-                              ),
+                                InkWell(
+                                  onTap: () {
+                                    _launchURL(notices.first!.url!);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        child: Center(
+                                          child: Text(
+                                            notices.first!.text!,
+                                            style: TextStyle(
+                                              // color: Colors.black,
+                                              color: hexToColor(
+                                                  notices.first!.fontColor!),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_right,
+                                        color: hexToColor(
+                                            notices.first!.fontColor!),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isNotificationOpen = false;
+                                      });
+                                    },
+                                    hoverColor: Colors.transparent,
+                                    icon: Icon(
+                                      Icons.close,
+                                      color:
+                                          hexToColor(notices.first!.fontColor!),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
                         ),
