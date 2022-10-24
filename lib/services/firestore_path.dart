@@ -11,4 +11,5 @@ class FirestorePath {
   static String groups() => 'group/';
   static String group(String documentId) => 'group/$documentId';
   static String version() => 'CONFIGURATION/VERSION';
+  static String notices() => 'notice/';
 }
