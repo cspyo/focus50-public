@@ -640,7 +640,7 @@ class _GroupState extends ConsumerState<Group> {
                                       radius: 64,
                                       backgroundColor: Colors.black38,
                                       backgroundImage: NetworkImage(
-                                          'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e'),
+                                          StorageMethods.defaultImageUrl),
                                     ),
                               Positioned(
                                 bottom: -10,
@@ -1007,21 +1007,23 @@ class _GroupState extends ConsumerState<Group> {
     String password,
     String introduction,
   ) async {
-    late final String groupDocId;
-    final String imageUrl = (_image == null)
-        ? 'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'
-        : await StorageMethods().uploadImageToStorage('profilePics', _image!);
-
     final createdGroup = GroupModel.newGroup(
       uid: database.uid,
       name: name,
-      imageUrl: imageUrl,
+      imageUrl: StorageMethods.defaultImageUrl,
       maxHeadcount: maxHeadcount,
       introduction: introduction,
       password: password,
     );
     final UserModel? user = await ref.read(userStreamProvider.future);
-    groupDocId = await database.setGroup(createdGroup);
+    final String groupDocId = await database.setGroup(createdGroup);
+
+    if (_image != null) {
+      final String newImageUrl = await StorageMethods()
+          .uploadImageToStorage('groupPics/${groupDocId}', _image!);
+      await database.setGroup(createdGroup.changeImage(
+          newImageUrl: newImageUrl, newUpdatedBy: database.uid));
+    }
     database.setUserPublic(user!.userPublicModel!.addGroup(groupDocId));
     return groupDocId;
   }

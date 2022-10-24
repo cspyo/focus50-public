@@ -286,7 +286,7 @@ class _GroupSettingAlertDialogState
                             final String imageUrl = (_image == null)
                                 ? widget.group.imageUrl!
                                 : await StorageMethods().uploadImageToStorage(
-                                    'profilePics', _image!);
+                                    'groupPics/${widget.group.id}', _image!);
                             modifyGroup(
                               database: widget.database,
                               group: widget.group,

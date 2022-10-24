@@ -231,8 +231,8 @@ class AuthMethods {
         if (file == null) {
           photoUrl = StorageMethods.defaultImageUrl;
         } else {
-          photoUrl =
-              await StorageMethods().uploadImageToStorage('profilePics', file);
+          photoUrl = await StorageMethods().uploadImageToStorage(
+              'profilePics/${_auth.currentUser!.uid}', file);
         }
         CollectionReference userPublicColRef = getUserPublicColRef();
         CollectionReference userPrivateColRef = getUserPrivateColRef();

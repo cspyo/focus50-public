@@ -3,7 +3,10 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/models/user_public_model.dart';
+import 'package:focus42/services/firestore_database.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -13,13 +16,13 @@ import '../resources/storage_method.dart';
 import '../utils/utils.dart';
 import '../widgets/line.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
@@ -27,6 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nicknameController = TextEditingController();
   final TextEditingController _jobController = TextEditingController();
+  late final FirestoreDatabase database;
 
   Uint8List? _image;
 
@@ -41,6 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     getData();
+    database = ref.watch(databaseProvider);
   }
 
   @override
@@ -88,8 +93,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_image == null) {
       photoUrl = userData['photoUrl'];
     } else {
-      photoUrl =
-          await StorageMethods().uploadImageToStorage('profilePics', _image!);
+      photoUrl = await StorageMethods()
+          .uploadImageToStorage('profilePics/${database.uid}', _image!);
     }
 
     UserPublicModel user = new UserPublicModel(
