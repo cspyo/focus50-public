@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/reservation_user_info.dart';
@@ -6,6 +7,22 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:logger/logger.dart';
 
 class MatchingMethods {
+  static MatchingMethods? _instance;
+
+  MatchingMethods._({required this.database}) {
+    debugPrint("[DEBUG] matching method created");
+    this.userId = database.uid;
+  }
+
+  factory MatchingMethods({required database}) {
+    if (_instance == null ||
+        _instance!.database.hashCode != database.hashCode) {
+      return _instance = MatchingMethods._(database: database);
+    } else {
+      return _instance!;
+    }
+  }
+
   late String userId;
   late String? userName;
   var userData = {};
@@ -13,10 +30,6 @@ class MatchingMethods {
   var logger = Logger();
   final FirestoreDatabase database;
   late UserPublicModel? user;
-
-  MatchingMethods({required this.database}) {
-    this.userId = database.uid;
-  }
 
   Future<void> matchRoom({
     required DateTime startTime,
