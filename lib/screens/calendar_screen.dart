@@ -123,11 +123,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       height: 100,
                       child: Reservation(),
                     ),
-                    Container(
-                      height: isNotificationOpen
-                          ? screenHeight - 225
-                          : screenHeight - 175,
-                      child: Calendar(),
+                    Row(
+                      children: [
+                        Container(
+                          width: 100,
+                          height: isNotificationOpen
+                              ? screenHeight - 225
+                              : screenHeight - 175,
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: border100, width: 1.5))),
+                          child: Group(),
+                        ),
+                        Container(
+                          height: isNotificationOpen
+                              ? screenHeight - 225
+                              : screenHeight - 175,
+                          width: screenWidth - 100,
+                          child: Calendar(),
+                        ),
+                      ],
                     )
                   ],
                 )

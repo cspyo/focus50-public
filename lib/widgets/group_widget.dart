@@ -173,9 +173,11 @@ class _GroupState extends ConsumerState<Group> {
     final _myGroupStream = ref.watch(myGroupFutureProvider);
     final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isTabletSize = screenWidth < 1200 ? true : false;
     return SizedBox(
       width: 80,
-      height: screenHeight - 267,
+      height: isTabletSize ? screenHeight - 362 : screenHeight - 267,
       child: ListItemsBuilder2<GroupModel>(
         data: _myGroupStream,
         itemBuilder: (context, model) => _buildToggleButtonUi(
