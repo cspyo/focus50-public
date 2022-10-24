@@ -316,7 +316,7 @@ class FirestoreDatabase {
   Stream<List<NoticeModel>> getNotices() =>
       _service.collectionStream<NoticeModel>(
           path: FirestorePath.notices(),
-          queryBuilder: (query) => query,
+          queryBuilder: (query) => query.where('isActive', isEqualTo: true),
           builder: (snapshot, options) =>
               NoticeModel.fromMap(snapshot, options));
 
