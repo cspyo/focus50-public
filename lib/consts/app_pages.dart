@@ -5,7 +5,7 @@ import 'package:focus42/mobile_screens/mobile_about_screen.dart';
 import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
 import 'package:focus42/mobile_screens/mobile_meeting_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
-import 'package:focus42/screens/profile_screen.dart';
+import 'package:focus42/feature/profile/presentation/profile_screen.dart';
 import 'package:get/get.dart';
 
 import '../screens/about_screen.dart';

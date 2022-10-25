@@ -175,6 +175,7 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      maxLines: 1,
                       textInputAction: TextInputAction.next,
                       validator: _emailValidator,
                     ),
@@ -207,6 +208,8 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      maxLength: 20,
+                      maxLines: 1,
                       validator: _passwordValidator,
                       onFieldSubmitted: (_) async {
                         if (_formKey.currentState!.validate()) {

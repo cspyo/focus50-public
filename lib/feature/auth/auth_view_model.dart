@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/error_message.dart';
@@ -7,15 +5,15 @@ import 'package:focus42/feature/auth/firebase_auth_remote_data_source.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
+import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 
 final authViewModelProvider = Provider<AuthViewModel>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    return AuthViewModel(database: database);
+    return AuthViewModel(database: database, ref: ref);
   },
 );
 
@@ -24,11 +22,12 @@ class AuthViewModel {
       FirebaseAuthRemoteDataSource();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreDatabase database;
+  final Ref ref;
   // final Ref ref;
   final String defaultPhotoUrl =
       'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
 
-  AuthViewModel({required this.database});
+  AuthViewModel({required this.database, required this.ref});
 
   // 회원가입 (email and password)
   Future<String> signUpWithEmail(
@@ -96,7 +95,7 @@ class AuthViewModel {
   // 로그인 (카카오)
   Future<String> loginWithKakao() async {
     String res = ERROR;
-    if (await _kakaoLoginProcess()) {
+    if (await kakaoLoginProcess()) {
       kakao.User user = await kakao.UserApi.instance.me();
 
       String uid = user.id.toString();
@@ -104,13 +103,6 @@ class AuthViewModel {
       String? email = user.kakaoAccount?.email;
       String? photoURL = user.kakaoAccount?.profile?.profileImageUrl;
       String? phoneNumber = user.kakaoAccount?.phoneNumber;
-
-      // print(uid);
-      // print(nickname);
-      // print(email);
-      // print(photoURL);
-
-      // print(user.kakaoAccount!.name);
 
       final token = await _firebaseAuthRemoteDataSource.createCustomToken({
         "uid": uid,
@@ -137,23 +129,16 @@ class AuthViewModel {
   }
 
   // 로그인 (카카오)
-  Future<bool> _kakaoLoginProcess() async {
+  Future<bool> kakaoLoginProcess() async {
     try {
       bool talkInstalled = await kakao.isKakaoTalkInstalled();
       //   카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
       kakao.OAuthToken token = talkInstalled
           ? await kakao.UserApi.instance.loginWithKakaoTalk()
           : await kakao.UserApi.instance.loginWithKakaoAccount();
+
       return true;
-    } on kakao.KakaoClientException {
-      return false;
-    } on kakao.KakaoAuthException catch (e) {
-      if (e.error == kakao.AuthErrorCause.accessDenied) {
-      } else if (e.error == kakao.AuthErrorCause.misconfigured) {
-      } else {}
-      return false;
     } catch (e) {
-      // 에러처리에 대한 개선사항이 필요하면 데브톡(https://devtalk.kakao.com)으로 문의해주세요.
       return false;
     }
   }
@@ -161,52 +146,80 @@ class AuthViewModel {
   // 유저의 uid(auth)와 profile을 엮어서 firestore에 저장
   Future<String> saveUserProfile({
     required String? nickname,
-    required Uint8List? file,
-    String? phoneNumber,
+    required String? signUpMethod,
   }) async {
     String res = ERROR;
+
     try {
       String uid = _auth.currentUser!.uid;
+      String? kakaoNickname = null;
+      String? googleNickname = null;
+      String? photoUrl = _auth.currentUser?.photoURL;
+      bool kakaoSynced = false;
+      bool? talkMessageAgreed = false;
+      bool emailNoticeAllowed = true;
+      bool kakaoNoticeAllowed = false;
+      List<String> noticeMethods = ["email"];
+
       String? email = _auth.currentUser!.email;
-      String? photoUrl;
+      String? kakaoAccount = null;
+      String? phoneNumber = _auth.currentUser?.phoneNumber;
 
-      if (phoneNumber == null) {
-        phoneNumber = _auth.currentUser?.phoneNumber;
-      }
+      // 카카오로 회원가입했으면
+      if (signUpMethod == "kakao") {
+        kakaoSynced = true;
+        kakaoAccount = email;
+        kakaoNickname = _auth.currentUser!.displayName;
+        nickname = kakaoNickname;
 
-      if (nickname == null) {
-        nickname = _auth.currentUser!.displayName;
-      }
-
-      if (file == null) {
-        if (_auth.currentUser?.photoURL == null) {
+        final user = await kakao.UserApi.instance.me();
+        if (user.kakaoAccount!.profile!.isDefaultImage!) {
           photoUrl = defaultPhotoUrl;
-        } else {
-          photoUrl = _auth.currentUser!.photoURL;
         }
+        talkMessageAgreed = await getTalkMessageAgreed();
+      } else if (signUpMethod == "google") {
+        googleNickname = _auth.currentUser!.displayName;
+        nickname = googleNickname;
+      } else if (signUpMethod == "email") {}
+
+      if (photoUrl == null) {
+        photoUrl = defaultPhotoUrl;
       } else {
-        photoUrl =
-            await StorageMethods().uploadImageToStorage('profilePics', file);
+        try {
+          photoUrl = await _firebaseAuthRemoteDataSource
+              .saveNetworkImageToStorage(photoUrl, uid);
+        } catch (e) {
+          photoUrl = defaultPhotoUrl;
+        }
       }
 
       UserPublicModel userPublic = UserPublicModel(
         nickname: nickname,
+        kakaoNickname: kakaoNickname,
+        googleNickname: googleNickname,
         photoUrl: photoUrl,
         createdDate: DateTime.now(),
         updatedDate: DateTime.now(),
         lastLogin: DateTime.now(),
+        kakaoSynced: kakaoSynced,
+        talkMessageAgreed: talkMessageAgreed,
+        emailNoticeAllowed: emailNoticeAllowed,
+        kakaoNoticeAllowed: kakaoNoticeAllowed,
+        noticeMethods: noticeMethods,
       );
 
       UserPrivateModel userPrivate = UserPrivateModel(
         uid: uid,
         email: email,
+        kakaoAccount: kakaoAccount,
         phoneNumber: phoneNumber,
       );
 
       UserModel userModel = UserModel(userPublic, userPrivate);
 
       await database.setUser(userModel);
-      // ref.read(usersProvider).addAll({uid: userPublic});
+
+      ref.read(usersProvider.notifier).addAll({uid: userPublic});
       res = SUCCESS;
     } catch (err) {
       res = err.toString();
@@ -216,6 +229,7 @@ class AuthViewModel {
 
   Future<bool> isSignedUp() async {
     final user = await database.getUserPublic();
+
     return user.createdDate != null;
   }
 
@@ -223,10 +237,19 @@ class AuthViewModel {
     return await database.possibleNickname(nickname);
   }
 
+  Future<bool?> getTalkMessageAgreed() async {
+    kakao.ScopeInfo scopeInfo = await kakao.UserApi.instance.scopes();
+    final talk_message_scope =
+        scopeInfo.scopes?.where((scope) => scope.id == "talk_message");
+    return talk_message_scope?.first.agreed;
+  }
+
   Future<void> signOut() async {
-    if (_auth.currentUser!.uid.contains('kakao')) {
-      await kakao.UserApi.instance.unlink();
-    }
+    // if (_auth.currentUser!.uid.contains('kakao')) {
+    //   await kakao.UserApi.instance.unlink();
+    // }
     await _auth.signOut();
   }
+
+  Future<void> deleteUser() async {}
 }

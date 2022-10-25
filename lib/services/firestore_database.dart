@@ -29,6 +29,17 @@ class FirestoreDatabase {
           data: user.userPrivateModel!.toMap());
   }
 
+  Future<void> updateUser(UserModel user) async {
+    if (user.userPublicModel != null)
+      await _service.updateData(
+          path: FirestorePath.userPublic(uid),
+          data: user.userPublicModel!.toMap());
+    if (user.userPrivateModel != null)
+      await _service.updateData(
+          path: FirestorePath.userPrivate(uid),
+          data: user.userPrivateModel!.toMap());
+  }
+
   Future<UserModel> getUser() async {
     UserModel user = UserModel(await getUserPublic(), await getUserPrivate());
     return user;

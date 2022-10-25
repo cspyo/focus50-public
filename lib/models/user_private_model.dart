@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserPrivateModel {
   final String? uid;
-  final String? username;
   final String? email;
+  String? kakaoAccount;
   final String? phoneNumber;
 
   UserPrivateModel({
     this.uid,
-    this.username,
     this.email,
+    this.kakaoAccount,
     this.phoneNumber,
   });
 
@@ -21,18 +21,18 @@ class UserPrivateModel {
 
     return UserPrivateModel(
       uid: data?["uid"],
-      username: data?["username"],
       email: data?["email"],
+      kakaoAccount: data?["kakaoAccount"],
       phoneNumber: data?["phoneNumber"],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      "uid": uid,
-      "username": username,
-      "email": email,
-      "phoneNumber": phoneNumber,
+      if (uid != null) "uid": uid,
+      if (email != null) "email": email,
+      if (kakaoAccount != null) "kakaoAccount": kakaoAccount,
+      if (phoneNumber != null) "phoneNumber": phoneNumber,
     };
   }
 }

@@ -8,7 +8,6 @@ import 'package:focus42/feature/jitsi/consts/times.dart';
 import 'package:focus42/feature/jitsi/jitsi_meet_methods.dart';
 import 'package:focus42/feature/jitsi/presentation/google_timer_widget.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
-import 'package:focus42/feature/jitsi/provider/my_auth.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -33,7 +32,6 @@ class MobileMeetingScreen extends ConsumerStatefulWidget {
 class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
   final JitsiMeetMethods _jitsiMeetMethods = JitsiMeetMethods();
   late final ReservationModel reservation;
-  late final MyAuth myAuth;
   late final database;
 
   @override

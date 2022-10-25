@@ -24,7 +24,7 @@ final userProvider = FutureProvider<UserModel>((ref) async {
   return await database.getUser();
 });
 
-final userStreamProvider = StreamProvider<UserModel?>(
+final userStreamProvider = StreamProvider<UserModel>(
   (ref) {
     final database = ref.watch(databaseProvider);
     return database.userStream();

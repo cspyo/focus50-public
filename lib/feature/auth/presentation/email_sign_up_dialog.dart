@@ -35,9 +35,8 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     if (res == EMAIL_ALREADY_IN_USE) {
       setState(() => _errorMessage = "이미 존재하는 이메일입니다");
     } else if (res == SUCCESS) {
-      await ref
-          .read(authViewModelProvider)
-          .saveUserProfile(nickname: _nicknameController.text, file: null);
+      await ref.read(authViewModelProvider).saveUserProfile(
+          nickname: _nicknameController.text, signUpMethod: "email");
       AnalyticsMethod().logSignUp("Email");
       Navigator.of(context).pop();
     } else {
@@ -51,6 +50,8 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     String nickname = _nicknameController.text;
     if (nickname.isEmpty) {
       nicknameValidate = '닉네임은 필수사항입니다';
+    } else if (nickname.length > 13) {
+      nicknameValidate = '12자리 이내로 작성해주세요';
     } else if (!await ref
         .read(authViewModelProvider)
         .possibleNickname(nickname)) {
@@ -76,6 +77,8 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
       return '비밀번호는 필수사항입니다';
     } else if (password.length < 6) {
       return '6자리 이상으로 입력해주세요';
+    } else if (password.length > 20) {
+      return '20자리 이내로 입력해주세요';
     } else {
       return null;
     }
@@ -192,13 +195,14 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      maxLines: 1,
+                      maxLength: 12,
                       textInputAction: TextInputAction.next,
                       validator: (_) {
                         return nicknameValidate;
                       },
                     ),
                   ),
-                  const SizedBox(height: 20),
                   // 이메일 필드
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -225,6 +229,7 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      maxLines: 1,
                       textInputAction: TextInputAction.next,
                       validator: _emailValidator,
                     ),
@@ -257,6 +262,8 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      maxLines: 1,
+                      maxLength: 20,
                       validator: _passwordValidator,
                       onFieldSubmitted: (_) async {
                         await _nicknameValidator();

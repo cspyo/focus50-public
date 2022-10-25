@@ -117,7 +117,5 @@ class _SessionPartnerTodoListState
     );
   }
 
-  void _onLike() {
-    print("clicked");
-  }
+  void _onLike() {}
 }

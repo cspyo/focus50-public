@@ -10,7 +10,6 @@ import 'package:focus42/feature/jitsi/presentation/google_timer_widget.dart';
 import 'package:focus42/feature/jitsi/presentation/list_items_builder.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/feature/jitsi/presentation/todo_list_tile_widget.dart';
-import 'package:focus42/feature/jitsi/provider/my_auth.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
@@ -37,7 +36,6 @@ class MeetingScreen extends ConsumerStatefulWidget {
 class _MeetingScreenState extends ConsumerState<MeetingScreen> {
   final JitsiMeetMethods _jitsiMeetMethods = JitsiMeetMethods();
   late final ReservationModel reservation;
-  late final MyAuth myAuth;
   late final FirestoreDatabase database;
 
   @override

@@ -24,7 +24,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
       if (!await authViewModel.isSignedUp()) {
-        await authViewModel.saveUserProfile(nickname: null, file: null);
+        await authViewModel.saveUserProfile(
+            nickname: null, signUpMethod: "google");
       }
       Navigator.of(context).pop();
     } else {
@@ -35,12 +36,14 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
 
   // 카카오로 회원가입
   void _signUpWithKakao() async {
+    String res = ERROR;
     setState(() => _isLoading = true);
-    String res = await ref.read(authViewModelProvider).loginWithKakao();
+    res = await ref.read(authViewModelProvider).loginWithKakao();
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
       if (!await authViewModel.isSignedUp()) {
-        await authViewModel.saveUserProfile(nickname: null, file: null);
+        await authViewModel.saveUserProfile(
+            nickname: null, signUpMethod: "kakao");
       }
       Navigator.of(context).pop();
     } else if (res == EMAIL_ALREADY_EXISTS) {
