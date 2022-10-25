@@ -15,9 +15,8 @@ import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/line.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 
-final isUpdatingProvider = StateProvider<bool>(((ref) => false));
+final isUpdatingProvider = StateProvider.autoDispose<bool>(((ref) => false));
 
 class ProfileScreen extends ConsumerStatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -57,16 +56,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return KakaoSyncDialog(notifyParent: _syncKakao);
+        return KakaoSyncDialog(
+          myInfo: myInfo,
+        );
       },
     );
-  }
-
-  void _syncKakao() async {
-    setState(() async {
-      _kakaoSyncSuccess =
-          await ref.read(authViewModelProvider).kakaoLoginProcess();
-    });
   }
 
   bool _somethingChanged() {
@@ -93,17 +87,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
 
     String? nickname = _nicknameController.text;
-    String? kakaoNickname;
-    bool? kakaoSynced = myInfo.userPublicModel!.kakaoSynced;
-    bool? talkMessageAgreed;
     bool emailNoticeAllowed = _emailNoticeController.value;
     bool kakaoNoticeAllowed = _kakaoNoticeController.value;
+    bool talkMessageAgreed = kakaoNoticeAllowed;
     List<String> noticeMethods = [];
     if (_emailNoticeController.value) noticeMethods.add("email");
     if (_kakaoNoticeController.value) noticeMethods.add("kakao");
-
-    String? phoneNumber;
-    String? kakaoAccount;
 
     ref.read(isUpdatingProvider.notifier).state = true;
 
@@ -115,32 +104,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           await StorageMethods().uploadImageToStorage('profilePics', _image!);
     }
 
-    if (_kakaoSyncSuccess) {
-      kakaoSynced = true;
-      final kakaoUser = await kakao.UserApi.instance.me();
-      kakaoNickname = kakaoUser.kakaoAccount?.name;
-      phoneNumber = kakaoUser.kakaoAccount?.phoneNumber;
-      kakaoAccount = kakaoUser.kakaoAccount?.email;
-      talkMessageAgreed =
-          await ref.read(authViewModelProvider).getTalkMessageAgreed();
-    }
-
     UserPublicModel userPublic = UserPublicModel(
       nickname: nickname,
       photoUrl: newPhotoUrl,
       updatedDate: DateTime.now(),
-      kakaoSynced: kakaoSynced,
-      kakaoNickname: kakaoNickname,
       talkMessageAgreed: talkMessageAgreed,
       emailNoticeAllowed: emailNoticeAllowed,
       kakaoNoticeAllowed: kakaoNoticeAllowed,
       noticeMethods: noticeMethods,
     );
 
-    UserPrivateModel userPrivate = UserPrivateModel(
-      kakaoAccount: kakaoAccount,
-      phoneNumber: phoneNumber,
-    );
+    UserPrivateModel userPrivate = UserPrivateModel();
 
     UserModel updateUser = UserModel(userPublic, userPrivate);
 
@@ -180,10 +154,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         TextEditingController(text: user.userPublicModel!.nickname);
     _emailController =
         TextEditingController(text: user.userPrivateModel!.email);
-    if (user.userPublicModel!.talkMessageAgreed == null)
+    // kakaoSynced 로 카카오 연동하기 박스 생성
+    if (user.userPublicModel!.kakaoSynced == null)
       _talkNoticeEnable = false;
     else
-      _talkNoticeEnable = user.userPublicModel!.talkMessageAgreed!;
+      _talkNoticeEnable = user.userPublicModel!.kakaoSynced!;
 
     if (user.userPublicModel!.kakaoNoticeAllowed == null)
       _kakaoNoticeController.value = false;
@@ -496,7 +471,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     width: 3,
                   ),
                   Text(
-                    "수신 선택 항목에 동의해주세요.",
+                    "카카오톡 수신 선택 항목에 동의해주세요.",
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 11,

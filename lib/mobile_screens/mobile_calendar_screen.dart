@@ -27,7 +27,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   String userPhotoUrl =
       'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
   String userNickname = '';
-  String userJob = '';
   bool isNotificationOpen = true;
   final Uri toLaunch = Uri(
     scheme: 'https',
@@ -67,7 +66,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
       final users = ref.read(usersProvider);
       userPhotoUrl = users[uid]!.photoUrl!;
       userNickname = users[uid]!.nickname!;
-      userJob = users[uid]!.job!;
       setState(() {
         getUserInfo = true;
       });
@@ -165,14 +163,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                                                 fontSize: 26,
                                                 fontWeight: FontWeight.w700),
                                             textAlign: TextAlign.left),
-                                        Text(
-                                          userJob,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500),
-                                          textAlign: TextAlign.left,
-                                        )
                                       ],
                                     )
                                   ])
@@ -195,14 +185,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                                                 fontSize: 26,
                                                 fontWeight: FontWeight.w700),
                                             textAlign: TextAlign.left),
-                                        Text(
-                                          userJob,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500),
-                                          textAlign: TextAlign.left,
-                                        )
                                       ],
                                     )
                                   ])),

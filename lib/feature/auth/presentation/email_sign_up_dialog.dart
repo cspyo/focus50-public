@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:get/get.dart';
 
 class EmailSignUpDialog extends ConsumerStatefulWidget {
   const EmailSignUpDialog({Key? key}) : super(key: key);
@@ -39,6 +41,7 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
           nickname: _nicknameController.text, signUpMethod: "email");
       AnalyticsMethod().logSignUp("Email");
       Navigator.of(context).pop();
+      Get.rootDelegate.toNamed(Routes.PROFILE);
     } else {
       setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }

@@ -156,9 +156,9 @@ class AuthViewModel {
       String? googleNickname = null;
       String? photoUrl = _auth.currentUser?.photoURL;
       bool kakaoSynced = false;
-      bool? talkMessageAgreed = false;
       bool emailNoticeAllowed = true;
       bool kakaoNoticeAllowed = false;
+      bool? talkMessageAgreed = false;
       List<String> noticeMethods = ["email"];
 
       String? email = _auth.currentUser!.email;
@@ -177,6 +177,8 @@ class AuthViewModel {
           photoUrl = defaultPhotoUrl;
         }
         talkMessageAgreed = await getTalkMessageAgreed();
+        kakaoNoticeAllowed = talkMessageAgreed!;
+        if (kakaoNoticeAllowed) noticeMethods.add("kakao");
       } else if (signUpMethod == "google") {
         googleNickname = _auth.currentUser!.displayName;
         nickname = googleNickname;

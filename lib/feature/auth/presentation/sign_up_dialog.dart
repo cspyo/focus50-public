@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/error_message.dart';
+import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/email_sign_up_dialog.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:get/get.dart';
 
 class SignUpDialog extends ConsumerStatefulWidget {
   const SignUpDialog({Key? key}) : super(key: key);
@@ -26,6 +28,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
+        Get.rootDelegate.toNamed(Routes.PROFILE);
       }
       Navigator.of(context).pop();
     } else {
@@ -44,6 +47,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
+        Get.rootDelegate.toNamed(Routes.PROFILE);
       }
       Navigator.of(context).pop();
     } else if (res == EMAIL_ALREADY_EXISTS) {
