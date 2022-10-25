@@ -279,8 +279,9 @@ class _GroupSettingAlertDialogState
                             height: 40,
                             child: TextButton(
                               onPressed: () async {
-                                if (await database.findIfGroupNameOverlap(
-                                    _nameController.text)) {
+                                if (_nameController.text != widget.group.name &&
+                                    await database.findIfGroupNameOverlap(
+                                        _nameController.text)) {
                                   setState(() {
                                     isGroupNameOverlap = true;
                                   });
