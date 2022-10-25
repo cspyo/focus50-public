@@ -29,7 +29,7 @@ class _GroupSearchAlertDialogState
   String query = '';
   final _formKey = GlobalKey<FormState>();
   late final database;
-  final TextEditingController _invitePwController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   String? uid = FirebaseAuth.instance.currentUser?.uid;
 
   @override
@@ -40,8 +40,8 @@ class _GroupSearchAlertDialogState
 
   @override
   void dispose() {
-    _invitePwController.dispose();
-    _invitePwController.clear();
+    _passwordController.dispose();
+
     super.dispose();
   }
 
@@ -49,7 +49,7 @@ class _GroupSearchAlertDialogState
   Widget build(BuildContext context) {
     final searchedGroups = ref.watch(searchedGroupStreamProvider(query));
     return SizedBox(
-        width: 250,
+        width: 300,
         child: AlertDialog(
           contentPadding: EdgeInsets.zero,
           insetPadding: EdgeInsets.zero,
@@ -58,7 +58,7 @@ class _GroupSearchAlertDialogState
               borderRadius: BorderRadius.all(Radius.circular(16.0))),
           content: Container(
             padding: EdgeInsets.zero,
-            width: 250,
+            width: 300,
             height: 560,
             child: Column(
               children: [
@@ -97,7 +97,7 @@ class _GroupSearchAlertDialogState
                 ),
                 Container(
                   height: 68,
-                  width: 240,
+                  width: 300,
                   padding: EdgeInsets.all(8),
                   child: TextField(
                     decoration: InputDecoration(
@@ -131,7 +131,7 @@ class _GroupSearchAlertDialogState
                   ),
                 ),
                 Container(
-                  width: 250,
+                  width: 300,
                   padding: EdgeInsets.all(10),
                   height: 432,
                   decoration: BoxDecoration(
@@ -221,7 +221,7 @@ class _GroupSearchAlertDialogState
                       width: 8,
                     ),
                     Text(
-                      '정원 : ${group.headcount} 명',
+                      '현재 인원 : ${group.headcount} 명',
                       style: MyTextStyle.CgS12W400,
                     ),
                   ],
@@ -262,6 +262,7 @@ class _GroupSearchAlertDialogState
                         padding: EdgeInsets.all(0),
                         onPressed: () {
                           Navigator.pop(context);
+                          _passwordController.clear();
                         },
                         icon: Icon(
                           Icons.close,
@@ -285,7 +286,7 @@ class _GroupSearchAlertDialogState
                             SizedBox(
                               width: 300,
                               child: TextFormField(
-                                controller: _invitePwController,
+                                controller: _passwordController,
                                 cursorColor: Colors.black,
                                 validator: (value) {
                                   return value != password
@@ -338,6 +339,7 @@ class _GroupSearchAlertDialogState
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           await enterGroup(group);
+                          _passwordController.clear();
                           Navigator.pop(context);
                         }
                       },

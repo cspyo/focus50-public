@@ -164,7 +164,7 @@ class GroupSelectAlertDialog extends ConsumerWidget {
                     ),
                     Text(
                       group.headcount != null
-                          ? '정원 : ${group.headcount}명'
+                          ? '현재 인원 : ${group.headcount}명'
                           : '모든 유저와 함께',
                       style: MyTextStyle.CgS12W400,
                     ),
