@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
@@ -16,7 +15,7 @@ import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
 Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
-  database.runTransaction((transaction) async {
+  await database.runTransaction((transaction) async {
     final GroupModel myGroup = await database.getGroupInTransaction(
         docId: docId, transaction: transaction);
     database.updateGroupInTransaction(
@@ -35,7 +34,7 @@ Future<void> modifyGroup({
   required String newIntroduction,
 }) async {
   final String groupId = group.id!;
-  database.runTransaction((transaction) async {
+  await database.runTransaction((transaction) async {
     final GroupModel myGroup = await database.getGroupInTransaction(
         docId: groupId, transaction: transaction);
     database.updateGroupInTransaction(
@@ -299,7 +298,7 @@ class _GroupSettingAlertDialogState
                                 if (_modifyGroupFormKey.currentState!
                                         .validate() &&
                                     isGroupNameOverlap == false) {
-                                  modifyGroup(
+                                  await modifyGroup(
                                     database: widget.database,
                                     group: widget.group,
                                     newName: _nameController.text,
@@ -308,8 +307,8 @@ class _GroupSettingAlertDialogState
                                         _introductionController.text,
                                     newPassword: _passwordController.text,
                                   );
-                                  Navigator.pop(parentContext);
                                   ref.refresh(myGroupFutureProvider);
+                                  Navigator.pop(parentContext);
                                 }
                               },
                               child: Text(
@@ -371,8 +370,8 @@ class _GroupSettingAlertDialogState
                                                     ref.refresh(
                                                         myGroupIdFutureProvider);
                                                     Navigator.pop(context);
-                                                    // Navigator.pop(
-                                                    //     parentContext);
+                                                    Navigator.pop(
+                                                        parentContext);
                                                   },
                                                   child: Text(
                                                     '나가기',
@@ -497,11 +496,11 @@ class _GroupSettingAlertDialogState
             padding: EdgeInsets.only(left: 8, right: 8),
             child: TextFormField(
               enabled: isUserCreator,
-              inputFormatters: <TextInputFormatter>[
-                index == 1
-                    ? FilteringTextInputFormatter.digitsOnly
-                    : FilteringTextInputFormatter.singleLineFormatter,
-              ],
+              // inputFormatters: <TextInputFormatter>[
+              //   index == 1
+              //       ? FilteringTextInputFormatter.digitsOnly
+              //       : FilteringTextInputFormatter.singleLineFormatter,
+              // ],
               validator: (value) {
                 return (value == null || value.isEmpty) && index != 1
                     ? '$title를 입력해주세요'

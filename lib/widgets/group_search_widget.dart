@@ -8,6 +8,7 @@ import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
 
 final searchedGroupStreamProvider =
@@ -26,6 +27,7 @@ class GroupSearchAlertDialog extends ConsumerStatefulWidget {
 class _GroupSearchAlertDialogState
     extends ConsumerState<GroupSearchAlertDialog> {
   String query = '';
+  final _formKey = GlobalKey<FormState>();
   late final database;
   final TextEditingController _invitePwController = TextEditingController();
   String? uid = FirebaseAuth.instance.currentUser?.uid;
@@ -39,6 +41,7 @@ class _GroupSearchAlertDialogState
   @override
   void dispose() {
     _invitePwController.dispose();
+    _invitePwController.clear();
     super.dispose();
   }
 
@@ -245,7 +248,7 @@ class _GroupSearchAlertDialogState
           content: Container(
             // height: 260,
             child: Form(
-              // key: _invitementFormKey,
+              key: _formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -285,10 +288,9 @@ class _GroupSearchAlertDialogState
                                 controller: _invitePwController,
                                 cursorColor: Colors.black,
                                 validator: (value) {
-                                  if (value != password) {
-                                    return '비밀번호가 올바르지 않습니다.';
-                                  }
-                                  return null;
+                                  return value != password
+                                      ? '비밀번호가 올바르지 않습니다.'
+                                      : null;
                                 },
                                 decoration: InputDecoration(
                                   hintStyle: MyTextStyle.CgS18W500,
@@ -333,9 +335,11 @@ class _GroupSearchAlertDialogState
                     height: 44,
                     width: 110,
                     child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        enterGroup(group);
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          await enterGroup(group);
+                          Navigator.pop(context);
+                        }
                       },
                       child: Text(
                         '가입하기',
@@ -438,8 +442,8 @@ class _GroupSearchAlertDialogState
       );
     } else {
       final UserModel? user = await ref.read(userStreamProvider.future);
-      database.setGroup(group.addMember(database.uid));
-      database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      await database.setGroup(group.addMember(database.uid));
+      await database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
       return showDialog(
         barrierDismissible: false,
         context: context,
@@ -458,8 +462,8 @@ class _GroupSearchAlertDialogState
                         padding: EdgeInsets.all(0),
                         onPressed: () {
                           _changeActivatedGroup(group.id!);
+                          ref.refresh(myGroupIdFutureProvider);
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                          Navigator.pop(context);
                           Navigator.pop(context);
                         },
                         icon: Icon(
@@ -486,6 +490,8 @@ class _GroupSearchAlertDialogState
                     height: 46,
                     child: TextButton(
                       onPressed: () {
+                        _changeActivatedGroup(group.id!);
+                        ref.refresh(myGroupIdFutureProvider);
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                         Navigator.pop(context);
                       },

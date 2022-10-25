@@ -75,7 +75,6 @@ class GroupModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
       "createdDate": createdDate,
       "updatedDate": updatedDate,
       "createdBy": createdBy,
@@ -154,12 +153,13 @@ class GroupModel {
     return modifiedGroup;
   }
 
-  GroupModel changeImage({
+  GroupModel changeImageAndPutId({
+    required String docId,
     required String newImageUrl,
     required String newUpdatedBy,
   }) {
     GroupModel modifiedGroup = GroupModel(
-      id: this.id,
+      id: docId,
       createdDate: this.createdDate,
       updatedDate: DateTime.now(),
       createdBy: this.createdBy,

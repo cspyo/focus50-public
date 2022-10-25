@@ -185,12 +185,14 @@ class _GroupState extends ConsumerState<Group> {
           model,
           _myActivatedGroupId == model.id ? true : false,
         ),
+        // itemBuilder: (context, model) => Text('${model.id}}'),
         creator: () => new GroupModel(
           id: 'public',
           name: '전체',
         ),
         axis: Axis.vertical,
       ),
+      // child: Text('없어열'),
     );
   }
 
@@ -528,11 +530,11 @@ class _GroupState extends ConsumerState<Group> {
             height: 36,
             padding: EdgeInsets.only(left: 8, right: 8),
             child: TextFormField(
-              inputFormatters: <TextInputFormatter>[
-                index == 1
-                    ? FilteringTextInputFormatter.digitsOnly
-                    : FilteringTextInputFormatter.singleLineFormatter,
-              ],
+              // inputFormatters: <TextInputFormatter>[
+              //   index == 1
+              //       ? FilteringTextInputFormatter.digitsOnly
+              //       : FilteringTextInputFormatter.singleLineFormatter,
+              // ],
               validator: (value) {
                 return (value == null || value.isEmpty) && index != 1
                     ? '$title를 입력해주세요'
@@ -1020,8 +1022,10 @@ class _GroupState extends ConsumerState<Group> {
     if (_image != null) {
       final String newImageUrl = await StorageMethods()
           .uploadImageToStorage('groupPics/${groupDocId}', _image!);
-      await database.setGroup(createdGroup.changeImage(
-          newImageUrl: newImageUrl, newUpdatedBy: database.uid));
+      await database.setGroup(createdGroup.changeImageAndPutId(
+          docId: groupDocId,
+          newImageUrl: newImageUrl,
+          newUpdatedBy: database.uid));
     }
     database.setUserPublic(user!.userPublicModel!.addGroup(groupDocId));
     return groupDocId;

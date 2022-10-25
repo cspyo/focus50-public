@@ -235,11 +235,11 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
             height: 36,
             // padding: EdgeInsets.only(left: 8, right: 8),
             child: TextFormField(
-              inputFormatters: <TextInputFormatter>[
-                index == 1
-                    ? FilteringTextInputFormatter.digitsOnly
-                    : FilteringTextInputFormatter.singleLineFormatter,
-              ],
+              // inputFormatters: <TextInputFormatter>[
+              //   index == 1
+              //       ? FilteringTextInputFormatter.digitsOnly
+              //       : FilteringTextInputFormatter.singleLineFormatter,
+              // ],
               validator: (value) {
                 return (value == null || value.isEmpty) && index != 1
                     ? '$title를 입력해주세요'
@@ -756,8 +756,10 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
     if (_image != null) {
       final String newImageUrl = await StorageMethods()
           .uploadImageToStorage('groupPics/${groupDocId}', _image!);
-      await database.setGroup(createdGroup.changeImage(
-          newImageUrl: newImageUrl, newUpdatedBy: database.uid));
+      await database.setGroup(createdGroup.changeImageAndPutId(
+          docId: groupDocId,
+          newImageUrl: newImageUrl,
+          newUpdatedBy: database.uid));
     }
     database.setUserPublic(user!.userPublicModel!.addGroup(groupDocId));
     return groupDocId;
