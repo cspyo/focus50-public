@@ -60,14 +60,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   loading: () => Container(
                     width: screenWidth,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          hexToColor('#6087FF'),
-                          hexToColor('#8365FF'),
-                        ],
-                      ),
+                      color: Colors.transparent,
                     ),
                     child: Center(
                       child: Text(
