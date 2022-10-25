@@ -153,4 +153,24 @@ class GroupModel {
     );
     return modifiedGroup;
   }
+
+  GroupModel changeImage({
+    required String newImageUrl,
+    required String newUpdatedBy,
+  }) {
+    GroupModel modifiedGroup = GroupModel(
+      id: this.id,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      createdBy: this.createdBy,
+      updatedBy: newUpdatedBy,
+      name: this.name,
+      headcount: this.headcount,
+      imageUrl: newImageUrl,
+      introduction: this.introduction,
+      memberUids: this.memberUids,
+      password: this.password,
+    );
+    return modifiedGroup;
+  }
 }

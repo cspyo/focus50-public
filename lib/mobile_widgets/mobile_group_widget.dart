@@ -9,7 +9,6 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
-import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
@@ -17,29 +16,9 @@ import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_search_widget.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-
-final myGroupIdFutureProvider =
-    FutureProvider.autoDispose<List<String>>((ref) async {
-  final database = ref.watch(databaseProvider);
-  final UserPublicModel userPublic = await database.getUserPublic();
-  List<String> groups = [];
-  if (userPublic.groups != null) groups = userPublic.groups!;
-  return groups;
-});
-
-final myGroupFutureProvider =
-    FutureProvider.autoDispose<List<GroupModel>>((ref) async {
-  final database = ref.watch(databaseProvider);
-  final List<String> myGroupIds =
-      await ref.watch(myGroupIdFutureProvider.future);
-  final List<GroupModel> result = [];
-  await Future.forEach(myGroupIds, (String groupId) async {
-    result.add(await database.getGroup(groupId));
-  });
-  return result;
-});
 
 class MobileGroup extends ConsumerStatefulWidget {
   @override
@@ -334,6 +313,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                   onPressed: () {
                                     if (groupDocId != '') {
                                       _changeActivatedGroup(groupDocId);
+                                      ref.refresh(myGroupIdFutureProvider);
                                     } else {
                                       Navigator.pop(context);
                                     }
@@ -366,7 +346,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                         radius: 64,
                                         backgroundColor: Colors.black38,
                                         backgroundImage: NetworkImage(
-                                            'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e'),
+                                            StorageMethods.defaultImageUrl),
                                       ),
                                 Positioned(
                                   bottom: -10,
@@ -508,6 +488,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
                                   _changeActivatedGroup(groupDocId);
+                                  ref.refresh(myGroupIdFutureProvider);
                                   Navigator.pop(context);
                                 },
                                 icon: Icon(
@@ -762,20 +743,22 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
     String password,
     String introduction,
   ) async {
-    late final String groupDocId;
-    final String imageUrl = (_image == null)
-        ? 'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'
-        : await StorageMethods().uploadImageToStorage('profilePics', _image!);
-
     final createdGroup = GroupModel.newGroup(
       uid: database.uid,
       name: name,
-      imageUrl: imageUrl,
+      imageUrl: StorageMethods.defaultImageUrl,
       introduction: introduction,
       password: password,
     );
     final UserModel? user = await ref.read(userStreamProvider.future);
-    groupDocId = await database.setGroup(createdGroup);
+    final String groupDocId = await database.setGroup(createdGroup);
+
+    if (_image != null) {
+      final String newImageUrl = await StorageMethods()
+          .uploadImageToStorage('groupPics/${groupDocId}', _image!);
+      await database.setGroup(createdGroup.changeImage(
+          newImageUrl: newImageUrl, newUpdatedBy: database.uid));
+    }
     database.setUserPublic(user!.userPublicModel!.addGroup(groupDocId));
     return groupDocId;
   }

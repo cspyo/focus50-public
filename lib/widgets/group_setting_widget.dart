@@ -12,6 +12,7 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
 Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
@@ -293,7 +294,8 @@ class _GroupSettingAlertDialogState
                                     ? widget.group.imageUrl!
                                     : await StorageMethods()
                                         .uploadImageToStorage(
-                                            'profilePics', _image!);
+                                            'groupPics/${widget.group.id}',
+                                            _image!);
                                 if (_modifyGroupFormKey.currentState!
                                         .validate() &&
                                     isGroupNameOverlap == false) {
@@ -307,7 +309,7 @@ class _GroupSettingAlertDialogState
                                     newPassword: _passwordController.text,
                                   );
                                   Navigator.pop(parentContext);
-                                  setState(() {});
+                                  ref.refresh(myGroupFutureProvider);
                                 }
                               },
                               child: Text(
@@ -361,12 +363,16 @@ class _GroupSettingAlertDialogState
                                               SizedBox(
                                                 height: 36,
                                                 child: TextButton(
-                                                  onPressed: () {
-                                                    leaveGroup(database,
+                                                  onPressed: () async {
+                                                    await leaveGroup(database,
                                                         widget.group.id!);
+                                                    _changeActivatedGroup(
+                                                        'public');
+                                                    ref.refresh(
+                                                        myGroupIdFutureProvider);
                                                     Navigator.pop(context);
-                                                    Navigator.pop(
-                                                        parentContext);
+                                                    // Navigator.pop(
+                                                    //     parentContext);
                                                   },
                                                   child: Text(
                                                     '나가기',
