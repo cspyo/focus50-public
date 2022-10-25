@@ -110,9 +110,14 @@ class GroupModel {
   }
 
   GroupModel removeMember(String uid) {
-    int newHeadcount = headcount! - 1;
+    late int newHeadcount;
     List<String>? newMemberUids = [...?memberUids];
-    newMemberUids.removeWhere((element) => element == uid);
+    if (newMemberUids.contains(uid)) {
+      newMemberUids.removeWhere((element) => element == uid);
+      newHeadcount = headcount! - 1;
+    } else {
+      newHeadcount = headcount!;
+    }
 
     GroupModel memberRemovedGroup = GroupModel(
       id: this.id,
