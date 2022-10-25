@@ -148,6 +148,21 @@ class FirestoreDatabase {
         },
       );
 
+  Future<void> updateReservationUserInfoInTransaction(
+    String docId,
+    String uid,
+    String field,
+    dynamic updatedData,
+    Transaction transaction,
+  ) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.reservation(docId),
+        data: {
+          FirestorePath.updateReservationUserInfo(uid, field): updatedData
+        },
+        transaction: transaction,
+      );
+
   // 매칭이 가능한 reservation 반환
   Future<ReservationModel?> findReservationForMatch(
       {required DateTime startTime,
@@ -277,12 +292,52 @@ class FirestoreDatabase {
         builder: (snapshot, options) => GroupModel.fromMap(snapshot, options));
   }
 
+  Future<GroupModel> getGroupInTransaction(
+      {required String docId, required Transaction transaction}) async {
+    return await _service.getDataInTransaction(
+      path: FirestorePath.group(docId),
+      builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      transaction: transaction,
+    );
+  }
+
+  Stream<List<GroupModel>> getGroupsOfName(String key) {
+    late final maxKey;
+    if (key.length == 0) {
+      return _service.collectionStream(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) =>
+            query.where("name", isGreaterThanOrEqualTo: key),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      );
+    } else {
+      List<int> codeUnits = [...key.codeUnits];
+      codeUnits.last++;
+      maxKey = String.fromCharCodes(codeUnits);
+      return _service.collectionStream(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) => query
+            .where("name", isGreaterThanOrEqualTo: key)
+            .where("name", isLessThanOrEqualTo: maxKey),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      );
+    }
+  }
+
   Future<String> setGroup(GroupModel group) => _service.setData(
         path: group.id != null
             ? FirestorePath.group(group.id!)
             : FirestorePath.groups(),
         data: group.toMap(),
         isAdd: group.id == null,
+      );
+
+  Future<void> updateGroupInTransaction(
+          GroupModel group, Transaction transaction) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.group(group.id!),
+        data: group.toMap(),
+        transaction: transaction,
       );
 
   Future<void> deleteGroup(GroupModel group) =>

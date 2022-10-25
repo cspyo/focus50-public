@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/jitsi/presentation/list_items_builder_2.dart';
+import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_group_widget.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
+import 'package:focus42/mobile_widgets/mobile_row_group_toggle_button_widget.dart';
+import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -23,8 +30,7 @@ class MobileCalendarScreen extends ConsumerStatefulWidget {
 
 class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   bool getUserInfo = false;
-  String userPhotoUrl =
-      'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
+  String userPhotoUrl = StorageMethods.defaultImageUrl;
   String userNickname = '';
   String userJob = '';
   bool isNotificationOpen = true;
@@ -70,10 +76,13 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
     final authState = ref.watch(authStateChangesProvider).asData?.value;
-
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
     return Scaffold(
         appBar: AppBar(
+          elevation: 0,
           centerTitle: true,
           title: Row(
             mainAxisSize: MainAxisSize.min,
@@ -298,93 +307,72 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
               ]),
         ),
         body: SingleChildScrollView(
-          child: Column(//페이지 전체 구성
-              children: <Widget>[
-            const Line(),
-            // isNotificationOpen
-            //     ? Container(
-            //         height: 50,
-            //         padding: EdgeInsets.only(left: 30, right: 30),
-            //         width: double.infinity,
-            //         decoration: BoxDecoration(
-            //           gradient: LinearGradient(
-            //             begin: Alignment.centerLeft,
-            //             end: Alignment.centerRight,
-            //             colors: [
-            //               Color(0xff5E88FF),
-            //               Color(0xff8465FF),
-            //             ],
-            //           ),
-            //         ),
-            //         child: Row(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           children: [
-            //             InkWell(
-            //               onTap: () {
-            //                 launchUrl(toLaunch);
-            //               },
-            //               child: Row(
-            //                 children: [
-            //                   Text(
-            //                     '더 나은 Focus50 이 되겠습니다. ',
-            //                     style: TextStyle(
-            //                         color: Colors.white, fontSize: 12),
-            //                   ),
-            //                   Text(
-            //                     '설문하러 가기',
-            //                     style: TextStyle(
-            //                         color: Colors.white,
-            //                         fontSize: 12,
-            //                         fontWeight: FontWeight.w700),
-            //                   )
-            //                 ],
-            //               ),
-            //             ),
-            //             Icon(
-            //               Icons.arrow_right_alt_rounded,
-            //               color: Colors.white,
-            //             ),
-            //             SizedBox(width: 20),
-            //             IconButton(
-            //               onPressed: () {
-            //                 setState(() {
-            //                   isNotificationOpen = false;
-            //                 });
-            //               },
-            //               hoverColor: Colors.transparent,
-            //               icon: Icon(
-            //                 Icons.close,
-            //                 color: Colors.white,
-            //               ),
-            //             )
-            //           ],
-            //         ),
-            //       )
-            //     : SizedBox(),
-            Column(children: <Widget>[
-              Container(
-                child: MobileReservation(),
-              ),
-              Container(
+          child: Column(
+            //페이지 전체 구성
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              const Line(),
+              Column(children: <Widget>[
+                // Container(
+                //   child: MobileReservation(),
+                // ),
+                SizedBox(
+                  height: 5,
+                ),
+                SizedBox(
+                  width: screenWidth - 40,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        '그룹',
+                        style: MyTextStyle.CgS18W500,
+                      ),
+                      Container(width: 68, height: 32, child: MobileGroup()),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: screenWidth - 40,
+                  height: 80,
+                  child: ListItemsBuilder2<GroupModel>(
+                    data: _myGroupStream,
+                    itemBuilder: (context, model) =>
+                        MobilRowGroupToggleButtonWidget(
+                      group: model,
+                      isThisGroupActivated:
+                          _myActivatedGroupId == model.id ? true : false,
+                    ),
+                    creator: () => new GroupModel(
+                      id: 'public',
+                      name: '전체',
+                    ),
+                    axis: Axis.horizontal,
+                  ),
+                ),
+                Container(
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: border100)),
-                  height: screenHeight - 165,
-                  child: Stack(
-                    children: [
-                      // MobileCalendarHeader(
-                      //   calendarController: calendarController,
-                      //   // visibleDates: visibleDates,
-                      // ),
-                      MobileCalendar(
-                        calendarController: calendarController,
-                        isNotificationOpen: isNotificationOpen,
-                      ),
-                      Positioned(bottom: 10, right: 10, child: MobileGroup()),
-                      // changeVisibleDates: changeVisibleDates),
-                    ],
-                  )),
-            ])
-          ]),
+                  height: screenHeight - 245,
+                  child: MobileCalendar(
+                    calendarController: calendarController,
+                    isNotificationOpen: isNotificationOpen,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                    ),
+                    color: MyColors.purple300,
+                  ),
+                  child: MobileReservation(),
+                ),
+              ])
+            ],
+          ),
         ));
   }
 
@@ -403,5 +391,9 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
           text,
           style: TextStyle(color: color),
         ));
+  }
+
+  void _changeActivatedGroup(String newGroupId) {
+    ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
   }
 }

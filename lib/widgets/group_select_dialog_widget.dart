@@ -129,7 +129,7 @@ class GroupSelectAlertDialog extends ConsumerWidget {
               child: Container(
                 child: Row(
                   children: [
-                    group.imageUrl != null
+                    group.imageUrl != null //TODO: 여기서 널 생겨서 다른 그룹들도 사진이 동일해진거임!
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.network(
@@ -164,7 +164,7 @@ class GroupSelectAlertDialog extends ConsumerWidget {
                     ),
                     Text(
                       group.headcount != null
-                          ? '${group.headcount} / ${group.maxHeadcount}'
+                          ? '현재 인원 : ${group.headcount}명'
                           : '모든 유저와 함께',
                       style: MyTextStyle.CgS12W400,
                     ),

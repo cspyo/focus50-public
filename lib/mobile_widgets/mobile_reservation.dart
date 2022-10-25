@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -35,6 +36,10 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
     final uid = database.uid;
     database.updateReservationUserInfo(
         nextReservation.id!, uid, "enterDTTM", DateTime.now());
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "sessionVersion", VERSION);
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "sessionAgent", AGENT);
     AnalyticsMethod().mobileLogEnterSession();
     Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
   }
@@ -47,11 +52,8 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
     final nextReservationStream = ref.watch(myNextReservationStreamProvider);
 
     return Container(
-      height: 90,
+      height: 70,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Colors.white,
-      ),
       child: _buildBody(context, authState, nextReservationStream, screenWidth),
     ); //모바일
   }
@@ -68,6 +70,7 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
           data: (nextReservation) {
             if (nextReservation.isEmpty) {
               return _buildNoReservation(context);
+              // return SizedBox.shrink();
             } else
               return _buildReservation(
                   context, screenWidth, nextReservation.first!);
@@ -83,9 +86,7 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
     return Text(
       '로딩중입니다...',
       style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Color.fromARGB(255, 24, 24, 24)),
+          fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white),
     );
   }
 
@@ -112,14 +113,12 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
             Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
       Text('예약이 없습니다',
           style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Color.fromARGB(255, 24, 24, 24))),
+              fontSize: 20, fontWeight: FontWeight.w600, color: Colors.white)),
       Text('캘린더에서 원하는 시간대를 골라 클릭해보세요!',
           style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.normal,
-              color: Color.fromARGB(105, 105, 105, 100))),
+              color: Colors.white)),
     ]));
   }
 
@@ -143,94 +142,68 @@ class _MobileReservationState extends ConsumerState<MobileReservation> {
     }
     return Container(
       width: screenWidth - 40,
-      height: 80,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      height: 40,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TimerCountdown(
-                format: CountDownTimerFormat.hoursMinutesSeconds,
-                endTime:
-                    Timestamp.fromDate(nextReservation.startTime!).toDate(),
-                enableDescriptions: false,
-                timeTextStyle: TextStyle(
-                  height: 1.0,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-                colonsTextStyle: TextStyle(
-                  height: 1.0,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-                spacerWidth: 0,
-              ),
-              Text(' 남았습니다',
-                  // textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    height: 1.0,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                  )),
-            ],
+          TimerCountdown(
+            format: CountDownTimerFormat.hoursMinutesSeconds,
+            endTime: Timestamp.fromDate(nextReservation.startTime!).toDate(),
+            enableDescriptions: false,
+            timeTextStyle: TextStyle(
+                height: 1.0,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.white),
+            colonsTextStyle: TextStyle(
+                height: 1.0,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.white),
+            spacerWidth: 0,
           ),
-          Container(
-            width: screenWidth - 160,
-            height: 36,
-            child: canEnter
-                ? TextButton(
+          Text(
+            ' 남았습니다',
+            // textAlign: TextAlign.center,
+            style: const TextStyle(
+                height: 1.0,
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.white),
+          ),
+          canEnter
+              ? SizedBox(
+                  width: 10,
+                )
+              : SizedBox.shrink(),
+          canEnter
+              ? Container(
+                  width: 68,
+                  height: 40,
+                  child: TextButton(
                     onPressed: () {
-                      enterReservation(nextReservation);
-                      // if (userAgent.contains('android')) {
-                      //   enterReservation(nextReservation);
-                      // } else {
-                      //   showSnackBar(
-                      //     '세션 입장은 안드로이드 및 PC 브라우저만 지원하고 있습니다 : )',
-                      //     context,
-                      //   );
-                      // }
+                      if (canEnter) enterReservation(nextReservation);
                     },
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius: BorderRadius.circular(16.0),
                               side: BorderSide(color: Colors.transparent))),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(purple300),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          canEnter ? Colors.white : purple300),
                     ),
                     child: Text(
                       '입장하기',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: canEnter ? MyColors.purple300 : Colors.white,
                       ),
-                    ),
-                  )
-                : TextButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.0),
-                              side: BorderSide(color: Colors.transparent))),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.black38),
-                    ),
-                    child: Text(
-                      '입장하기',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
                     ),
                   ),
-          ),
+                )
+              : SizedBox.shrink(),
         ],
       ),
     );

@@ -130,12 +130,24 @@ class ReservationModel {
       DateTime? leaveDTTM = value['leaveDTTM'] != null
           ? value['leaveDTTM'].toDate() as DateTime
           : null;
+      DateTime? reserveDTTM = value['reserveDTTM'] != null
+          ? value['reserveDTTM'].toDate() as DateTime
+          : null;
+      String? reservationVersion = value['reservationVersion'] as String?;
+      String? reservationAgent = value['reservationAgent'] as String?;
+      String? sessionVersion = value['sessionVersion'] as String?;
+      String? sessionAgent = value['sessionAgent'] as String?;
 
       ReservationUserInfo reservationUserInfo = new ReservationUserInfo(
         uid: uid,
         nickname: nickname,
         enterDTTM: enterDTTM,
         leaveDTTM: leaveDTTM,
+        reserveDTTM: reserveDTTM,
+        reservationVersion: reservationVersion,
+        reservationAgent: reservationAgent,
+        sessionVersion: sessionVersion,
+        sessionAgent: sessionAgent,
       );
       userInfoMap.addAll({uid: reservationUserInfo});
     });

@@ -5,6 +5,7 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:get/get.dart';
@@ -19,8 +20,7 @@ class MobileAboutScreen extends ConsumerStatefulWidget {
 class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
     with TickerProviderStateMixin {
   bool getUserInfo = false;
-  String userPhotoUrl =
-      'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
+  String userPhotoUrl = StorageMethods.defaultImageUrl;
   String userNickname = '';
   String userJob = '';
 
@@ -422,136 +422,62 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
             ),
             SizedBox(
               width: screenWidth,
-              height: 150,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/contributor1.png',
-                    width: screenWidth * 0.35,
-                  ),
-                  Image.asset(
-                    'assets/images/contributor2.png',
-                    width: screenWidth * 0.25,
-                  ),
-                  Image.asset(
-                    'assets/images/contributor3.jpeg',
-                    width: screenWidth * 0.3,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 220,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  SizedBox(
+                    width: screenWidth,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/contributor1.png',
+                          width: screenWidth * 0.35,
+                        ),
+                        Image.asset(
+                          'assets/images/contributor2.png',
+                          width: screenWidth * 0.25,
+                        ),
+                        Image.asset(
+                          'assets/images/contributor3.jpeg',
+                          width: screenWidth * 0.3,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 70),
                   Text(
-                    '우리 서비스를 이용하지 않아도 좋아요',
+                    '집중에 다가가는 세 가지 방법',
                     style: TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 28,
                         fontWeight: FontWeight.w600),
                   ),
-                  Column(
-                    children: [
-                      Text(
-                        '어디서 어떤 공부를 하든,',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '진짜 공부',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            '를 하길 바라요.',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '서비스를 기획하며 습득한 ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '모든 지식과 이론',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            '이',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400),
-                          )
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '공통적으로 말하던 ',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '세가지',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          Text(
-                            ' 방법을 알려드릴게요.',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400),
-                          )
-                        ],
-                      ),
-                    ],
-                  )
+                  SizedBox(height: 30),
                 ],
               ),
             ),
-            Column(
-              children: [
-                SvgPicture.asset('assets/images/postit1.svg'),
-                SvgPicture.asset('assets/images/postit2.svg'),
-                SvgPicture.asset('assets/images/postit3.svg'),
-              ],
+            // Container(
+            //   width: screenWidth,
+            //   height: screenHeight,
+            //   padding: EdgeInsets.only(top: 100),
+            //   child: SvgPicture.asset('assets/images/three_informations.svg'),
+            // ),
+            SizedBox(
+              // height: 500,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SvgPicture.asset('assets/images/postit1.svg'),
+                  SvgPicture.asset('assets/images/postit2.svg'),
+                  SvgPicture.asset('assets/images/postit3.svg'),
+                ],
+              ),
             ),
+
             Container(
-              padding: EdgeInsets.only(left: 20, right: 20),
+              padding: EdgeInsets.only(left: 10, right: 10),
               width: screenWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,9 +486,9 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '다른 사람들과',
+                        '더 이상',
                         style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.w400),
+                            fontSize: 36, fontWeight: FontWeight.w400),
                       ),
                       Row(
                         children: [
@@ -571,48 +497,40 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                               Positioned(
                                 bottom: 4,
                                 child: Container(
-                                  width: 134,
+                                  width: 180,
                                   height: 24,
                                   color: textHighlightColor,
                                   child: Text(''),
                                 ),
                               ),
                               Text(
-                                '오공',
+                                '미루지 않게',
                                 style: TextStyle(
-                                    fontSize: 32, fontWeight: FontWeight.w700),
+                                    fontSize: 36, fontWeight: FontWeight.w700),
                               ),
                             ],
                           ),
                           Text(
-                            '을 ',
+                            ' 해줄게요',
                             style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '예약',
-                            style: TextStyle(
-                                fontSize: 32, fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            '해봐요',
-                            style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w400),
+                                fontSize: 36, fontWeight: FontWeight.w400),
                           ),
                         ],
                       ),
                     ],
                   ),
                   SizedBox(
-                    height: 14,
+                    height: 10,
                   ),
                   Text(
-                    "*오공은 '오늘 공부'의 줄임말로, Focus50에서 공부 하는 시간 단위입니다.",
-                    style: TextStyle(fontSize: 10),
+                    "캘린더에 집중할 시간을 예약해보세요",
+                    style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.start,
                   ),
-                  SizedBox(
-                    height: 10,
+                  Text(
+                    "나 자신만이 아닌 남과의 약속은 지킬 확률이 87% 더 높대요!",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.start,
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
@@ -624,11 +542,9 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                 ],
               ),
             ),
-            SizedBox(
-              height: 100,
-            ),
+            SizedBox(height: 100),
             Container(
-              padding: EdgeInsets.only(left: 20, right: 20),
+              padding: EdgeInsets.only(left: 10, right: 10),
               width: screenWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -636,10 +552,19 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '예약 후에는,',
-                        style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.w400),
+                      Row(
+                        children: [
+                          Text(
+                            '50분',
+                            style: TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            '동안',
+                            style: TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.w400),
+                          ),
+                        ],
                       ),
                       Row(
                         children: [
@@ -648,40 +573,25 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                               Positioned(
                                 bottom: 4,
                                 child: Container(
-                                  width: 134,
+                                  width: 80,
                                   height: 24,
                                   color: textHighlightColor,
                                   child: Text(''),
                                 ),
                               ),
                               Text(
-                                '오공',
+                                '함께 ',
                                 style: TextStyle(
-                                    fontSize: 32, fontWeight: FontWeight.w700),
+                                    fontSize: 36, fontWeight: FontWeight.w700),
                               ),
                             ],
                           ),
                           Text(
-                            '을 ',
+                            '집중 해봐요',
                             style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '50분',
-                            style: TextStyle(
-                                fontSize: 32, fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            '동안',
-                            style: TextStyle(
-                                fontSize: 28, fontWeight: FontWeight.w400),
+                                fontSize: 36, fontWeight: FontWeight.w400),
                           ),
                         ],
-                      ),
-                      Text(
-                        '진행 해봐요',
-                        style: TextStyle(
-                            fontSize: 28, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -689,13 +599,13 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                     height: 10,
                   ),
                   Text(
-                    "여러 명이 '오공'할 때보다, 1:1로 진행했을 때 집중이 잘 된대요!",
-                    style: TextStyle(fontSize: 10),
+                    "캠을 켜고 자신이 집중하는 모습을 공유해봐요",
+                    style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.start,
                   ),
                   Text(
-                    "이번 '오공'에서 할 일들을 투두에 적어 봐요.",
-                    style: TextStyle(fontSize: 10),
+                    "감시효과는 딴짓을 막아주어 몰입도가 92% 높아진대요!",
+                    style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.start,
                   ),
                   SizedBox(
@@ -704,7 +614,68 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image.asset(
-                      'assets/images/sessionTimer.gif',
+                      'assets/images/photoInSession.png',
+                      width: screenWidth * 0.85,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 110),
+            Container(
+              padding: EdgeInsets.only(left: 10),
+              width: screenWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          Positioned(
+                            bottom: 4,
+                            child: Container(
+                              width: 140,
+                              height: 24,
+                              color: textHighlightColor,
+                              child: Text(''),
+                            ),
+                          ),
+                          Text(
+                            '집중 패턴을',
+                            style: TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '분석해줄게요',
+                        style: TextStyle(
+                            fontSize: 36, fontWeight: FontWeight.w400),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "예약 패턴과 노쇼 비율, 세션의 목표 달성율 등을 AI가 분석해 알려줘요",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.start,
+                  ),
+                  Text(
+                    "집중의 비밀은 얼마나 나를 아느냐에 달려있어요!",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.asset(
+                      'assets/images/report.png',
                       width: screenWidth * 0.85,
                     ),
                   ),
@@ -740,7 +711,7 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                                 ),
                               ),
                               Text(
-                                '70350',
+                                '176250',
                                 style: TextStyle(
                                     fontSize: 36, fontWeight: FontWeight.w700),
                               ),
@@ -845,7 +816,7 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                               ),
                             ),
                             Text(
-                              '남양주시 다산중앙로 82번길 15, 5101동 101호',
+                              '남양주시 다산중앙로 82번길 15',
                               style: TextStyle(
                                 color: footerGreyColor,
                                 fontSize: 14,
@@ -911,24 +882,36 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                           ),
                           Row(
                             children: [
-                              Text(
-                                'Terms',
-                                style: TextStyle(
-                                  color: footerGreyColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w300,
+                              TextButton(
+                                child: Text(
+                                  '이용약관',
+                                  style: TextStyle(
+                                    color: footerGreyColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w300,
+                                  ),
                                 ),
+                                onPressed: () {
+                                  launch(
+                                      "https://cspyo.notion.site/Focus50-bf3dcea5936b4f3a96633ff2d57d71ee");
+                                },
                               ),
                               SizedBox(
                                 width: 4,
                               ),
-                              Text(
-                                'Privacy Policy',
-                                style: TextStyle(
-                                  color: footerGreyColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w300,
+                              TextButton(
+                                child: Text(
+                                  '개인정보처리방침',
+                                  style: TextStyle(
+                                    color: footerGreyColor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
+                                onPressed: () {
+                                  launch(
+                                      "https://cspyo.notion.site/Focus50-9f22f670ba5c40a286d764cf055ce14a");
+                                },
                               ),
                             ],
                           )

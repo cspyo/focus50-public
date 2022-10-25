@@ -35,6 +35,22 @@ class UserPublicModel {
     return groupAddedUser;
   }
 
+  UserPublicModel leaveGroup(String groupId) {
+    List<String>? newGroups = [...?groups];
+    newGroups.removeWhere((element) => element == groupId);
+
+    UserPublicModel groupRemovedUser = UserPublicModel(
+      nickname: this.nickname,
+      photoUrl: this.photoUrl,
+      job: this.job,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      lastLogin: this.lastLogin,
+      groups: newGroups,
+    );
+    return groupRemovedUser;
+  }
+
   factory UserPublicModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,

@@ -229,11 +229,10 @@ class AuthMethods {
         String? phoneNumber;
 
         if (file == null) {
-          photoUrl =
-              'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3';
+          photoUrl = StorageMethods.defaultImageUrl;
         } else {
-          photoUrl =
-              await StorageMethods().uploadImageToStorage('profilePics', file);
+          photoUrl = await StorageMethods().uploadImageToStorage(
+              'profilePics/${_auth.currentUser!.uid}', file);
         }
         CollectionReference userPublicColRef = getUserPublicColRef();
         CollectionReference userPrivateColRef = getUserPrivateColRef();
