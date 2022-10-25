@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
@@ -164,8 +165,8 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                           : CircleAvatar(
                               radius: 64,
                               backgroundColor: Colors.black38,
-                              backgroundImage: NetworkImage(
-                                  'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e'),
+                              backgroundImage:
+                                  NetworkImage(StorageMethods.defaultImageUrl),
                             ),
                       Positioned(
                         bottom: -10,

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
+import 'package:focus42/feature/jitsi/presentation/list_items_builder_2.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -17,7 +17,9 @@ import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_search_widget.dart';
 import 'package:focus42/widgets/group_select_dialog_widget.dart';
+import 'package:focus42/widgets/group_setting_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -50,8 +52,6 @@ class Group extends ConsumerStatefulWidget {
 class _GroupState extends ConsumerState<Group> {
   late final FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _maxHeadcountController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
   final TextEditingController _invitePwController = TextEditingController();
@@ -76,8 +76,6 @@ class _GroupState extends ConsumerState<Group> {
   @override
   void dispose() {
     _nameController.dispose();
-    _categoryController.dispose();
-    _maxHeadcountController.dispose();
     _passwordController.dispose();
     _introductionController.dispose();
     _invitePwController.dispose();
@@ -88,48 +86,54 @@ class _GroupState extends ConsumerState<Group> {
   Widget build(BuildContext context) {
     groupId = ref.read(activatedGroupIdProvider);
     return Container(
-      padding: EdgeInsets.only(left: 8, right: 8),
-      child: Row(
+      // padding: EdgeInsets.only(left: 8, right: 8),
+      // decoration: BoxDecoration(
+      //     border: Border(right: BorderSide(color: border100, width: 1))),
+      child: Column(
         children: [
           SizedBox(
-            width: 80,
-            height: 34,
-            child: TextButton(
-              onPressed: () {
-                if (uid != null) {
-                  AnalyticsMethod().logPressGroupSelectButton();
-                  _popupInviteOthersDialog(context);
-                } else {
-                  AnalyticsMethod().logPressGroupSelectButtonWithoutSignIn();
-                  Get.rootDelegate.toNamed(Routes.SIGNUP);
-                }
-              },
-              child: Text(
-                '그룹 선택',
-                style: MyTextStyle.CwS12W600,
-              ),
-              style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(MyColors.purple300),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            height: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  height: 40,
+                  child: Text(
+                    '그룹',
+                    style: MyTextStyle.CbS20W600,
                   ),
                 ),
-              ),
+                SizedBox(
+                  width: 80,
+                  height: 30,
+                  child: TextButton(
+                    onPressed: () {
+                      _popupSearchGroupDialog(context); //TODO: GA 달기
+                    },
+                    child: Icon(
+                      Icons.search,
+                      color: MyColors.purple300,
+                    ),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(width: 1, color: MyColors.purple300),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(
-            width: 5,
-          ),
-          _buildMyGroupIndicator(context, groupId),
-          Spacer(),
-          SizedBox(
-            width: 5,
-          ),
+          _buildColumnGroupToggleButton(context),
           SizedBox(
             width: 80,
-            height: 34,
+            height: 30,
             child: TextButton(
               onPressed: () {
                 if (uid != null) {
@@ -140,9 +144,10 @@ class _GroupState extends ConsumerState<Group> {
                   Get.rootDelegate.toNamed(Routes.SIGNUP);
                 }
               },
-              child: Text(
-                '그룹 만들기',
-                style: MyTextStyle.CwS12W600,
+              child: Icon(
+                Icons.add,
+                size: 24,
+                color: Colors.white,
               ),
               style: ButtonStyle(
                 backgroundColor:
@@ -155,34 +160,55 @@ class _GroupState extends ConsumerState<Group> {
               ),
             ),
           ),
+          SizedBox(
+            height: 5,
+          ),
+          // Spacer(),
         ],
       ),
     );
   }
 
-  // Widget _buildGroupToggleButton(BuildContext context) {
-  //   // TODO: 1. ListItemBuilder empty 케이스 일반화하기 / 2. itemBuilder 수정하기
-  //   final _myGroupStream = ref.watch(myGroupFutureProvider);
-  //   return ListItemsBuilder<GroupModel>(
-  //     data: _myGroupStream,
-  //     itemBuilder: (context, model) => _buildToggleButtonUi(context, model),
-  //     axis: Axis.horizontal,
-  //   );
-  // }
-
-  Widget _buildMyGroupIndicator(BuildContext context, String groupId) {
-    final _myGroupStream = ref.watch(myActivatedGroupFutureProvider);
-    return _myGroupStream.when(
-      data: (data) => _buildToggleButtonUi(context, data),
-      loading: () => const Center(
-          child: CircularProgressIndicator(
-        color: MyColors.purple300,
-      )),
-      error: (_, __) => EmptyContent(
-        title: '오류가 발생하였습니다',
+  Widget _buildColumnGroupToggleButton(BuildContext context) {
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isTabletSize = screenWidth < 1200 ? true : false;
+    return SizedBox(
+      width: 80,
+      height: isTabletSize ? screenHeight - 362 : screenHeight - 267,
+      child: ListItemsBuilder2<GroupModel>(
+        data: _myGroupStream,
+        itemBuilder: (context, model) => _buildToggleButtonUi(
+          context,
+          model,
+          _myActivatedGroupId == model.id ? true : false,
+        ),
+        // itemBuilder: (context, model) => Text('${model.id}}'),
+        creator: () => new GroupModel(
+          id: 'public',
+          name: '전체',
+        ),
+        axis: Axis.vertical,
       ),
+      // child: Text('없어열'),
     );
   }
+
+  // Widget _buildMyGroupIndicator(BuildContext context, String groupId) {
+  //   final _myGroupStream = ref.watch(myActivatedGroupFutureProvider);
+  //   return _myGroupStream.when(
+  //     data: (data) => _buildToggleButtonUi(context, data),
+  //     loading: () => const Center(
+  //         child: CircularProgressIndicator(
+  //       color: MyColors.purple300,
+  //     )),
+  //     error: (_, __) => EmptyContent(
+  //       title: '오류가 발생하였습니다',
+  //     ),
+  //   );
+  // }
 
   Widget _buildCreateGroupSuccess(BuildContext context, String groupName,
       String groupPassword, String groupDocId) {
@@ -194,6 +220,7 @@ class _GroupState extends ConsumerState<Group> {
     return StatefulBuilder(
       builder: ((context, setState) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
@@ -249,181 +276,225 @@ class _GroupState extends ConsumerState<Group> {
     );
   }
 
-  Widget _buildToggleButtonUi(BuildContext context, GroupModel group) {
-    String groupName = group.name ?? '전체';
-    return Container(
-      width: group.id == 'public' ? 46 : 84 + groupName.length * 11,
-      height: 34,
-      child: TextButton(
-        onPressed: () {
-          _changeActivatedGroup(group.id!);
-        },
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all<Color>(MyColors.purple100),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: MyColors.purple300, width: 1),
-            ),
-          ),
-        ),
-        child: Container(
-          child: Row(
-            children: [
-              group.imageUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        group.imageUrl!,
-                        fit: BoxFit.cover,
-                        width: 20,
-                        height: 20,
+  Widget _buildToggleButtonUi(
+      BuildContext context, GroupModel group, bool isThisGroupActivated) {
+    return Stack(
+      children: [
+        Container(
+          height: 80,
+          child: TextButton(
+            onPressed: () {
+              _changeActivatedGroup(group.id!);
+            },
+            style: isThisGroupActivated
+                ? ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(MyColors.purple100),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: MyColors.purple300, width: 1),
                       ),
-                    )
-                  : SizedBox.shrink(),
-              SizedBox(
-                width: 4,
-              ),
-              Text(
-                groupName,
-                softWrap: true,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              groupName != '전체'
-                  ? SizedBox(
-                      height: 22,
-                      width: 38,
-                      child: TextButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                    ),
+                  )
+                : ButtonStyle(),
+            child: Container(
+              width: 80,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  group.id != 'public'
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            group.imageUrl!,
+                            fit: BoxFit.cover,
+                            width: 24,
+                            height: 24,
+                          ),
+                        )
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            'assets/images/earth.png',
+                            fit: BoxFit.cover,
+                            width: 24,
+                            height: 24,
                           ),
                         ),
-                        onPressed: () {
-                          Uri uri = Uri.parse(Uri.base.toString());
-                          String quote = group.password != ''
-                              ? '귀하는 ${groupName}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                              : '귀하는 ${groupName}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
-                          showDialog(
-                              context: context,
-                              builder: (context) {
-                                bool isCopied = false;
-                                return StatefulBuilder(
-                                    builder: (context, setState) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(16.0))),
-                                    content: SizedBox(
-                                      height: 264,
-                                      child: Column(
-                                        children: [
-                                          Container(
-                                            alignment: Alignment.centerRight,
-                                            child: SizedBox(
-                                              width: 36,
-                                              height: 36,
-                                              child: IconButton(
-                                                padding: EdgeInsets.all(0),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                icon: Icon(
-                                                  Icons.close,
-                                                  color: Colors.black,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Text('이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
-                                              style: MyTextStyle.CbS18W400),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  width: 1, color: border300),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                            child: SelectableText(quote),
-                                          ),
-                                          SizedBox(
-                                            height: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 80,
-                                            height: 44,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                Clipboard.setData(
-                                                    ClipboardData(text: quote));
-                                                setState(() => isCopied = true);
-                                              },
-                                              child: !isCopied
-                                                  ? Text(
-                                                      '복사하기',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    )
-                                                  : Icon(
-                                                      Icons.check,
-                                                      color: Colors.white,
+                  Text(
+                    group.name!,
+                    softWrap: true,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: group.name!.length > 5 ? 10 : 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  isThisGroupActivated
+                      ? SizedBox(
+                          height: 22,
+                          width: 38,
+                          child: TextButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  MyColors.purple300),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              Uri uri = Uri.parse(Uri.base.toString());
+                              String quote = group.id == 'public'
+                                  ? '같이 집중해봅시다!! \n자꾸 미룰 때, 할 일이 많을 때, 혼자 공부하기 싫을 때 사용해보시면 많은 도움이 될 거예요. \n아래 링크를 눌러 입장해주세요! \nhttps://focus50.day'
+                                  : group.password != ''
+                                      ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
+                                      : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    bool isCopied = false;
+                                    return StatefulBuilder(
+                                        builder: (context, setState) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(16.0))),
+                                        content: SizedBox(
+                                          height: 264,
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: SizedBox(
+                                                  width: 36,
+                                                  height: 36,
+                                                  child: IconButton(
+                                                    padding: EdgeInsets.all(0),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.close,
+                                                      color: Colors.black,
+                                                      size: 30,
                                                     ),
-                                              style: ButtonStyle(
-                                                backgroundColor:
-                                                    MaterialStateProperty.all<
-                                                            Color>(
-                                                        MyColors.purple300),
-                                                shape:
-                                                    MaterialStateProperty.all<
-                                                        RoundedRectangleBorder>(
-                                                  RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                });
-                              });
-                        },
-                        child: Text(
-                          '초대',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                                              Text('이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
+                                                  style: MyTextStyle.CbS18W400),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.all(8),
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 1,
+                                                      color: border300),
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                child: SelectableText(quote),
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              SizedBox(
+                                                width: 80,
+                                                height: 44,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    Clipboard.setData(
+                                                        ClipboardData(
+                                                            text: quote));
+                                                    setState(
+                                                        () => isCopied = true);
+                                                  },
+                                                  child: !isCopied
+                                                      ? Text(
+                                                          '복사하기',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
+                                                        )
+                                                      : Icon(
+                                                          Icons.check,
+                                                          color: Colors.white,
+                                                        ),
+                                                  style: ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all<Color>(MyColors
+                                                                .purple300),
+                                                    shape: MaterialStateProperty
+                                                        .all<
+                                                            RoundedRectangleBorder>(
+                                                      RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(16),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    });
+                                  });
+                            },
+                            child: Text(
+                              '초대',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
+                        )
+                      : SizedBox(
+                          height: 22,
+                          width: 38,
                         ),
-                      ),
-                    )
-                  : SizedBox.shrink(),
-            ],
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+        isThisGroupActivated && group.id != 'public'
+            ? Positioned(
+                top: 4,
+                left: 4,
+                child: SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: IconButton(
+                    hoverColor: Colors.transparent,
+                    focusColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    onPressed: () {
+                      _popupGroupSettingDialog(context, group);
+                    },
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.settings,
+                      size: 16,
+                      color: MyColors.purple300,
+                    ),
+                  ),
+                ),
+              )
+            : SizedBox.shrink(),
+      ],
     );
   }
 
@@ -459,13 +530,13 @@ class _GroupState extends ConsumerState<Group> {
             height: 36,
             padding: EdgeInsets.only(left: 8, right: 8),
             child: TextFormField(
-              inputFormatters: <TextInputFormatter>[
-                index == 2
-                    ? FilteringTextInputFormatter.digitsOnly
-                    : FilteringTextInputFormatter.singleLineFormatter,
-              ],
+              // inputFormatters: <TextInputFormatter>[
+              //   index == 1
+              //       ? FilteringTextInputFormatter.digitsOnly
+              //       : FilteringTextInputFormatter.singleLineFormatter,
+              // ],
               validator: (value) {
-                return (value == null || value.isEmpty) && index != 3
+                return (value == null || value.isEmpty) && index != 1
                     ? '$title를 입력해주세요'
                     : index == 0 && isGroupNameOverlap!
                         ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'
@@ -502,20 +573,14 @@ class _GroupState extends ConsumerState<Group> {
     String groupDocId = '';
     List<String> titles = [
       '그룹 명',
-      '카테고리',
-      '최대 구성원 수',
       '비밀번호',
     ];
     List<String> hintTexts = [
       '그룹 명을 적어주세요',
-      '카테고리를 입력해주세요',
-      '10(숫자만 입력해주세요)',
       '비밀번호(선택)',
     ];
     List<TextEditingController> controllers = [
       _nameController,
-      _categoryController,
-      _maxHeadcountController,
       _passwordController,
     ];
     return showDialog(
@@ -526,11 +591,11 @@ class _GroupState extends ConsumerState<Group> {
           return AlertDialog(
             content: Container(
               width: 626,
-              height: !isCreateGroupFinished ? 800 : 300,
               child: !isCreateGroupFinished
                   ? Form(
                       key: _createGroupFormKey,
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
                             alignment: Alignment.centerRight,
@@ -542,10 +607,10 @@ class _GroupState extends ConsumerState<Group> {
                                 onPressed: () {
                                   if (groupDocId != '') {
                                     _changeActivatedGroup(groupDocId);
+                                    ref.refresh(myGroupIdFutureProvider);
                                   } else {
                                     Navigator.pop(context);
                                   }
-                                  setState(() {});
                                 },
                                 icon: Icon(
                                   Icons.close,
@@ -574,7 +639,7 @@ class _GroupState extends ConsumerState<Group> {
                                       radius: 64,
                                       backgroundColor: Colors.black38,
                                       backgroundImage: NetworkImage(
-                                          'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e'),
+                                          StorageMethods.defaultImageUrl),
                                     ),
                               Positioned(
                                 bottom: -10,
@@ -604,7 +669,6 @@ class _GroupState extends ConsumerState<Group> {
                                 hintTexts[i],
                                 controllers[i],
                                 i), //for 문 안쓰고 어케 하지??
-                          // _buildCategoryField(context),
                           Container(
                             width: 410,
                             height: 50,
@@ -665,8 +729,6 @@ class _GroupState extends ConsumerState<Group> {
                                   });
                                   groupDocId = await createGroup(
                                     _nameController.text,
-                                    _categoryController.text,
-                                    int.parse(_maxHeadcountController.text),
                                     _passwordController.text,
                                     _introductionController.text,
                                   );
@@ -676,6 +738,10 @@ class _GroupState extends ConsumerState<Group> {
                                     groupName = _nameController.text;
                                     groupPassword = _passwordController.text;
                                   });
+                                  _nameController.clear();
+                                  _passwordController.clear();
+                                  _introductionController.clear();
+                                  _invitePwController.clear();
                                 }
                               },
                               child: !isCreateGroupLoading
@@ -705,6 +771,7 @@ class _GroupState extends ConsumerState<Group> {
                       ),
                     )
                   : Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
                           alignment: Alignment.centerRight,
@@ -715,6 +782,8 @@ class _GroupState extends ConsumerState<Group> {
                               padding: EdgeInsets.all(0),
                               onPressed: () {
                                 _changeActivatedGroup(groupDocId);
+                                ref.refresh(myGroupIdFutureProvider);
+                                debugPrint("[DEBUG] onPressed / $groupDocId");
                                 Navigator.pop(context);
                               },
                               icon: Icon(
@@ -747,48 +816,24 @@ class _GroupState extends ConsumerState<Group> {
         });
   }
 
-  // Widget _buildSelectableMyGroupButton(BuildContext context, GroupModel group) {
-  //   String groupName = group.name ?? '전체';
-  //   int groupNameLength = groupName.length;
-  //   return Container(
-  //     width: groupNameLength * 10 + 68,
-  //     height: 34,
-  //     padding: EdgeInsets.all(0),
-  //     child: TextButton(
-  //       onPressed: () {
-  //         _changeActivatedGroup(group.id!);
-  //         Navigator.pop(context);
-  //       },
-  //       child: Row(
-  //         children: [
-  //           group.imageUrl != null
-  //               ? ClipRRect(
-  //                   borderRadius: BorderRadius.circular(10),
-  //                   child: Image.network(
-  //                     group.imageUrl!,
-  //                     fit: BoxFit.cover,
-  //                     width: 20,
-  //                     height: 20,
-  //                   ),
-  //                 )
-  //               : SizedBox.shrink(),
-  //           Text(
-  //             groupName,
-  //             style: MyTextStyle.CwS16W400,
-  //           ),
-  //         ],
-  //       ),
-  //       style: ButtonStyle(
-  //         backgroundColor: MaterialStateProperty.all<Color>(MyColors.purple300),
-  //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-  //           RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  Future<dynamic> _popupSearchGroupDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSearchAlertDialog();
+        });
+  }
+
+  Future<dynamic> _popupGroupSettingDialog(
+      BuildContext context, GroupModel group) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSettingAlertDialog(database: database, group: group);
+        });
+  }
 
   Future<GroupModel?> checkGroupIdAndPw(String id, String? pw) async {
     GroupModel? group = await database.getGroup(id);
@@ -826,6 +871,8 @@ class _GroupState extends ConsumerState<Group> {
                                 child: IconButton(
                                   padding: EdgeInsets.all(0),
                                   onPressed: () {
+                                    _changeActivatedGroup(group.id!);
+                                    ref.refresh(myGroupIdFutureProvider);
                                     Navigator.pop(context);
                                   },
                                   icon: Icon(
@@ -912,8 +959,8 @@ class _GroupState extends ConsumerState<Group> {
                                   if (uid != null) {
                                     if (_invitementFormKey.currentState!
                                         .validate()) {
-                                      Navigator.pop(context);
                                       enterGroup(group);
+                                      Navigator.pop(context);
                                     }
                                   } else {
                                     Get.rootDelegate.toNamed(Routes.SIGNUP,
@@ -961,27 +1008,27 @@ class _GroupState extends ConsumerState<Group> {
 
   Future<String> createGroup(
     String name,
-    String category,
-    int maxHeadcount,
     String password,
     String introduction,
   ) async {
-    late final String groupDocId;
-    final String imageUrl = (_image == null)
-        ? 'https://firebasestorage.googleapis.com/v0/b/focus50-8b405.appspot.com/o/profilePics%2Fuser.png?alt=media&token=f3d3b60c-55f8-4576-bfab-e219d9c225b3'
-        : await StorageMethods().uploadImageToStorage('profilePics', _image!);
-
     final createdGroup = GroupModel.newGroup(
       uid: database.uid,
       name: name,
-      category: category,
-      imageUrl: imageUrl,
-      maxHeadcount: maxHeadcount,
+      imageUrl: StorageMethods.defaultImageUrl,
       introduction: introduction,
       password: password,
     );
     final UserModel? user = await ref.read(userStreamProvider.future);
-    groupDocId = await database.setGroup(createdGroup);
+    final String groupDocId = await database.setGroup(createdGroup);
+
+    if (_image != null) {
+      final String newImageUrl = await StorageMethods()
+          .uploadImageToStorage('groupPics/${groupDocId}', _image!);
+      await database.setGroup(createdGroup.changeImageAndPutId(
+          docId: groupDocId,
+          newImageUrl: newImageUrl,
+          newUpdatedBy: database.uid));
+    }
     database.setUserPublic(user!.userPublicModel!.addGroup(groupDocId));
     return groupDocId;
   }
@@ -1058,148 +1105,81 @@ class _GroupState extends ConsumerState<Group> {
         },
       );
     } else {
-      if (group.headcount! < group.maxHeadcount!) {
-        final UserModel? user = await ref.read(userStreamProvider.future);
-        database.setGroup(group.addMember(database.uid));
-        database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
-        return showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            _changeActivatedGroup(group.id!);
-                            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '환영합니다',
-                      style: MyTextStyle.CbS20W600,
-                    ),
-                    Text(
-                      '성공적으로 가입되었습니다',
-                      style: MyTextStyle.CbS18W400,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      height: 46,
-                      child: TextButton(
+      final UserModel? user = await ref.read(userStreamProvider.future);
+      database.setGroup(group.addMember(database.uid));
+      database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: SizedBox(
+              height: 160,
+              child: Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: IconButton(
+                        padding: EdgeInsets.all(0),
                         onPressed: () {
+                          _changeActivatedGroup(group.id!);
+                          ref.refresh(myGroupIdFutureProvider);
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
-                        child: Text(
-                          '확인',
-                          style: TextStyle(color: Colors.white),
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.black,
+                          size: 30,
                         ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    '환영합니다',
+                    style: MyTextStyle.CbS20W600,
+                  ),
+                  Text(
+                    '성공적으로 가입되었습니다',
+                    style: MyTextStyle.CbS18W400,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    height: 46,
+                    child: TextButton(
+                      onPressed: () {
+                        _changeActivatedGroup(group.id!);
+                        ref.refresh(myGroupIdFutureProvider);
+                        Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        '확인',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            MyColors.purple300),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
-            );
-          },
-        );
-      } else {
-        return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerRight,
-                      child: SizedBox(
-                        width: 36,
-                        height: 36,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () {
-                            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(
-                            Icons.close,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '그룹 가입',
-                      style: MyTextStyle.CbS20W600,
-                    ),
-                    Text(
-                      '정원이 모두 찼습니다.',
-                      style: MyTextStyle.CbS18W400,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      height: 46,
-                      child: TextButton(
-                        onPressed: () {
-                          Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          '확인',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.purple300),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      }
+            ),
+          );
+        },
+      );
     }
   }
 
