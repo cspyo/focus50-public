@@ -19,6 +19,7 @@ import 'consts/app_router_delegate.dart';
 import 'firebase_options.dart';
 
 const String VERSION = "1.6.3";
+late final AGENT;
 
 Future<void> versionCheck() async {
   const version = VERSION;
@@ -38,6 +39,7 @@ void main() async {
   bool isMobile = false;
   if (kIsWeb) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
+    AGENT = userAgent;
     AnalyticsMethod().logUserAgent(userAgent);
     AnalyticsMethod().setUserAgent(userAgent);
     // smartphones

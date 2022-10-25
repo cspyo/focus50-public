@@ -15,6 +15,7 @@ import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
+import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -62,17 +63,14 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
       );
     });
     html.window.onUnload.listen((event) async {
-      database.updateReservationUserInfo(
-          reservation.id!, database.uid, "leaveDTTM", DateTime.now());
-
+      MatchingMethods(database: database).leaveRoom(reservation.id!);
       AnalyticsMethod().logForceExit();
     });
   }
 
   @override
   void dispose() {
-    database.updateReservationUserInfo(
-        reservation.id!, database.uid, "leaveDTTM", DateTime.now());
+    MatchingMethods(database: database).leaveRoom(reservation.id!);
     JitsiMeet.removeAllListeners();
     super.dispose();
   }

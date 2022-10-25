@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:focus42/models/group_model.dart';
+import 'package:focus42/models/notice_model.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -145,6 +146,21 @@ class FirestoreDatabase {
         data: {
           FirestorePath.updateReservationUserInfo(uid, field): updatedData
         },
+      );
+
+  Future<void> updateReservationUserInfoInTransaction(
+    String docId,
+    String uid,
+    String field,
+    dynamic updatedData,
+    Transaction transaction,
+  ) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.reservation(docId),
+        data: {
+          FirestorePath.updateReservationUserInfo(uid, field): updatedData
+        },
+        transaction: transaction,
       );
 
   // 매칭이 가능한 reservation 반환
@@ -350,6 +366,14 @@ class FirestoreDatabase {
         path: FirestorePath.version(),
         builder: (snapshot, options) => builder(snapshot, options));
   }
+
+  //----------------------notice----------------------//
+  Stream<List<NoticeModel>> getNotices() =>
+      _service.collectionStream<NoticeModel>(
+          path: FirestorePath.notices(),
+          queryBuilder: (query) => query.where('isActive', isEqualTo: true),
+          builder: (snapshot, options) =>
+              NoticeModel.fromMap(snapshot, options));
 
   //----------------------transaction----------------------//
   Future<void> runTransaction(TransactionHandler transactionHandler) async {
