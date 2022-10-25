@@ -871,6 +871,8 @@ class _GroupState extends ConsumerState<Group> {
                                 child: IconButton(
                                   padding: EdgeInsets.all(0),
                                   onPressed: () {
+                                    _changeActivatedGroup(group.id!);
+                                    ref.refresh(myGroupIdFutureProvider);
                                     Navigator.pop(context);
                                   },
                                   icon: Icon(
@@ -957,8 +959,8 @@ class _GroupState extends ConsumerState<Group> {
                                   if (uid != null) {
                                     if (_invitementFormKey.currentState!
                                         .validate()) {
-                                      Navigator.pop(context);
                                       enterGroup(group);
+                                      Navigator.pop(context);
                                     }
                                   } else {
                                     Get.rootDelegate.toNamed(Routes.SIGNUP,
@@ -1124,6 +1126,7 @@ class _GroupState extends ConsumerState<Group> {
                         padding: EdgeInsets.all(0),
                         onPressed: () {
                           _changeActivatedGroup(group.id!);
+                          ref.refresh(myGroupIdFutureProvider);
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
@@ -1150,6 +1153,8 @@ class _GroupState extends ConsumerState<Group> {
                     height: 46,
                     child: TextButton(
                       onPressed: () {
+                        _changeActivatedGroup(group.id!);
+                        ref.refresh(myGroupIdFutureProvider);
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                         Navigator.pop(context);
                       },

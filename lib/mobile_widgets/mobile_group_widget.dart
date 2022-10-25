@@ -578,10 +578,10 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
               content: groupName != null
                   ? Container(
                       // width: 360,
-                      height: 216,
                       child: Form(
                         key: _invitementFormKey,
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
@@ -619,12 +619,12 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                 : SizedBox(
                                     height: 40,
                                   ),
-                            Text(' 귀하께서 $groupName그룹에 초대되었습니다.',
+                            Text('귀하께서 $groupName그룹에 초대되었습니다.',
                                 style: MyTextStyle.CbS14W400),
                             password != ''
                                 ? Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '비밀번호를 입력해주세요.',
@@ -866,6 +866,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                         padding: EdgeInsets.all(0),
                         onPressed: () {
                           _changeActivatedGroup(group.id!);
+                          ref.refresh(myGroupIdFutureProvider);
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
@@ -892,6 +893,8 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                     height: 46,
                     child: TextButton(
                       onPressed: () {
+                        _changeActivatedGroup(group.id!);
+                        ref.refresh(myGroupIdFutureProvider);
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                         Navigator.pop(context);
                       },
