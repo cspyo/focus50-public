@@ -86,11 +86,11 @@ class _MobilRowGroupToggleButtonWidgetState
                                 ),
                               ),
                               Positioned(
-                                top: 7,
+                                top: 5,
                                 left: 1,
                                 child: isThisGroupActivated
                                     ? SizedBox(
-                                        height: 20,
+                                        height: 24,
                                         width: 32,
                                         child: TextButton(
                                           style: ButtonStyle(
@@ -119,11 +119,13 @@ class _MobilRowGroupToggleButtonWidgetState
                                                       builder:
                                                           (context, setState) {
                                                     return AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius.circular(
-                                                                      16.0))),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                          Radius.circular(16.0),
+                                                        ),
+                                                      ),
                                                       content: SizedBox(
                                                         width: 200,
                                                         child: Column(
@@ -239,6 +241,7 @@ class _MobilRowGroupToggleButtonWidgetState
                                           },
                                           child: Text(
                                             '초대',
+                                            maxLines: 1,
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 8,
@@ -266,11 +269,11 @@ class _MobilRowGroupToggleButtonWidgetState
                                 ),
                               ),
                               Positioned(
-                                top: 7,
+                                top: 5,
                                 left: 1,
                                 child: isThisGroupActivated
-                                    ? SizedBox(
-                                        height: 20,
+                                    ? Container(
+                                        height: 24,
                                         width: 32,
                                         child: TextButton(
                                           style: ButtonStyle(
@@ -417,10 +420,11 @@ class _MobilRowGroupToggleButtonWidgetState
                                           },
                                           child: Text(
                                             '초대',
+                                            maxLines: 1,
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 8,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w400,
                                             ),
                                           ),
                                         ),

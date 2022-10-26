@@ -605,6 +605,9 @@ class _GroupState extends ConsumerState<Group> {
                               child: IconButton(
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
+                                  setState(() {
+                                    _image = null;
+                                  });
                                   if (groupDocId != '') {
                                     _changeActivatedGroup(groupDocId);
                                     ref.refresh(myGroupIdFutureProvider);
@@ -742,6 +745,9 @@ class _GroupState extends ConsumerState<Group> {
                                   _passwordController.clear();
                                   _introductionController.clear();
                                   _invitePwController.clear();
+                                  setState(() {
+                                    _image = null;
+                                  });
                                 }
                               },
                               child: !isCreateGroupLoading
