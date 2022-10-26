@@ -19,6 +19,7 @@ import 'package:focus42/widgets/group_search_widget.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class MobileGroup extends ConsumerStatefulWidget {
   @override
@@ -754,8 +755,10 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
     final String groupDocId = await database.setGroup(createdGroup);
 
     if (_image != null) {
-      final String newImageUrl = await StorageMethods()
-          .uploadImageToStorage('groupPics/${groupDocId}', _image!);
+      final String dateString =
+          DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+      final String newImageUrl = await StorageMethods().uploadImageToStorage(
+          'groupPics/${dateString}${groupDocId}', _image!);
       await database.setGroup(createdGroup.changeImageAndPutId(
           docId: groupDocId,
           newImageUrl: newImageUrl,

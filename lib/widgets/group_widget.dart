@@ -22,6 +22,7 @@ import 'package:focus42/widgets/group_select_dialog_widget.dart';
 import 'package:focus42/widgets/group_setting_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 final myGroupIdFutureProvider =
     FutureProvider.autoDispose<List<String>>((ref) async {
@@ -1020,10 +1021,11 @@ class _GroupState extends ConsumerState<Group> {
     );
     final UserModel? user = await ref.read(userStreamProvider.future);
     final String groupDocId = await database.setGroup(createdGroup);
-
     if (_image != null) {
-      final String newImageUrl = await StorageMethods()
-          .uploadImageToStorage('groupPics/${groupDocId}', _image!);
+      final String dateString =
+          DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+      final String newImageUrl = await StorageMethods().uploadImageToStorage(
+          'groupPics/${dateString}${groupDocId}', _image!);
       await database.setGroup(createdGroup.changeImageAndPutId(
           docId: groupDocId,
           newImageUrl: newImageUrl,

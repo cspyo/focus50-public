@@ -13,6 +13,7 @@ import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
   await database.runTransaction((transaction) async {
@@ -298,11 +299,14 @@ class _GroupSettingAlertDialogState
                                         isGroupNameOverlap = false;
                                       });
                                     }
+                                    final String dateString =
+                                        DateFormat('yyyyMMddHHmmss')
+                                            .format(DateTime.now());
                                     final String imageUrl = (_image == null)
                                         ? widget.group.imageUrl!
                                         : await StorageMethods()
                                             .uploadImageToStorage(
-                                                'groupPics/${widget.group.id}',
+                                                'groupPics/${dateString}${widget.group.id}',
                                                 _image!);
                                     if (_modifyGroupFormKey.currentState!
                                             .validate() &&
