@@ -8,8 +8,10 @@ import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:universal_html/html.dart' as html;
 
 final authViewModelProvider = Provider<AuthViewModel>(
   (ref) {
@@ -146,7 +148,7 @@ class AuthViewModel {
   // 유저의 uid(auth)와 profile을 엮어서 firestore에 저장
   Future<String> saveUserProfile({
     required String? nickname,
-    required String? signUpMethod,
+    required String signUpMethod,
   }) async {
     String res = ERROR;
 
@@ -223,6 +225,14 @@ class AuthViewModel {
 
       ref.read(usersProvider.notifier).addAll({uid: userPublic});
       res = SUCCESS;
+
+      String userAgent =
+          html.window.navigator.userAgent.toString().toLowerCase();
+      if (userAgent.contains("iphone") || userAgent.contains("android")) {
+        AnalyticsMethod().mobileLogSignUp(signUpMethod);
+      } else {
+        AnalyticsMethod().logSignUp(signUpMethod);
+      }
     } catch (err) {
       res = err.toString();
     }
@@ -250,6 +260,7 @@ class AuthViewModel {
     // if (_auth.currentUser!.uid.contains('kakao')) {
     //   await kakao.UserApi.instance.unlink();
     // }
+    AnalyticsMethod().logSignOut();
     await _auth.signOut();
   }
 

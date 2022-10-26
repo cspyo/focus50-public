@@ -8,6 +8,7 @@ import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
+import 'package:universal_html/html.dart' as html;
 
 class EmailLoginDialog extends ConsumerStatefulWidget {
   const EmailLoginDialog({Key? key}) : super(key: key);
@@ -24,6 +25,15 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
   bool _isLoading = false;
   String _errorMessage = "";
 
+  void _logLoginAnalyticsAboutAgent(String loginMethod) {
+    String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
+    if (userAgent.contains("iphone") || userAgent.contains("android")) {
+      AnalyticsMethod().mobileLogLogin(loginMethod);
+    } else {
+      AnalyticsMethod().logLogin(loginMethod);
+    }
+  }
+
   // 이메일로 로그인
   void _loginWithEmail(String email, String password) async {
     setState(() => _isLoading = true);
@@ -32,7 +42,7 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
         .loginWithEmail(email: email, password: password);
     if (res == SUCCESS) {
       Get.rootDelegate.offNamed(Routes.CALENDAR);
-      AnalyticsMethod().logLogin("Email");
+      _logLoginAnalyticsAboutAgent("email");
     } else if (res == USER_NOT_FOUND) {
       setState(() => _errorMessage = "회원으로 등록되어있지 않습니다");
     } else if (res == WRONG_PASSWORD) {

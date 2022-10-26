@@ -1,9 +1,7 @@
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/reservation_user_info.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/services/firestore_database.dart';
-import 'package:focus42/utils/signaling.dart';
 import 'package:logger/logger.dart';
 
 class MatchingMethods {
@@ -63,32 +61,5 @@ class MatchingMethods {
     } else {
       database.setReservation(cancelReservation);
     }
-  }
-
-  Future<void> enterRoom(
-    String docId,
-    Signaling signaling,
-    RTCVideoRenderer localRenderer,
-    RTCVideoRenderer remoteRenderer,
-  ) async {
-    await signaling.openUserMedia(localRenderer, remoteRenderer);
-    signaling.peerClose();
-    user = await database.getUserPublic();
-    userName = user!.nickname;
-
-    ReservationModel reservation = await database.getReservation(docId);
-
-    String? roomId = reservation.roomId;
-    if (roomId == null) {
-      roomId = await signaling.createRoom(remoteRenderer);
-    } else {
-      signaling.joinRoom(roomId, remoteRenderer);
-    }
-    ReservationUserInfo updateUserInfo = ReservationUserInfo(
-        enterDTTM: DateTime.now(),
-        leaveDTTM: null,
-        nickname: userName,
-        uid: userId);
-    database.setReservation(reservation.updateUserInfo(userId, updateUserInfo));
   }
 }

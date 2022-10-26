@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/resources/matching_method.dart';
+import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/view_models.dart/appointments_notifier.dart';
@@ -441,7 +441,7 @@ class CalendarState extends ConsumerState<Calendar> {
                   });
                   final database = ref.read(databaseProvider);
                   try {
-                    await MatchingMethod(database: database)
+                    await MatchingMethods(database: database)
                         .matchRoom(startTime: startTime, endTime: endTime);
                   } catch (err) {
                     appointment.subject = RESERVE;
@@ -691,7 +691,7 @@ class CalendarState extends ConsumerState<Calendar> {
                     setState(() {});
                     final database = ref.read(databaseProvider);
                     try {
-                      await MatchingMethod(database: database)
+                      await MatchingMethods(database: database)
                           .cancelRoom(docId);
                     } catch (e) {
                       if (appointment.notes == null) {

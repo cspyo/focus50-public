@@ -12,10 +12,6 @@ class AnalyticsMethod {
     await analytics.logLogin(loginMethod: loginMethod);
   } //O
 
-  Future logCreateProfile() async {
-    await analytics.logEvent(name: "create_profile");
-  } //O
-
   Future logSignUp(String signUpMethod) async {
     await analytics.logSignUp(signUpMethod: signUpMethod);
   } //O
@@ -118,17 +114,13 @@ class AnalyticsMethod {
     await analytics.logLogin(loginMethod: loginMethod);
   } //O
 
-  Future mobileLogCreateProfile() async {
-    await analytics.logEvent(name: "mobile_create_profile");
-  } //O
-
   Future mobileLogSignUp(String signUpMethod) async {
     await analytics.logSignUp(signUpMethod: signUpMethod);
   } //O
 
   Future mobileLogSignOut() async {
     await analytics.logEvent(name: "mobile_sign_out");
-  } //O
+  } //X
 
   Future mobileLogCalendarTapWithoutSignIn() async {
     await analytics.logEvent(name: "mobile_calendar_tap_without_signin");
@@ -172,7 +164,7 @@ class AnalyticsMethod {
 
   Future mobileLogCompleteTodoInCalendar() async {
     await analytics.logEvent(name: "complete_todo_calendar");
-  } //O
+  } //x
 
   Future mobileLogMicOn() async {
     await analytics.logEvent(name: "mobile_mic_on");

@@ -148,7 +148,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   void _selectImage() async {
     Uint8List im = await pickImage(ImageSource.gallery);
-    _image = im;
+    setState(() {
+      _image = im;
+    });
   }
 
   void _initStates(UserModel user) {

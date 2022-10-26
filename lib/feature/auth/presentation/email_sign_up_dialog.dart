@@ -6,7 +6,6 @@ import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 
 class EmailSignUpDialog extends ConsumerStatefulWidget {
@@ -39,7 +38,6 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     } else if (res == SUCCESS) {
       await ref.read(authViewModelProvider).saveUserProfile(
           nickname: _nicknameController.text, signUpMethod: "email");
-      AnalyticsMethod().logSignUp("Email");
       Navigator.of(context).pop();
       Get.rootDelegate.toNamed(Routes.PROFILE);
     } else {

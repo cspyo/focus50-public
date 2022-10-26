@@ -6,7 +6,9 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/email_login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
+import 'package:universal_html/html.dart' as html;
 
 class LoginDialog extends ConsumerStatefulWidget {
   const LoginDialog({Key? key}) : super(key: key);
@@ -18,6 +20,15 @@ class LoginDialog extends ConsumerStatefulWidget {
 class _LoginDialogState extends ConsumerState<LoginDialog> {
   bool _isLoading = false;
   String _errorMessage = "";
+
+  void _logLoginAnalyticsAboutAgent(String loginMethod) {
+    String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
+    if (userAgent.contains("iphone") || userAgent.contains("android")) {
+      AnalyticsMethod().mobileLogLogin(loginMethod);
+    } else {
+      AnalyticsMethod().logLogin(loginMethod);
+    }
+  }
 
   // 구글로 로그인
   void _loginWithGoogle() async {
@@ -31,6 +42,8 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         Get.rootDelegate.toNamed(Routes.PROFILE);
       }
       Navigator.of(context).pop();
+      Get.rootDelegate.toNamed(Routes.CALENDAR);
+      _logLoginAnalyticsAboutAgent("google");
     } else {
       setState(() => _errorMessage = "로그인을 다시 진행해주세요");
     }
@@ -50,6 +63,8 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         Get.rootDelegate.toNamed(Routes.PROFILE);
       }
       Navigator.of(context).pop();
+      Get.rootDelegate.toNamed(Routes.CALENDAR);
+      _logLoginAnalyticsAboutAgent("kakao");
     } else if (res == EMAIL_ALREADY_EXISTS) {
       setState(() => _errorMessage = "이미 가입한 이메일입니다");
     } else {
