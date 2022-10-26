@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/feature/jitsi/presentation/text_style.dart';
+import 'package:focus42/mobile_widgets/mobile_group_setting_widget.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
-import 'package:focus42/widgets/group_setting_widget.dart';
 
 class MobilRowGroupToggleButtonWidget extends ConsumerStatefulWidget {
   final GroupModel group;
@@ -74,363 +72,23 @@ class _MobilRowGroupToggleButtonWidgetState
                             ? Border.all(width: 3, color: MyColors.purple300)
                             : Border.all(width: 3, color: Colors.transparent)),
                     child: group.id != 'public'
-                        ? Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30),
-                                child: Image.network(
-                                  group.imageUrl!,
-                                  fit: BoxFit.cover,
-                                  width: 34,
-                                  height: 34,
-                                ),
-                              ),
-                              Positioned(
-                                top: 7,
-                                left: 1,
-                                child: isThisGroupActivated
-                                    ? SizedBox(
-                                        height: 20,
-                                        width: 32,
-                                        child: TextButton(
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(MyColors.purple300),
-                                            shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Uri uri =
-                                                Uri.parse(Uri.base.toString());
-                                            String quote = group.password != ''
-                                                ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                                                : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  bool isCopied = false;
-                                                  return StatefulBuilder(
-                                                      builder:
-                                                          (context, setState) {
-                                                    return AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius.circular(
-                                                                      16.0))),
-                                                      content: SizedBox(
-                                                        width: 200,
-                                                        child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Container(
-                                                              alignment: Alignment
-                                                                  .centerRight,
-                                                              child: SizedBox(
-                                                                width: 36,
-                                                                height: 36,
-                                                                child:
-                                                                    IconButton(
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              0),
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  icon: Icon(
-                                                                    Icons.close,
-                                                                    color: Colors
-                                                                        .black,
-                                                                    size: 30,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                                '이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
-                                                                style: MyTextStyle
-                                                                    .CbS18W400),
-                                                            SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            Container(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(8),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                border: Border.all(
-                                                                    width: 1,
-                                                                    color:
-                                                                        border300),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                              ),
-                                                              child:
-                                                                  SelectableText(
-                                                                      quote),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            SizedBox(
-                                                              width: 80,
-                                                              height: 44,
-                                                              child: TextButton(
-                                                                onPressed: () {
-                                                                  Clipboard.setData(
-                                                                      ClipboardData(
-                                                                          text:
-                                                                              quote));
-                                                                  setState(() =>
-                                                                      isCopied =
-                                                                          true);
-                                                                },
-                                                                child: !isCopied
-                                                                    ? Text(
-                                                                        '복사하기',
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      )
-                                                                    : Icon(
-                                                                        Icons
-                                                                            .check,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                style:
-                                                                    ButtonStyle(
-                                                                  backgroundColor:
-                                                                      MaterialStateProperty.all<
-                                                                              Color>(
-                                                                          MyColors
-                                                                              .purple300),
-                                                                  shape: MaterialStateProperty
-                                                                      .all<
-                                                                          RoundedRectangleBorder>(
-                                                                    RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              16),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  });
-                                                });
-                                          },
-                                          child: Text(
-                                            '초대',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 8,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        height: 16,
-                                        width: 30,
-                                      ),
-                              ),
-                            ],
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(30),
+                            child: Image.network(
+                              group.imageUrl!,
+                              fit: BoxFit.cover,
+                              width: 38,
+                              height: 38,
+                            ),
                           )
-                        : Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: Image.asset(
-                                  'assets/images/earth.png',
-                                  fit: BoxFit.cover,
-                                  width: 34,
-                                  height: 34,
-                                ),
-                              ),
-                              Positioned(
-                                top: 7,
-                                left: 1,
-                                child: isThisGroupActivated
-                                    ? SizedBox(
-                                        height: 20,
-                                        width: 32,
-                                        child: TextButton(
-                                          style: ButtonStyle(
-                                            backgroundColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(MyColors.purple300),
-                                            shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                              RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                            ),
-                                          ),
-                                          onPressed: () {
-                                            Uri uri =
-                                                Uri.parse(Uri.base.toString());
-                                            String quote =
-                                                '같이 집중해봅시다!! \n자꾸 미룰 때, 할 일이 많을 때, 혼자 공부하기 싫을 때 사용해보시면 많은 도움이 될 거예요. \n아래 링크를 눌러 입장해주세요! \nhttps://focus50.day';
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  bool isCopied = false;
-                                                  return StatefulBuilder(
-                                                      builder:
-                                                          (context, setState) {
-                                                    return AlertDialog(
-                                                      shape: RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius.circular(
-                                                                      16.0))),
-                                                      content: SizedBox(
-                                                        child: Column(
-                                                          mainAxisSize:
-                                                              MainAxisSize.min,
-                                                          children: [
-                                                            Container(
-                                                              alignment: Alignment
-                                                                  .centerRight,
-                                                              child: SizedBox(
-                                                                width: 36,
-                                                                height: 36,
-                                                                child:
-                                                                    IconButton(
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              0),
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                  icon: Icon(
-                                                                    Icons.close,
-                                                                    color: Colors
-                                                                        .black,
-                                                                    size: 30,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                                '이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
-                                                                style: MyTextStyle
-                                                                    .CbS18W400),
-                                                            SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            Container(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(8),
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                border: Border.all(
-                                                                    width: 1,
-                                                                    color:
-                                                                        border300),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                              ),
-                                                              child:
-                                                                  SelectableText(
-                                                                      quote),
-                                                            ),
-                                                            SizedBox(
-                                                              height: 20,
-                                                            ),
-                                                            SizedBox(
-                                                              width: 80,
-                                                              height: 44,
-                                                              child: TextButton(
-                                                                onPressed: () {
-                                                                  Clipboard.setData(
-                                                                      ClipboardData(
-                                                                          text:
-                                                                              quote));
-                                                                  setState(() =>
-                                                                      isCopied =
-                                                                          true);
-                                                                },
-                                                                child: !isCopied
-                                                                    ? Text(
-                                                                        '복사하기',
-                                                                        style: TextStyle(
-                                                                            color:
-                                                                                Colors.white),
-                                                                      )
-                                                                    : Icon(
-                                                                        Icons
-                                                                            .check,
-                                                                        color: Colors
-                                                                            .white,
-                                                                      ),
-                                                                style:
-                                                                    ButtonStyle(
-                                                                  backgroundColor:
-                                                                      MaterialStateProperty.all<
-                                                                              Color>(
-                                                                          MyColors
-                                                                              .purple300),
-                                                                  shape: MaterialStateProperty
-                                                                      .all<
-                                                                          RoundedRectangleBorder>(
-                                                                    RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              16),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            )
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    );
-                                                  });
-                                                });
-                                          },
-                                          child: Text(
-                                            '초대',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 8,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        height: 16,
-                                        width: 30,
-                                      ),
-                              ),
-                            ],
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.asset(
+                              'assets/images/earth.png',
+                              fit: BoxFit.cover,
+                              width: 38,
+                              height: 38,
+                            ),
                           ),
                   ),
                   Text(
@@ -451,11 +109,11 @@ class _MobilRowGroupToggleButtonWidgetState
         ),
         isThisGroupActivated && group.id != 'public'
             ? Positioned(
-                top: 4,
-                left: 4,
+                top: 1,
+                left: 1,
                 child: SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 18,
+                  height: 18,
                   child: IconButton(
                     hoverColor: Colors.transparent,
                     focusColor: Colors.transparent,
@@ -466,7 +124,7 @@ class _MobilRowGroupToggleButtonWidgetState
                     padding: EdgeInsets.zero,
                     icon: Icon(
                       Icons.settings,
-                      size: 16,
+                      size: 18,
                       color: MyColors.purple300,
                     ),
                   ),
@@ -483,7 +141,8 @@ class _MobilRowGroupToggleButtonWidgetState
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return GroupSettingAlertDialog(database: database, group: group);
+          return MobileGroupSettingAlertDialog(
+              database: database, group: group);
         });
   }
 
