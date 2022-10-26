@@ -1025,7 +1025,7 @@ class _GroupState extends ConsumerState<Group> {
       final String dateString =
           DateFormat('yyyyMMddHHmmss').format(DateTime.now());
       final String newImageUrl = await StorageMethods().uploadImageToStorage(
-          'groupPics/${dateString}${groupDocId}', _image!);
+          'groupPics/${groupDocId}/${dateString}', _image!);
       await database.setGroup(createdGroup.changeImageAndPutId(
           docId: groupDocId,
           newImageUrl: newImageUrl,

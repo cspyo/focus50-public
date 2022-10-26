@@ -306,7 +306,7 @@ class _GroupSettingAlertDialogState
                                         ? widget.group.imageUrl!
                                         : await StorageMethods()
                                             .uploadImageToStorage(
-                                                'groupPics/${dateString}${widget.group.id}',
+                                                'groupPics/${widget.group.id}/${dateString}',
                                                 _image!);
                                     if (_modifyGroupFormKey.currentState!
                                             .validate() &&
