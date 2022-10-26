@@ -102,14 +102,14 @@ class AuthViewModel {
       String? nickname = user.kakaoAccount?.profile?.nickname;
       String? email = user.kakaoAccount?.email;
       String? photoURL = user.kakaoAccount?.profile?.profileImageUrl;
-      String? phoneNumber = user.kakaoAccount?.phoneNumber;
+      // String? phoneNumber = user.kakaoAccount?.phoneNumber;
 
       final token = await _firebaseAuthRemoteDataSource.createCustomToken({
         "uid": uid,
         "displayName": nickname,
         "email": email,
         "photoURL": photoURL,
-        "phoneNumber": _substringPhoneNumber(phoneNumber),
+        // "phoneNumber": _substringPhoneNumber(phoneNumber),
       });
 
       if (token == EMAIL_ALREADY_EXISTS) {

@@ -157,6 +157,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         TextEditingController(text: user.userPublicModel!.nickname);
     _emailController =
         TextEditingController(text: user.userPrivateModel!.email);
+
     // kakaoSynced 로 카카오 연동하기 박스 생성
     if (user.userPublicModel!.kakaoSynced == null)
       _talkNoticeEnable = false;
@@ -407,11 +408,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ],
         ),
-        !_talkNoticeEnable ? SizedBox(height: 16) : Container(),
-        !_talkNoticeEnable ? _buildKakaoSyncNotification() : Container(),
-        SizedBox(height: 16),
-        _buildSwitchButton(
-            "카카오톡으로 알림 받기", _kakaoNoticeController, _talkNoticeEnable),
+        // !_talkNoticeEnable ? SizedBox(height: 16) : Container(),
+        // !_talkNoticeEnable ? _buildKakaoSyncNotification() : Container(),
+        // SizedBox(height: 16),
+        // _buildSwitchButton(
+        //     "카카오톡으로 알림 받기", _kakaoNoticeController, _talkNoticeEnable),
         SizedBox(height: 20),
         _buildSwitchButton("이메일로 알림 받기", _emailNoticeController, true),
       ],
