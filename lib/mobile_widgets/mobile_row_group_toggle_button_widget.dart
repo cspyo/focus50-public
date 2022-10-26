@@ -81,8 +81,8 @@ class _MobilRowGroupToggleButtonWidgetState
                                 child: Image.network(
                                   group.imageUrl!,
                                   fit: BoxFit.cover,
-                                  width: 34,
-                                  height: 34,
+                                  width: 38,
+                                  height: 38,
                                 ),
                               ),
                               Positioned(
@@ -90,8 +90,8 @@ class _MobilRowGroupToggleButtonWidgetState
                                 left: 1,
                                 child: isThisGroupActivated
                                     ? SizedBox(
-                                        height: 24,
-                                        width: 32,
+                                        height: 28,
+                                        width: 36,
                                         child: TextButton(
                                           style: ButtonStyle(
                                             backgroundColor:
@@ -244,7 +244,7 @@ class _MobilRowGroupToggleButtonWidgetState
                                             maxLines: 1,
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 8,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.w500,
                                             ),
                                           ),
@@ -264,8 +264,8 @@ class _MobilRowGroupToggleButtonWidgetState
                                 child: Image.asset(
                                   'assets/images/earth.png',
                                   fit: BoxFit.cover,
-                                  width: 34,
-                                  height: 34,
+                                  width: 38,
+                                  height: 38,
                                 ),
                               ),
                               Positioned(
@@ -273,8 +273,8 @@ class _MobilRowGroupToggleButtonWidgetState
                                 left: 1,
                                 child: isThisGroupActivated
                                     ? Container(
-                                        height: 24,
-                                        width: 32,
+                                        height: 28,
+                                        width: 36,
                                         child: TextButton(
                                           style: ButtonStyle(
                                             backgroundColor:
@@ -423,7 +423,7 @@ class _MobilRowGroupToggleButtonWidgetState
                                             maxLines: 1,
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: 8,
+                                              fontSize: 10,
                                               fontWeight: FontWeight.w400,
                                             ),
                                           ),
@@ -455,11 +455,11 @@ class _MobilRowGroupToggleButtonWidgetState
         ),
         isThisGroupActivated && group.id != 'public'
             ? Positioned(
-                top: 4,
-                left: 4,
+                top: 1,
+                left: 1,
                 child: SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 18,
+                  height: 18,
                   child: IconButton(
                     hoverColor: Colors.transparent,
                     focusColor: Colors.transparent,
@@ -470,7 +470,7 @@ class _MobilRowGroupToggleButtonWidgetState
                     padding: EdgeInsets.zero,
                     icon: Icon(
                       Icons.settings,
-                      size: 16,
+                      size: 18,
                       color: MyColors.purple300,
                     ),
                   ),
