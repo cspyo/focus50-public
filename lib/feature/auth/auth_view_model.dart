@@ -5,6 +5,7 @@ import 'package:focus42/feature/auth/firebase_auth_remote_data_source.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
+import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
@@ -24,8 +25,7 @@ class AuthViewModel {
   final FirestoreDatabase database;
   final Ref ref;
   // final Ref ref;
-  final String defaultPhotoUrl =
-      'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
+  final String defaultPhotoUrl = StorageMethods.defaultImageUrl;
 
   AuthViewModel({required this.database, required this.ref});
 

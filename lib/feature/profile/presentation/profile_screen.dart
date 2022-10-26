@@ -15,6 +15,7 @@ import 'package:focus42/utils/utils.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/line.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 final isUpdatingProvider = StateProvider.autoDispose<bool>(((ref) => false));
 
@@ -100,8 +101,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (_image == null) {
       newPhotoUrl = myInfo.userPublicModel!.photoUrl!;
     } else {
-      newPhotoUrl =
-          await StorageMethods().uploadImageToStorage('profilePics', _image!);
+      final String dateString =
+          DateFormat('yyyyMMddHHmmss').format(DateTime.now());
+      newPhotoUrl = await StorageMethods().uploadImageToStorage(
+          'profilePics/${myInfo.userPrivateModel!.uid}/${dateString}', _image!);
     }
 
     UserPublicModel userPublic = UserPublicModel(

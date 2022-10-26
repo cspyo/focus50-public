@@ -7,6 +7,7 @@ import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/models/user_public_model.dart';
+import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:get/get.dart';
@@ -21,8 +22,7 @@ class MobileAboutScreen extends ConsumerStatefulWidget {
 class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
     with TickerProviderStateMixin {
   bool getUserInfo = false;
-  String userPhotoUrl =
-      'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2Fuser.png?alt=media&token=69e13fc9-b2ea-460c-98e0-92fe6613461e';
+  String userPhotoUrl = StorageMethods.defaultImageUrl;
   String userNickname = '';
 
   late AnimationController _controller;

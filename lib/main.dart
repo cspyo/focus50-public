@@ -22,7 +22,6 @@ void main() async {
   KakaoSdk.init(
     nativeAppKey: '1a793b7dbc55cd4e80c9971c6c5bdc6e',
     javaScriptAppKey: '47caa6871b9758b5895998565adcb42b',
-    loggingEnabled: true,
   );
 
   await Firebase.initializeApp(
