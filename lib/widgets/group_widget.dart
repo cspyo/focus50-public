@@ -873,12 +873,11 @@ class _GroupState extends ConsumerState<Group> {
             return AlertDialog(
               content: groupName != null
                   ? Container(
-                      // width: 360,
-                      height: 260,
                       child: Form(
                         key: _invitementFormKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
                               alignment: Alignment.centerRight,
@@ -888,8 +887,6 @@ class _GroupState extends ConsumerState<Group> {
                                 child: IconButton(
                                   padding: EdgeInsets.all(0),
                                   onPressed: () {
-                                    _changeActivatedGroup(group.id!);
-                                    ref.refresh(myGroupIdFutureProvider);
                                     Navigator.pop(context);
                                   },
                                   icon: Icon(
@@ -907,59 +904,42 @@ class _GroupState extends ConsumerState<Group> {
                             Text(' 귀하께서 $groupName그룹에 초대되었습니다.',
                                 style: MyTextStyle.CbS18W400),
                             password != ''
-                                ? Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        '비밀번호를 입력해주세요.',
-                                        style: MyTextStyle.CbS18W400,
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      SizedBox(
-                                        width: 300,
-                                        child: TextFormField(
-                                          controller: _invitePwController,
-                                          cursorColor: Colors.black,
-                                          validator: (value) {
-                                            if (value != password) {
-                                              return '비밀번호가 올바르지 않습니다.';
-                                            }
-                                            return null;
-                                          },
-                                          decoration: InputDecoration(
-                                            hintStyle: MyTextStyle.CgS18W500,
-                                            border: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color: MyColors.border300,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color: Colors.black,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            enabledBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color: Colors.black,
-                                                width: 1,
-                                              ),
-                                            ),
-                                            errorBorder: InputBorder.none,
-                                            disabledBorder: InputBorder.none,
-                                            hintText: '비밀번호',
-                                            errorStyle: TextStyle(
-                                              fontSize: 10,
-                                              height: 0.4,
-                                            ),
+                                ? Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TextFormField(
+                                      controller: _invitePwController,
+                                      validator: (value) {
+                                        if (value != password) {
+                                          return '비밀번호가 올바르지 않습니다.';
+                                        }
+                                        return null;
+                                      },
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                      cursorColor: Colors.grey.shade600,
+                                      cursorHeight: 18,
+                                      decoration: const InputDecoration(
+                                        border: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.grey,
+                                            style: BorderStyle.solid,
                                           ),
                                         ),
+                                        hoverColor: purple300,
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide:
+                                                BorderSide(color: purple300)),
+                                        labelText: '비밀번호',
+                                        floatingLabelStyle: TextStyle(
+                                          color: purple300,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ],
+                                      maxLines: 1,
+                                      textInputAction: TextInputAction.next,
+                                    ),
                                   )
                                 : Text(
                                     '가입하시겠습니까?',
