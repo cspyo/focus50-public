@@ -343,9 +343,11 @@ class CalendarState extends ConsumerState<Calendar> {
 
   Widget _buildCalendarItem(
       BuildContext context, users, userIds, reservedUserCount, nickname) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isTabletSize = screenWidth < tabletBoundSize ? true : false;
     return Container(
       padding: EdgeInsets.only(
-        left: 8,
+        left: 4,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -353,14 +355,16 @@ class CalendarState extends ConsumerState<Calendar> {
           _buildUserProfileImage(reservedUserCount, users, userIds),
           Flexible(
             child: Container(
-              padding: EdgeInsets.only(left: 8),
+              padding: EdgeInsets.only(left: 4),
               height: 30,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 60,
+                    width: isTabletSize
+                        ? (screenWidth - 49) / 7 - 47
+                        : (screenWidth - 489.5) / 7 - 47,
                     alignment: Alignment.centerLeft,
                     child: reservedUserCount == 1
                         ? Text(
@@ -370,8 +374,8 @@ class CalendarState extends ConsumerState<Calendar> {
                                 fontSize: 11,
                                 color: Colors.black),
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
+                            // maxLines: 1,
+                            // textAlign: TextAlign.center,
                           )
                         : Text(
                             "${nickname} 외 ${reservedUserCount - 1}명",
@@ -380,8 +384,8 @@ class CalendarState extends ConsumerState<Calendar> {
                                 fontSize: 11,
                                 color: Colors.black),
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
+                            // maxLines: 1,
+                            // textAlign: TextAlign.center,
                           ),
                   ),
                 ],
