@@ -55,7 +55,7 @@ class CalendarState extends ConsumerState<Calendar> {
 
   // String? groupId = Uri.base.queryParameters['id'];
   // String? groupPw = Uri.base.queryParameters['pw'];
-  late final database;
+  late var database;
   late String groupId;
   //highlighter 위치 정하는 함수
   int _getFirstDayOfWeek(int highlighterPosition) {
@@ -201,13 +201,16 @@ class CalendarState extends ConsumerState<Calendar> {
 
     final appointments = ref.watch(appointmentsProvider);
     final timeRegions = ref.watch(timeRegionsProvider);
+    final newDatabase = ref.watch(databaseProvider);
 
-    final _oldGroupId = groupId;
-    final _groupId = ref.watch(activatedGroupIdProvider);
-    if (_oldGroupId != _groupId) {
+    final oldGroupId = groupId;
+    final newGroupId = ref.watch(activatedGroupIdProvider);
+
+    if (database.uid != newDatabase.uid || oldGroupId != newGroupId) {
       reservationViewModel.cancelListener();
       reservationViewModel = ref.read(reservationViewModelProvider);
-      groupId = _groupId;
+      groupId = newGroupId;
+      database = newDatabase;
       reservationViewModel.startView();
     }
 
@@ -270,7 +273,7 @@ class CalendarState extends ConsumerState<Calendar> {
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
                   appointmentBuilder: (context, details) => _appointmentBuilder(
-                      context, details, isTabletSize, _groupId),
+                      context, details, isTabletSize, newGroupId),
                 ),
               ),
             ),

@@ -54,7 +54,7 @@ class Group extends ConsumerStatefulWidget {
 }
 
 class _GroupState extends ConsumerState<Group> {
-  late final FirestoreDatabase database;
+  late FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
@@ -98,6 +98,9 @@ class _GroupState extends ConsumerState<Group> {
   @override
   Widget build(BuildContext context) {
     groupId = ref.read(activatedGroupIdProvider);
+    database = ref.watch(databaseProvider);
+    uid = FirebaseAuth.instance.currentUser?.uid;
+
     return Container(
       // padding: EdgeInsets.only(left: 8, right: 8),
       // decoration: BoxDecoration(
