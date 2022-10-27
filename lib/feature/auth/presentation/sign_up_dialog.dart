@@ -22,6 +22,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
   bool _isLoading = false;
   String _errorMessage = "";
 
+  String? invitedGroupId = Uri.base.queryParameters["g"];
+
   void _logLoginAnalyticsAboutAgent(String loginMethod) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
@@ -33,20 +35,27 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
 
   // 구글로 회원가입
   void _signUpWithGoogle() async {
-    setState(() => _isLoading = true);
     String res = await ref.read(authViewModelProvider).loginWithGoogle();
+    setState(() => _isLoading = true);
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
-        Get.rootDelegate.toNamed(Routes.PROFILE);
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.PROFILE);
+      } else {
+        Navigator.of(context).pop();
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
-      Navigator.of(context).pop();
-      Get.rootDelegate.toNamed(Routes.CALENDAR);
       _logLoginAnalyticsAboutAgent("google");
     } else {
-      setState(() => _errorMessage = "로그인을 다시 진행해주세요");
+      setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }
     setState(() => _isLoading = false);
   }
@@ -61,10 +70,17 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
-        Get.rootDelegate.toNamed(Routes.PROFILE);
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.PROFILE);
+      } else {
+        Navigator.of(context).pop();
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
-      Navigator.of(context).pop();
-      Get.rootDelegate.toNamed(Routes.CALENDAR);
       _logLoginAnalyticsAboutAgent("kakao");
     } else if (res == EMAIL_ALREADY_EXISTS) {
       setState(() => _errorMessage = "이미 가입한 이메일입니다");
@@ -193,10 +209,10 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.chat,
-              color: Colors.black,
-              size: 20,
+            Image.asset(
+              "assets/images/kakao_button_icon.png",
+              width: 20,
+              height: 20,
             ),
             SizedBox(width: 10),
             const Text(
@@ -328,7 +344,18 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     return SingleChildScrollView(
       child: Container(
         child: ListBody(
-          children: [CircularIndicator(size: 50, color: MyColors.purple300)],
+          children: [
+            Center(
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: purple300,
+                  strokeWidth: 5.0,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

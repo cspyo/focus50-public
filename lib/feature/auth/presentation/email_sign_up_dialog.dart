@@ -26,6 +26,8 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
   bool _isLoading = false;
   String _errorMessage = "";
 
+  String? invitedGroupId = Uri.base.queryParameters["g"];
+
   // 이메일로 회원가입
   void _signUpWithEmail() async {
     setState(() => _isLoading = true);
@@ -39,8 +41,10 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     } else if (res == SUCCESS) {
       await ref.read(authViewModelProvider).saveUserProfile(
           nickname: _nicknameController.text, signUpMethod: "email");
-      Navigator.of(context).pop();
-      Get.rootDelegate.toNamed(Routes.PROFILE);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.PROFILE,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.PROFILE);
     } else {
       setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }
