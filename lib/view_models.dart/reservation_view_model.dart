@@ -59,10 +59,12 @@ class ReservationViewModel {
 
   bool isSignedUp = false;
 
-  late StreamSubscription<List<ReservationModel>> streamSubscription;
+  StreamSubscription<List<ReservationModel>>? streamSubscription;
 
   void cancelListener() {
-    streamSubscription.cancel();
+    if (streamSubscription != null) {
+      streamSubscription!.cancel();
+    }
   }
 
   void startView() {

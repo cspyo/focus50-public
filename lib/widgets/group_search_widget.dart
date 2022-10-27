@@ -7,6 +7,7 @@ import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
+import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_widget.dart';
@@ -29,7 +30,7 @@ class _GroupSearchAlertDialogState
     extends ConsumerState<GroupSearchAlertDialog> {
   String query = '';
   final _formKey = GlobalKey<FormState>();
-  late final database;
+  late FirestoreDatabase database;
   final TextEditingController _passwordController = TextEditingController();
   String? uid = FirebaseAuth.instance.currentUser?.uid;
 
@@ -58,6 +59,8 @@ class _GroupSearchAlertDialogState
   @override
   Widget build(BuildContext context) {
     final searchedGroups = ref.watch(searchedGroupStreamProvider(query));
+    database = ref.watch(databaseProvider);
+    uid = FirebaseAuth.instance.currentUser?.uid;
     return SizedBox(
         width: 300,
         child: AlertDialog(
@@ -454,8 +457,14 @@ class _GroupSearchAlertDialogState
       );
     } else {
       final UserModel? user = await ref.read(userStreamProvider.future);
-      await database.setGroup(group.addMember(database.uid));
-      await database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      database.runTransaction((transaction) async {
+        final GroupModel myGroup = await database.getGroupInTransaction(
+            docId: group.id!, transaction: transaction);
+        database.updateGroupInTransaction(
+            myGroup.addMember(database.uid), transaction);
+      });
+      await database.updateUser(
+          UserModel(user!.userPublicModel!.addGroup(group.id!), null));
       return showDialog(
         barrierDismissible: false,
         context: context,

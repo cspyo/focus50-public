@@ -54,7 +54,7 @@ class Group extends ConsumerStatefulWidget {
 }
 
 class _GroupState extends ConsumerState<Group> {
-  late final FirestoreDatabase database;
+  late FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
@@ -98,6 +98,9 @@ class _GroupState extends ConsumerState<Group> {
   @override
   Widget build(BuildContext context) {
     groupId = ref.read(activatedGroupIdProvider);
+    database = ref.watch(databaseProvider);
+    uid = FirebaseAuth.instance.currentUser?.uid;
+
     return Container(
       // padding: EdgeInsets.only(left: 8, right: 8),
       // decoration: BoxDecoration(
@@ -927,7 +930,8 @@ class _GroupState extends ConsumerState<Group> {
           newImageUrl: newImageUrl,
           newUpdatedBy: database.uid));
     }
-    database.setUserPublic(user!.userPublicModel!.addGroup(groupDocId));
+    await database.updateUser(
+        UserModel(user!.userPublicModel!.addGroup(groupDocId), null));
     return groupDocId;
   }
 
@@ -1004,8 +1008,14 @@ class _GroupState extends ConsumerState<Group> {
       );
     } else {
       final UserModel? user = await ref.read(userStreamProvider.future);
-      database.setGroup(group.addMember(database.uid));
-      database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      database.runTransaction((transaction) async {
+        final GroupModel myGroup = await database.getGroupInTransaction(
+            docId: group.id!, transaction: transaction);
+        database.updateGroupInTransaction(
+            myGroup.addMember(database.uid), transaction);
+      });
+      await database.updateUser(
+          UserModel(user!.userPublicModel!.addGroup(group.id!), null));
       return showDialog(
         barrierDismissible: false,
         context: context,

@@ -38,12 +38,7 @@ class UserPublicModel {
     newGroups.add(groupId);
 
     UserPublicModel groupAddedUser = UserPublicModel(
-      nickname: this.nickname,
-      photoUrl: this.photoUrl,
-      job: this.job,
-      createdDate: this.createdDate,
       updatedDate: DateTime.now(),
-      lastLogin: this.lastLogin,
       groups: newGroups,
     );
     return groupAddedUser;
@@ -54,12 +49,7 @@ class UserPublicModel {
     newGroups.removeWhere((element) => element == groupId);
 
     UserPublicModel groupRemovedUser = UserPublicModel(
-      nickname: this.nickname,
-      photoUrl: this.photoUrl,
-      job: this.job,
-      createdDate: this.createdDate,
       updatedDate: DateTime.now(),
-      lastLogin: this.lastLogin,
       groups: newGroups,
     );
     return groupRemovedUser;
