@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -421,25 +422,21 @@ class CalendarState extends ConsumerState<Calendar> {
           ),
         ),
         child: Center(
-          child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(color: purple300)),
-        ),
+            child: CircularIndicator(
+          color: MyColors.purple300,
+          size: 15,
+        )),
       );
     } else if (subject == LOADING_CANCEL) {
       return Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.red, width: 1.5)),
-        child: Center(
-          child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(color: Colors.red)),
-        ),
-      );
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red, width: 1.5)),
+          child: CircularIndicator(
+            color: Colors.red,
+            size: 15,
+          ));
     }
     // 캘린더 그냥 탭했을 때 (예약하시겠습니까?)
     else if (subject == RESERVE) {
