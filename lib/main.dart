@@ -12,6 +12,7 @@ import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/utils/version_compare.dart';
 import 'package:get/get.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_strategy/url_strategy.dart';
 
@@ -33,6 +34,11 @@ Future<void> versionCheck() async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  KakaoSdk.init(
+    nativeAppKey: '1a793b7dbc55cd4e80c9971c6c5bdc6e',
+    javaScriptAppKey: '47caa6871b9758b5895998565adcb42b',
+  );
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

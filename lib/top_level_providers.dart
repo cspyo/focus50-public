@@ -19,7 +19,12 @@ final databaseProvider = Provider<FirestoreDatabase>((ref) {
   }
 });
 
-final userStreamProvider = StreamProvider<UserModel?>(
+final userProvider = FutureProvider<UserModel>((ref) async {
+  final database = ref.watch(databaseProvider);
+  return await database.getUser();
+});
+
+final userStreamProvider = StreamProvider<UserModel>(
   (ref) {
     final database = ref.watch(databaseProvider);
     return database.userStream();

@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/top_level_providers.dart';
@@ -38,6 +39,15 @@ class ReservationState extends ConsumerState<Reservation> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
   }
 
   void enterReservation(ReservationModel nextReservation) {
@@ -327,7 +337,7 @@ class ReservationState extends ConsumerState<Reservation> {
           width: 250,
           child: TextButton(
             onPressed: () {
-              Get.rootDelegate.toNamed(Routes.LOGIN);
+              _showLoginDialog();
             },
             child: Text('로그인이 필요합니다',
                 style: TextStyle(
@@ -592,7 +602,7 @@ class ReservationState extends ConsumerState<Reservation> {
           width: 250,
           child: TextButton(
             onPressed: () {
-              Get.rootDelegate.toNamed(Routes.LOGIN);
+              _showLoginDialog();
             },
             child: Text('로그인이 필요합니다',
                 style: TextStyle(

@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
@@ -22,11 +24,28 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
   bool getUserInfo = false;
   String userPhotoUrl = StorageMethods.defaultImageUrl;
   String userNickname = '';
-  String userJob = '';
 
   late AnimationController _controller;
   double wavesStartPoint = 0.0;
   List<double> wavesEndPoints = [2.5, -2, 2.2];
+
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
+
+  Future<void> _showSignUpDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SignUpDialog();
+      },
+    );
+  }
 
   Future<void> getUserData() async {
     final usersNotifier = ref.read(usersProvider.notifier);
@@ -41,7 +60,6 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
       final users = ref.read(usersProvider);
       userPhotoUrl = users[uid]!.photoUrl!;
       userNickname = users[uid]!.nickname!;
-      userJob = users[uid]!.job!;
       setState(() {
         getUserInfo = true;
       });
@@ -125,14 +143,6 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                                       fontSize: 26,
                                       fontWeight: FontWeight.w700),
                                   textAlign: TextAlign.left),
-                              Text(
-                                userJob,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.left,
-                              )
                             ],
                           )
                         ])
@@ -152,14 +162,6 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                                       fontSize: 26,
                                       fontWeight: FontWeight.w700),
                                   textAlign: TextAlign.left),
-                              Text(
-                                userJob,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.left,
-                              )
                             ],
                           )
                         ])
@@ -203,10 +205,8 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                           borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: () {
-                      setState(() {
-                        AuthMethods().signOut();
-                      });
-                      Get.rootDelegate.toNamed(Routes.LOGIN);
+                      ref.read(authViewModelProvider).signOut();
+                      setState(() {});
                     },
                     child: const Text(
                       '  로그아웃  ',
@@ -227,7 +227,7 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                           borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: () {
-                      Get.rootDelegate.toNamed(Routes.SIGNUP);
+                      _showSignUpDialog();
                     },
                     child: const Text(
                       '  회원가입  ',
@@ -257,7 +257,7 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
                           borderRadius: BorderRadius.circular(16)),
                     ),
                     onPressed: () {
-                      Get.rootDelegate.toNamed(Routes.LOGIN);
+                      _showLoginDialog();
                     },
                     child: const Text(
                       '  로그인  ',

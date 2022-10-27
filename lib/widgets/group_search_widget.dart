@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -31,6 +32,15 @@ class _GroupSearchAlertDialogState
   late final database;
   final TextEditingController _passwordController = TextEditingController();
   String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+  Future<void> _showSignUpDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SignUpDialog();
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -178,7 +188,7 @@ class _GroupSearchAlertDialogState
                 if (uid != null) {
                   _popupRegisterDialog(context, group);
                 } else {
-                  Get.rootDelegate.toNamed(Routes.SIGNUP);
+                  _showSignUpDialog();
                 }
               },
               style: ButtonStyle(

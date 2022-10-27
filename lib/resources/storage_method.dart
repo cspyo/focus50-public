@@ -15,7 +15,6 @@ class StorageMethods {
 
     // putting in uint8list format -> Upload task like a future but not future
     UploadTask uploadTask = ref.putData(file);
-
     TaskSnapshot snapshot = await uploadTask;
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;

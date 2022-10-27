@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -11,7 +11,6 @@ import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -43,6 +42,16 @@ class CalendarState extends ConsumerState<Calendar> {
 
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   late ReservationViewModel reservationViewModel;
+
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
+
   // String? groupId = Uri.base.queryParameters['id'];
   // String? groupPw = Uri.base.queryParameters['pw'];
   late final database;
@@ -78,13 +87,7 @@ class CalendarState extends ConsumerState<Calendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.SIGNUP);
-      return;
-    }
-
-    // 프로필 작성이 안되어 있으면 add profile 페이지로
-    if (!reservationViewModel.isSignedUp) {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      _showLoginDialog();
       return;
     }
 

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
@@ -58,6 +59,15 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   late ReservationViewModel reservationViewModel;
 
+  Future<void> _showLoginDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return LoginDialog();
+      },
+    );
+  }
+
   void _calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = _auth.currentUser?.uid;
     DateTime? tappedDate = calendarTapDetails.date;
@@ -67,13 +77,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
     // 로그인이 안되어있으면 로그인 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.LOGIN);
-      return;
-    }
-
-    // 프로필 작성이 안되어 있으면 add profile 페이지로
-    if (!reservationViewModel.isSignedUp) {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      _showLoginDialog();
       return;
     }
 
