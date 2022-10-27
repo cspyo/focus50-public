@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -11,6 +12,7 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_title_and_textfield_widget.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -71,7 +73,7 @@ class _GroupSettingAlertDialogState
   Uint8List? _image;
   final _modifyGroupFormKey = GlobalKey<FormState>();
   late String currentGroupImageUrl;
-  bool? isGroupNameOverlap; //null이면 아직 체크 안한거.
+  bool isGroupNameOverlap = false;
   bool isUserCreator = false;
   bool isModifyLoading = false;
   bool isLeaveLoading = false;
@@ -104,17 +106,11 @@ class _GroupSettingAlertDialogState
 
   @override
   Widget build(BuildContext context) {
-    List<String> titles = [
-      '그룹 명',
-      '비밀번호',
-    ];
-    List<String> hintTexts = [
-      '그룹 명을 적어주세요',
-      '비밀번호(선택)',
-    ];
+    List<String> hintTexts = ['그룹 명', '비밀번호(선택)', '그룹 소개(선택)'];
     List<TextEditingController> controllers = [
       _nameController,
       _passwordController,
+      _introductionController,
     ];
     return StatefulBuilder(builder: (parentContext, setState) {
       return SizedBox(
@@ -165,65 +161,30 @@ class _GroupSettingAlertDialogState
                             backgroundImage: NetworkImage(currentGroupImageUrl),
                           ),
                     Positioned(
-                      bottom: -10,
-                      left: 80,
-                      child: IconButton(
-                        onPressed: () async {
-                          if (isUserCreator) {
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: TextButton(
+                          onPressed: () async {
                             Uint8List im = await pickImage(ImageSource.gallery);
                             setState(() {
                               _image = im;
                             });
-                          } else {
-                            showDialog(
-                                context: parentContext,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: SizedBox(
-                                      width: 240,
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                SizedBox(
-                                                  width: 36,
-                                                ),
-                                                Text('권한이 없습니다',
-                                                    style:
-                                                        MyTextStyle.CbS20W600),
-                                                SizedBox(
-                                                  width: 36,
-                                                  height: 36,
-                                                  child: IconButton(
-                                                    padding: EdgeInsets.all(0),
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.close,
-                                                      color: Colors.black,
-                                                      size: 30,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Text(
-                                              '그룹 관리자만 정보를 수정할 수 있습니다.',
-                                              style: MyTextStyle.CbS14W400,
-                                            ),
-                                          ]),
-                                    ),
-                                  );
-                                });
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.add_a_photo,
+                          },
+                          child: Center(
+                            child: const Icon(
+                              Icons.add_a_photo,
+                              color: Colors.black,
+                              size: 16,
+                            ),
+                          ),
                         ),
                       ),
                     )
@@ -232,47 +193,12 @@ class _GroupSettingAlertDialogState
                 SizedBox(
                   height: 10,
                 ),
-                for (int i = 0; i < titles.length; i++)
-                  _buildTitleAndTextField(parentContext, titles[i],
-                      hintTexts[i], controllers[i], i), //for 문 안쓰고 어케 하지??
-                Container(
-                  width: 410,
-                  height: 50,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '그룹 소개 및 공지',
-                    style: MyTextStyle.CbS14W600,
-                  ),
-                ),
-                Container(
-                  width: 410,
-                  height: 86,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 1,
-                        color: MyColors.border300,
-                      ),
-                      borderRadius: BorderRadius.circular(16)),
-                  padding: EdgeInsets.only(left: 8, right: 8),
-                  child: TextField(
-                    enabled: isUserCreator,
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    cursorColor: Colors.black,
-                    controller: _introductionController,
-                    decoration: InputDecoration(
-                        hintStyle: MyTextStyle.CgS18W500,
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        hintText: "그룹에 대해 소개해 주세요!"),
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
+                for (int i = 0; i < hintTexts.length; i++)
+                  BuildTitleAndTextField(
+                      hintText: hintTexts[i],
+                      controller: controllers[i],
+                      index: i,
+                      isGroupNameOverlap: isGroupNameOverlap),
                 StatefulBuilder(
                   builder: ((context, setState) {
                     return Row(
@@ -328,10 +254,8 @@ class _GroupSettingAlertDialogState
                                     });
                                   },
                                   child: isModifyLoading
-                                      ? Center(
-                                          child: CircularProgressIndicator(
-                                          color: MyColors.purple300,
-                                        ))
+                                      ? CircularIndicator(
+                                          size: 22, color: MyColors.purple300)
                                       : Text(
                                           '그룹 정보 수정',
                                           style: MyTextStyle.CpS12W600,
@@ -411,12 +335,10 @@ class _GroupSettingAlertDialogState
                                                                 parentContext);
                                                           },
                                                           child: isLeaveLoading
-                                                              ? Center(
-                                                                  child:
-                                                                      CircularProgressIndicator(
+                                                              ? CircularIndicator(
+                                                                  size: 22,
                                                                   color: MyColors
-                                                                      .purple300,
-                                                                ))
+                                                                      .purple300)
                                                               : Text(
                                                                   '나가기',
                                                                   style: MyTextStyle
@@ -511,78 +433,6 @@ class _GroupSettingAlertDialogState
             ),
           )));
     });
-  }
-
-  Widget _buildTitleAndTextField(
-    BuildContext context,
-    String title,
-    String hintText,
-    TextEditingController _controller,
-    int index,
-  ) {
-    return Container(
-      width: 410,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: MyColors.border300,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 130,
-            child: Text(
-              title,
-              style: MyTextStyle.CbS14W600,
-            ),
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Container(
-            width: 244,
-            height: 36,
-            padding: EdgeInsets.only(left: 8, right: 8),
-            child: TextFormField(
-              enabled: isUserCreator,
-              // inputFormatters: <TextInputFormatter>[
-              //   index == 1
-              //       ? FilteringTextInputFormatter.digitsOnly
-              //       : FilteringTextInputFormatter.singleLineFormatter,
-              // ],
-              validator: (value) {
-                return (value == null || value.isEmpty) && index != 1
-                    ? '$title를 입력해주세요'
-                    : index == 0 && isGroupNameOverlap!
-                        ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'
-                        : index == 0 && value!.length > 12
-                            ? '12자 이내의 이름을 적어주세요'
-                            : null;
-              },
-              controller: _controller,
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                hintStyle: MyTextStyle.CgS18W500,
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                hintText: hintText,
-                errorStyle: TextStyle(
-                  fontSize: 10,
-                  height: 0.4,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   void _changeActivatedGroup(String newGroupId) {

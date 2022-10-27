@@ -6,6 +6,7 @@ import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:get/get.dart';
 
 class EmailSignUpDialog extends ConsumerStatefulWidget {
@@ -374,11 +375,6 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
   }
 
   Widget _buildCircularIndicator() {
-    return Center(
-        child: SizedBox(
-      width: 22,
-      height: 22,
-      child: CircularProgressIndicator(color: Colors.white),
-    ));
+    return CircularIndicator(size: 22, color: Colors.white);
   }
 }
