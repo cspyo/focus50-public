@@ -3,13 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
-import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/storage_method.dart';
-import 'package:focus42/top_level_providers.dart';
-import 'package:focus42/view_models.dart/users_notifier.dart';
+import 'package:focus42/mobile_widgets/mobile_drawer.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,58 +15,15 @@ class MobileAboutScreen extends ConsumerStatefulWidget {
 
 class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
     with TickerProviderStateMixin {
-  bool getUserInfo = false;
-  String userPhotoUrl = StorageMethods.defaultImageUrl;
-  String userNickname = '';
-
   late AnimationController _controller;
   double wavesStartPoint = 0.0;
   List<double> wavesEndPoints = [2.5, -2, 2.2];
-
-  Future<void> _showLoginDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginDialog();
-      },
-    );
-  }
-
-  Future<void> _showSignUpDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SignUpDialog();
-      },
-    );
-  }
-
-  Future<void> getUserData() async {
-    final usersNotifier = ref.read(usersProvider.notifier);
-    final database = ref.read(databaseProvider);
-    final auth = ref.read(firebaseAuthProvider);
-    final uid = auth.currentUser?.uid;
-    if (uid != null) {
-      if (!usersNotifier.containsKey(uid)) {
-        UserPublicModel user = await database.getUserPublic(othersUid: uid);
-        usersNotifier.addAll({uid: user});
-      }
-      final users = ref.read(usersProvider);
-      userPhotoUrl = users[uid]!.photoUrl!;
-      userNickname = users[uid]!.nickname!;
-      setState(() {
-        getUserInfo = true;
-      });
-    }
-  }
 
   @override
   void initState() {
     _controller =
         AnimationController(vsync: this, duration: Duration(seconds: 20))
           ..repeat();
-    getUserData();
-
     super.initState();
   }
 
@@ -86,7 +37,6 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    final authState = ref.watch(authStateChangesProvider).asData?.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -115,161 +65,7 @@ class _MobileAboutScreenState extends ConsumerState<MobileAboutScreen>
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: purple300),
       ),
-      drawer: Drawer(
-        backgroundColor: purple300,
-        child:
-            ListView(padding: EdgeInsets.symmetric(horizontal: 20), children: [
-          SizedBox(
-            height: 20,
-          ),
-          SizedBox(
-              height: 60,
-              child: getUserInfo
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                          Image.network(
-                            userPhotoUrl,
-                          ),
-                          SizedBox(width: 20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(userNickname,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w700),
-                                  textAlign: TextAlign.left),
-                            ],
-                          )
-                        ])
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                          Image.asset('assets/images/default_profile.png'),
-                          SizedBox(width: 20),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(userNickname,
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w700),
-                                  textAlign: TextAlign.left),
-                            ],
-                          )
-                        ])
-              // : Container(
-              //     alignment: Alignment.center,
-              //     width: 20,
-              //     height: 20,
-              //     child:
-              //         CircularProgressIndicator(color: Colors.white)),
-              ),
-          SizedBox(
-            height: 10,
-          ),
-          buildMenuItem(
-              text: 'About', icon: Icons.waving_hand, route: Routes.ABOUT),
-          SizedBox(
-            height: 10,
-          ),
-          buildMenuItem(
-              text: 'Calendar',
-              icon: Icons.calendar_month,
-              route: Routes.CALENDAR),
-          SizedBox(
-            height: 10,
-          ),
-          Divider(
-            color: Colors.white,
-            thickness: 1,
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          (authState != null)
-              ? SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                    ),
-                    onPressed: () {
-                      ref.read(authViewModelProvider).signOut();
-                      setState(() {});
-                    },
-                    child: const Text(
-                      '  로그아웃  ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: purple300,
-                      ),
-                    ),
-                  ),
-                )
-              : SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                    ),
-                    onPressed: () {
-                      _showSignUpDialog();
-                    },
-                    child: const Text(
-                      '  회원가입  ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: purple300,
-                      ),
-                    ),
-                  ),
-                ),
-          SizedBox(
-            height: 10,
-          ),
-          (authState != null)
-              ? Container()
-              : SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: purple300,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                              color: Colors.white,
-                              width: 1,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.circular(16)),
-                    ),
-                    onPressed: () {
-                      _showLoginDialog();
-                    },
-                    child: const Text(
-                      '  로그인  ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-        ]),
-      ),
+      drawer: MobileDrawer(),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
