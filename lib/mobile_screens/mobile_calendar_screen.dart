@@ -13,7 +13,6 @@ import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/mobile_widgets/mobile_row_group_toggle_button_widget.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';

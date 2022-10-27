@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/feature/jitsi/presentation/list_items_builder_2.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
@@ -64,6 +65,15 @@ class _GroupState extends ConsumerState<Group> {
   bool? isGroupNameOverlap; //null이면 아직 체크 안한거.
   String? invitedGroupId = Uri.base.queryParameters["g"];
   String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+  Future<void> _showSignUpDialog() async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SignUpDialog();
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -142,7 +152,7 @@ class _GroupState extends ConsumerState<Group> {
                   _popupCreateGroupDialog(context);
                 } else {
                   AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
-                  Get.rootDelegate.toNamed(Routes.SIGNUP);
+                  _showSignUpDialog();
                 }
               },
               child: Icon(
@@ -970,9 +980,7 @@ class _GroupState extends ConsumerState<Group> {
                                       Navigator.pop(context);
                                     }
                                   } else {
-                                    Get.rootDelegate.toNamed(Routes.SIGNUP,
-                                        arguments: true,
-                                        parameters: {'g': group.id!});
+                                    _showSignUpDialog();
                                   }
                                 },
                                 child: Text(
@@ -1005,8 +1013,7 @@ class _GroupState extends ConsumerState<Group> {
           },
         );
       } else {
-        Get.rootDelegate.toNamed(Routes.SIGNUP,
-            arguments: true, parameters: {'g': group.id!});
+        _showSignUpDialog();
       }
     } else {
       return null;

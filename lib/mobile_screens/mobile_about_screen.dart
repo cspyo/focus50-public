@@ -7,7 +7,6 @@ import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/auth_method.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
