@@ -6,6 +6,7 @@ import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
@@ -255,7 +256,10 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _isLoading
-                          ? _buildCircularIndicator()
+                          ? CircularIndicator(
+                              size: 22,
+                              color: Colors.white,
+                            )
                           : const Text(
                               '로그인',
                               style: TextStyle(
@@ -325,14 +329,5 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
         SizedBox(height: 20)
       ],
     );
-  }
-
-  Widget _buildCircularIndicator() {
-    return Center(
-        child: SizedBox(
-      width: 22,
-      height: 22,
-      child: CircularProgressIndicator(color: Colors.white),
-    ));
   }
 }

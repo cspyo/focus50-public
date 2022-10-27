@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/list_items_builder_2.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
@@ -766,11 +767,8 @@ class _GroupState extends ConsumerState<Group> {
                                       '그룹 만들기',
                                       style: MyTextStyle.CwS20W600,
                                     )
-                                  : Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                  : CircularIndicator(
+                                      size: 22, color: Colors.white),
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
 import 'package:focus42/models/group_model.dart';
 
@@ -24,10 +25,7 @@ class ListItemsBuilder2<T> extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return data.when(
       data: (items) => _buildList(items),
-      loading: () => const Center(
-          child: CircularProgressIndicator(
-        color: MyColors.purple300,
-      )),
+      loading: () => CircularIndicator(size: 22, color: MyColors.purple300),
       error: (_, __) => EmptyContent(
         title: '오류가 발생하였습니다',
         message: T == GroupModel ? '' : '전체 미션을 받아올 수 없습니다',

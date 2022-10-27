@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -205,18 +206,11 @@ class _KakaoSyncDialogState extends ConsumerState<KakaoSyncDialog> {
   }
 
   Widget _buildCircularIndicator(BuildContext context) {
+    //TODO: 왜 SinglechildScrollview?
     return SingleChildScrollView(
       child: Container(
         child: ListBody(
-          children: [
-            Center(
-              child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(color: purple300),
-              ),
-            ),
-          ],
+          children: [CircularIndicator(size: 50, color: MyColors.purple300)],
         ),
       ),
     );

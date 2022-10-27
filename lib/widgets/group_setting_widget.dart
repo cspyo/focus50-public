@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -328,10 +329,8 @@ class _GroupSettingAlertDialogState
                                     });
                                   },
                                   child: isModifyLoading
-                                      ? Center(
-                                          child: CircularProgressIndicator(
-                                          color: MyColors.purple300,
-                                        ))
+                                      ? CircularIndicator(
+                                          size: 22, color: MyColors.purple300)
                                       : Text(
                                           '그룹 정보 수정',
                                           style: MyTextStyle.CpS12W600,
@@ -411,12 +410,10 @@ class _GroupSettingAlertDialogState
                                                                 parentContext);
                                                           },
                                                           child: isLeaveLoading
-                                                              ? Center(
-                                                                  child:
-                                                                      CircularProgressIndicator(
+                                                              ? CircularIndicator(
+                                                                  size: 22,
                                                                   color: MyColors
-                                                                      .purple300,
-                                                                ))
+                                                                      .purple300)
                                                               : Text(
                                                                   '나가기',
                                                                   style: MyTextStyle
