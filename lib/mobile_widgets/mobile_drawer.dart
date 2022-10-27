@@ -143,11 +143,11 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         SizedBox(
           height: 10,
         ),
-        authState != null
+        (authState != null)
             ? buildMenuItem(
                 text: 'Profile', icon: Icons.person, route: Routes.PROFILE)
             : SizedBox.shrink(),
-        authState != null
+        (authState != null)
             ? SizedBox(
                 height: 10,
               )
@@ -171,7 +171,8 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                   ),
                   onPressed: () {
                     ref.read(authViewModelProvider).signOut();
-                    setState(() {});
+                    // setState(() {});
+                    Get.rootDelegate.toNamed(Routes.ABOUT);
                   },
                   child: const Text(
                     '  로그아웃  ',
