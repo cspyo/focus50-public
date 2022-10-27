@@ -31,7 +31,7 @@ class MobileGroup extends ConsumerStatefulWidget {
 
 class _MobileGroupState extends ConsumerState<MobileGroup>
     with TickerProviderStateMixin {
-  late final FirestoreDatabase database;
+  late FirestoreDatabase database;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _introductionController = TextEditingController();
