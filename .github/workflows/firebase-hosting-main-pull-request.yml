@@ -34,3 +34,9 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS_50 }}'
           projectId: focus-50
           expires: 3d
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_FOCUS50_DEV }}'
+          channelId: live
+          projectId: focus50-dev
