@@ -21,6 +21,7 @@ import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_search_widget.dart';
 import 'package:focus42/widgets/group_select_dialog_widget.dart';
 import 'package:focus42/widgets/group_setting_widget.dart';
+import 'package:focus42/widgets/group_title_and_textfield_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -62,7 +63,7 @@ class _GroupState extends ConsumerState<Group> {
   Uint8List? _image;
   late String groupId;
   bool isCreateGroupLoading = false;
-  bool? isGroupNameOverlap; //null이면 아직 체크 안한거.
+  bool isGroupNameOverlap = false;
   String? invitedGroupId = Uri.base.queryParameters["g"];
   String? uid = FirebaseAuth.instance.currentUser?.uid;
 
@@ -509,90 +510,17 @@ class _GroupState extends ConsumerState<Group> {
     );
   }
 
-  Widget _buildTitleAndTextField(
-    BuildContext context,
-    String title,
-    String hintText,
-    TextEditingController _controller,
-    int index,
-  ) {
-    return Container(
-      width: 410,
-      height: 60,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: MyColors.border300,
-            width: 1,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 130,
-            child: Text(
-              title,
-              style: MyTextStyle.CbS18W400,
-            ),
-          ),
-          Container(
-            width: 244,
-            height: 36,
-            padding: EdgeInsets.only(left: 8, right: 8),
-            child: TextFormField(
-              // inputFormatters: <TextInputFormatter>[
-              //   index == 1
-              //       ? FilteringTextInputFormatter.digitsOnly
-              //       : FilteringTextInputFormatter.singleLineFormatter,
-              // ],
-              validator: (value) {
-                return (value == null || value.isEmpty) && index != 1
-                    ? '$title를 입력해주세요'
-                    : index == 0 && isGroupNameOverlap!
-                        ? '이미 있는 그룹명입니다. 다른 이름을 적어주세요'
-                        : index == 0 && value!.length > 12
-                            ? '12자 이내의 이름을 적어주세요'
-                            : null;
-              },
-              controller: _controller,
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                hintStyle: MyTextStyle.CgS18W500,
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                hintText: hintText,
-                errorStyle: TextStyle(
-                  fontSize: 10,
-                  height: 0.4,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<dynamic> _popupCreateGroupDialog(BuildContext context) {
     bool isCreateGroupFinished = false;
     String groupName = '';
     String groupPassword = '';
     String groupDocId = '';
-    List<String> titles = [
-      '그룹 명',
-      '비밀번호',
-    ];
-    List<String> hintTexts = [
-      '그룹 명을 적어주세요',
-      '비밀번호(선택)',
-    ];
+
+    List<String> hintTexts = ['그룹 명', '비밀번호(선택)', '그룹 소개(선택)'];
     List<TextEditingController> controllers = [
       _nameController,
       _passwordController,
+      _introductionController
     ];
     return showDialog(
       barrierDismissible: false,
@@ -616,6 +544,9 @@ class _GroupState extends ConsumerState<Group> {
                               child: IconButton(
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
+                                  _nameController.clear();
+                                  _passwordController.clear();
+                                  _introductionController.clear();
                                   setState(() {
                                     _image = null;
                                   });
@@ -676,50 +607,12 @@ class _GroupState extends ConsumerState<Group> {
                           SizedBox(
                             height: 10,
                           ),
-                          for (int i = 0; i < titles.length; i++)
-                            _buildTitleAndTextField(
-                                context,
-                                titles[i],
-                                hintTexts[i],
-                                controllers[i],
-                                i), //for 문 안쓰고 어케 하지??
-                          Container(
-                            width: 410,
-                            height: 50,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              '그룹 소개 및 공지',
-                              style: MyTextStyle.CbS18W400,
-                            ),
-                          ),
-                          Container(
-                            width: 410,
-                            height: 86,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 1,
-                                  color: MyColors.border300,
-                                ),
-                                borderRadius: BorderRadius.circular(16)),
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            child: TextField(
-                              keyboardType: TextInputType.multiline,
-                              maxLines: null,
-                              cursorColor: Colors.black,
-                              controller: _introductionController,
-                              decoration: InputDecoration(
-                                  hintStyle: MyTextStyle.CgS18W500,
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: "그룹에 대해 소개해 주세요!"),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
+                          for (int i = 0; i < hintTexts.length; i++)
+                            BuildTitleAndTextField(
+                                hintText: hintTexts[i],
+                                controller: controllers[i],
+                                index: i,
+                                isGroupNameOverlap: isGroupNameOverlap),
                           SizedBox(
                             width: 140,
                             height: 45,
@@ -755,7 +648,6 @@ class _GroupState extends ConsumerState<Group> {
                                   _nameController.clear();
                                   _passwordController.clear();
                                   _introductionController.clear();
-                                  _invitePwController.clear();
                                   setState(() {
                                     _image = null;
                                   });
@@ -888,6 +780,7 @@ class _GroupState extends ConsumerState<Group> {
                                 child: IconButton(
                                   padding: EdgeInsets.all(0),
                                   onPressed: () {
+                                    _invitePwController.clear();
                                     _changeActivatedGroup(group.id!);
                                     ref.refresh(myGroupIdFutureProvider);
                                     Navigator.pop(context);
@@ -973,6 +866,7 @@ class _GroupState extends ConsumerState<Group> {
                               width: 110,
                               child: TextButton(
                                 onPressed: () {
+                                  _invitePwController.clear();
                                   if (uid != null) {
                                     if (_invitementFormKey.currentState!
                                         .validate()) {
