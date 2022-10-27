@@ -342,7 +342,7 @@ class _GroupState extends ConsumerState<Group> {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  isThisGroupActivated
+                  isThisGroupActivated && group.id != 'public'
                       ? SizedBox(
                           height: 22,
                           width: 38,
@@ -359,11 +359,9 @@ class _GroupState extends ConsumerState<Group> {
                             ),
                             onPressed: () {
                               Uri uri = Uri.parse(Uri.base.toString());
-                              String quote = group.id == 'public'
-                                  ? '같이 집중해봅시다!! \n자꾸 미룰 때, 할 일이 많을 때, 혼자 공부하기 싫을 때 사용해보시면 많은 도움이 될 거예요. \n아래 링크를 눌러 입장해주세요! \nhttps://focus50.day'
-                                  : group.password != ''
-                                      ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
-                                      : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
+                              String quote = group.password != ''
+                                  ? '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호 : ${group.password} \n ${uri.origin}${uri.path}?g=${group.id}'
+                                  : '귀하는 ${group.name}그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=${group.id}';
                               showDialog(
                                   context: context,
                                   builder: (context) {
@@ -472,10 +470,7 @@ class _GroupState extends ConsumerState<Group> {
                             ),
                           ),
                         )
-                      : SizedBox(
-                          height: 22,
-                          width: 38,
-                        ),
+                      : SizedBox.shrink(),
                 ],
               ),
             ),
