@@ -5,6 +5,7 @@ import 'package:focus42/mobile_screens/mobile_about_screen.dart';
 // import 'package:focus42/m.screens/m.profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
 import 'package:focus42/mobile_screens/mobile_meeting_screen.dart';
+import 'package:focus42/mobile_screens/mobile_profile_screen.dart';
 import 'package:focus42/screens/calendar_screen.dart';
 import 'package:get/get.dart';
 
@@ -40,11 +41,10 @@ abstract class AppPages {
       name: Routes.ABOUT,
       page: () => MobileAboutScreen(),
     ),
-
-    // GetPage(
-    //   name: Routes.PROFILE,
-    //   page: () => MobileProfileScreen(),
-    // ),
+    GetPage(
+      name: Routes.PROFILE,
+      page: () => MobileProfileScreen(),
+    ),
     GetPage(
       name: Routes.CALENDAR,
       page: () => MobileCalendarScreen(),
