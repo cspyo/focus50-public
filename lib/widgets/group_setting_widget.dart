@@ -165,65 +165,30 @@ class _GroupSettingAlertDialogState
                             backgroundImage: NetworkImage(currentGroupImageUrl),
                           ),
                     Positioned(
-                      bottom: -10,
-                      left: 80,
-                      child: IconButton(
-                        onPressed: () async {
-                          if (isUserCreator) {
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: TextButton(
+                          onPressed: () async {
                             Uint8List im = await pickImage(ImageSource.gallery);
                             setState(() {
                               _image = im;
                             });
-                          } else {
-                            showDialog(
-                                context: parentContext,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    content: SizedBox(
-                                      width: 240,
-                                      child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                SizedBox(
-                                                  width: 36,
-                                                ),
-                                                Text('권한이 없습니다',
-                                                    style:
-                                                        MyTextStyle.CbS20W600),
-                                                SizedBox(
-                                                  width: 36,
-                                                  height: 36,
-                                                  child: IconButton(
-                                                    padding: EdgeInsets.all(0),
-                                                    onPressed: () {
-                                                      Navigator.pop(context);
-                                                    },
-                                                    icon: Icon(
-                                                      Icons.close,
-                                                      color: Colors.black,
-                                                      size: 30,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Text(
-                                              '그룹 관리자만 정보를 수정할 수 있습니다.',
-                                              style: MyTextStyle.CbS14W400,
-                                            ),
-                                          ]),
-                                    ),
-                                  );
-                                });
-                          }
-                        },
-                        icon: const Icon(
-                          Icons.add_a_photo,
+                          },
+                          child: Center(
+                            child: const Icon(
+                              Icons.add_a_photo,
+                              color: Colors.black,
+                              size: 16,
+                            ),
+                          ),
                         ),
                       ),
                     )

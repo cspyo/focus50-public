@@ -363,18 +363,32 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                             StorageMethods.defaultImageUrl),
                                       ),
                                 Positioned(
-                                  bottom: -10,
-                                  left: 80,
-                                  child: IconButton(
-                                    onPressed: () async {
-                                      Uint8List im =
-                                          await pickImage(ImageSource.gallery);
-                                      setState(() {
-                                        _image = im;
-                                      });
-                                    },
-                                    icon: const Icon(
-                                      Icons.add_a_photo,
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: Colors.black, width: 2),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Uint8List im = await pickImage(
+                                            ImageSource.gallery);
+                                        setState(() {
+                                          _image = im;
+                                        });
+                                      },
+                                      child: Center(
+                                        child: const Icon(
+                                          Icons.add_a_photo,
+                                          color: Colors.black,
+                                          size: 18,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 )
