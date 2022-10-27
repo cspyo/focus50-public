@@ -75,6 +75,8 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
   @override
   Widget build(BuildContext context) {
     groupId = ref.read(activatedGroupIdProvider);
+    database = ref.watch(databaseProvider);
+    uid = FirebaseAuth.instance.currentUser?.uid;
     return Container(
       // decoration: BoxDecoration(border: Border.all(width: 1)),
       width: 68,

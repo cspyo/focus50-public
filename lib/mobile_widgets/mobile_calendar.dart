@@ -53,7 +53,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   CalendarDetails? details;
 
-  late final database;
+  late var database;
   late String groupId;
 
   late ReservationViewModel reservationViewModel;
@@ -138,12 +138,17 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
   Widget build(BuildContext context) {
     final _myGroupStream = ref.watch(myGroupFutureProvider);
     final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
-    final _oldGroupId = groupId;
-    final _groupId = ref.watch(activatedGroupIdProvider);
-    if (_oldGroupId != _groupId) {
+
+    final newDatabase = ref.watch(databaseProvider);
+
+    final oldGroupId = groupId;
+    final newGroupId = ref.watch(activatedGroupIdProvider);
+
+    if (database.uid != newDatabase.uid || oldGroupId != newGroupId) {
       reservationViewModel.cancelListener();
       reservationViewModel = ref.read(reservationViewModelProvider);
-      groupId = _groupId;
+      groupId = newGroupId;
+      database = newDatabase;
       reservationViewModel.startView();
     }
 
@@ -257,7 +262,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
                   appointmentBuilder: (context, details) =>
-                      _appointmentBuilder(context, details, _groupId),
+                      _appointmentBuilder(context, details, newGroupId),
                 ),
               ),
             ),
