@@ -409,8 +409,8 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "예약 알림 설정",
@@ -421,13 +421,13 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
               ),
             ),
             SizedBox(
-              width: 10,
+              height: 4,
             ),
             Text(
               "*세션 시작 5분 전에 알림을 드립니다",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
-                fontSize: 14,
+                fontSize: 12,
                 color: Colors.black54,
               ),
             ),
