@@ -366,8 +366,8 @@ class CalendarState extends ConsumerState<Calendar> {
                 children: [
                   Container(
                     width: isTabletSize
-                        ? (screenWidth - 49) / 7 - 47
-                        : (screenWidth - 489.5) / 7 - 47,
+                        ? (screenWidth - 49) / 7 - 61
+                        : (screenWidth - 489.5) / 7 - 58,
                     alignment: Alignment.centerLeft,
                     child: reservedUserCount == 1
                         ? Text(
