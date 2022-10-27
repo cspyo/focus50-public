@@ -112,18 +112,25 @@ class _AboutScreenState extends State<AboutScreen>
                                                 '캠스터디',
                                                 style: TextStyle(
                                                     color: Colors.white,
-                                                    fontSize: 38,
+                                                    fontSize: 36,
                                                     fontWeight:
                                                         FontWeight.w600),
                                               ),
                                             ],
                                           ),
                                           Text(
-                                            ' Focus 50',
+                                            ' Focus',
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 32,
-                                                fontWeight: FontWeight.w500),
+                                                fontSize: 40,
+                                                fontWeight: FontWeight.w700),
+                                          ),
+                                          Text(
+                                            '50',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 40,
+                                                fontWeight: FontWeight.w700),
                                           ),
                                         ],
                                       ),
@@ -233,9 +240,7 @@ class _AboutScreenState extends State<AboutScreen>
             ),
             SizedBox(
               width: screenWidth,
-              height: screenHeight,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
                     width: screenWidth,
@@ -259,107 +264,15 @@ class _AboutScreenState extends State<AboutScreen>
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: screenHeight - 200,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          '우리 서비스를 이용하지 않아도 좋아요',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 40,
-                              fontWeight: FontWeight.w600),
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              '어디서 어떤 공부를 하든,',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w400),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '진짜 공부',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  '를 하길 바라요.',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w400),
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '서비스를 기획하며 습득한 ',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                Text(
-                                  '모든 지식과 이론',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  '이',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w400),
-                                )
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '공통적으로 말하던 ',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                                Text(
-                                  '세가지',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Text(
-                                  ' 방법을 알려드릴게요.',
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w400),
-                                )
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )
+                  SizedBox(height: 70),
+                  Text(
+                    '집중에 다가가는 세 가지 방법',
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 36,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: 30),
                 ],
               ),
             ),
@@ -392,7 +305,7 @@ class _AboutScreenState extends State<AboutScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '다른 사람들과',
+                        '더 이상',
                         style: TextStyle(
                             fontSize: 36, fontWeight: FontWeight.w400),
                       ),
@@ -403,31 +316,21 @@ class _AboutScreenState extends State<AboutScreen>
                               Positioned(
                                 bottom: 4,
                                 child: Container(
-                                  width: 134,
+                                  width: 180,
                                   height: 24,
                                   color: textHighlightColor,
                                   child: Text(''),
                                 ),
                               ),
                               Text(
-                                '오공',
+                                '미루지 않게',
                                 style: TextStyle(
                                     fontSize: 36, fontWeight: FontWeight.w700),
                               ),
                             ],
                           ),
                           Text(
-                            '을 ',
-                            style: TextStyle(
-                                fontSize: 36, fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '예약',
-                            style: TextStyle(
-                                fontSize: 36, fontWeight: FontWeight.w700),
-                          ),
-                          Text(
-                            '해봐요',
+                            ' 해줄게요',
                             style: TextStyle(
                                 fontSize: 36, fontWeight: FontWeight.w400),
                           ),
@@ -439,12 +342,14 @@ class _AboutScreenState extends State<AboutScreen>
                     height: 10,
                   ),
                   Text(
-                    "*오공은 '오늘 공부'의 줄임말로, Focus50(포커스 오공)에서 공부 하는 시간 단위입니다.",
-                    style: TextStyle(fontSize: 16),
+                    "캘린더에 집중할 시간을 예약해보세요",
+                    style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.start,
                   ),
-                  SizedBox(
-                    height: 10,
+                  Text(
+                    "나 자신만이 아닌 남과의 약속은 지킬 확률이 87% 더 높대요!",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.start,
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
@@ -456,6 +361,7 @@ class _AboutScreenState extends State<AboutScreen>
                 ],
               ),
             ),
+            SizedBox(height: 100),
             Container(
               padding: EdgeInsets.only(left: 100, right: 100),
               width: screenWidth,
@@ -465,36 +371,8 @@ class _AboutScreenState extends State<AboutScreen>
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '예약 후에는,',
-                        style: TextStyle(
-                            fontSize: 36, fontWeight: FontWeight.w400),
-                      ),
                       Row(
                         children: [
-                          Stack(
-                            children: [
-                              Positioned(
-                                bottom: 4,
-                                child: Container(
-                                  width: 134,
-                                  height: 24,
-                                  color: textHighlightColor,
-                                  child: Text(''),
-                                ),
-                              ),
-                              Text(
-                                '오공',
-                                style: TextStyle(
-                                    fontSize: 36, fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            '을 ',
-                            style: TextStyle(
-                                fontSize: 36, fontWeight: FontWeight.w400),
-                          ),
                           Text(
                             '50분',
                             style: TextStyle(
@@ -507,8 +385,91 @@ class _AboutScreenState extends State<AboutScreen>
                           ),
                         ],
                       ),
+                      Row(
+                        children: [
+                          Stack(
+                            children: [
+                              Positioned(
+                                bottom: 4,
+                                child: Container(
+                                  width: 80,
+                                  height: 24,
+                                  color: textHighlightColor,
+                                  child: Text(''),
+                                ),
+                              ),
+                              Text(
+                                '함께 ',
+                                style: TextStyle(
+                                    fontSize: 36, fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            '집중 해봐요',
+                            style: TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "캠을 켜고 자신이 집중하는 모습을 공유해봐요",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.start,
+                  ),
+                  Text(
+                    "감시효과는 딴짓을 막아주어 몰입도가 92% 높아진대요!",
+                    style: TextStyle(fontSize: 18),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.asset(
+                      'assets/images/photoInSession.png',
+                      width: screenWidth * 0.85,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 110),
+            Container(
+              padding: EdgeInsets.only(left: 100, right: 100),
+              width: screenWidth,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          Positioned(
+                            bottom: 4,
+                            child: Container(
+                              width: 140,
+                              height: 24,
+                              color: textHighlightColor,
+                              child: Text(''),
+                            ),
+                          ),
+                          Text(
+                            '집중 패턴을',
+                            style: TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
                       Text(
-                        '진행 해봐요',
+                        '분석해줄게요',
                         style: TextStyle(
                             fontSize: 36, fontWeight: FontWeight.w400),
                       ),
@@ -518,13 +479,13 @@ class _AboutScreenState extends State<AboutScreen>
                     height: 10,
                   ),
                   Text(
-                    "여러 명이 '오공'할 때보다, 1:1로 진행했을 때 집중이 잘 된대요!",
-                    style: TextStyle(fontSize: 16),
+                    "예약 패턴과 노쇼 비율, 세션의 목표 달성율 등을 AI가 분석해 알려줘요",
+                    style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.start,
                   ),
                   Text(
-                    "이번 '오공'에서 할 일들을 투두에 적어 봐요.",
-                    style: TextStyle(fontSize: 16),
+                    "집중의 비밀은 얼마나 나를 아느냐에 달려있어요!",
+                    style: TextStyle(fontSize: 18),
                     textAlign: TextAlign.start,
                   ),
                   SizedBox(
@@ -533,7 +494,7 @@ class _AboutScreenState extends State<AboutScreen>
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16.0),
                     child: Image.asset(
-                      'assets/images/sessionTimer.gif',
+                      'assets/images/report.png',
                       width: screenWidth * 0.85,
                     ),
                   ),
@@ -569,7 +530,7 @@ class _AboutScreenState extends State<AboutScreen>
                                 ),
                               ),
                               Text(
-                                '70350',
+                                '176250',
                                 style: TextStyle(
                                     fontSize: 36, fontWeight: FontWeight.w700),
                               ),
@@ -597,7 +558,7 @@ class _AboutScreenState extends State<AboutScreen>
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        Get.rootDelegate.toNamed(Routes.CALENDAR);
+                        Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: purple300,
@@ -672,7 +633,7 @@ class _AboutScreenState extends State<AboutScreen>
                               ),
                             ),
                             Text(
-                              '남양주시 다산중앙로 82번길 15, 5101동 101호',
+                              '남양주시 다산중앙로 82번길 15',
                               style: TextStyle(
                                 color: footerGreyColor,
                                 fontSize: 18,
@@ -738,24 +699,36 @@ class _AboutScreenState extends State<AboutScreen>
                           ),
                           Row(
                             children: [
-                              Text(
-                                'Terms',
-                                style: TextStyle(
-                                  color: footerGreyColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w300,
+                              TextButton(
+                                child: Text(
+                                  '이용약관',
+                                  style: TextStyle(
+                                    color: footerGreyColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w300,
+                                  ),
                                 ),
+                                onPressed: () {
+                                  launch(
+                                      "https://cspyo.notion.site/Focus50-bf3dcea5936b4f3a96633ff2d57d71ee");
+                                },
                               ),
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(
-                                'Privacy Policy',
-                                style: TextStyle(
-                                  color: footerGreyColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w300,
+                              TextButton(
+                                child: Text(
+                                  '개인정보처리방침',
+                                  style: TextStyle(
+                                    color: footerGreyColor,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
+                                onPressed: () {
+                                  launch(
+                                      "https://cspyo.notion.site/Focus50-9f22f670ba5c40a286d764cf055ce14a");
+                                },
                               ),
                             ],
                           )

@@ -14,6 +14,7 @@ class UserPublicModel {
   bool? emailNoticeAllowed; // 이메일로 예약 알림 동의 여부
   bool? kakaoNoticeAllowed; // 카카오톡으로 예약 알림 동의 여부 (우리 서비스에서 알림 설정)
   List<String?>? noticeMethods = [];
+  final List<String>? groups;
 
   UserPublicModel({
     this.nickname,
@@ -29,7 +30,40 @@ class UserPublicModel {
     this.emailNoticeAllowed,
     this.kakaoNoticeAllowed,
     this.noticeMethods,
+    this.groups,
   });
+
+  UserPublicModel addGroup(String groupId) {
+    List<String>? newGroups = [...?groups];
+    newGroups.add(groupId);
+
+    UserPublicModel groupAddedUser = UserPublicModel(
+      nickname: this.nickname,
+      photoUrl: this.photoUrl,
+      job: this.job,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      lastLogin: this.lastLogin,
+      groups: newGroups,
+    );
+    return groupAddedUser;
+  }
+
+  UserPublicModel leaveGroup(String groupId) {
+    List<String>? newGroups = [...?groups];
+    newGroups.removeWhere((element) => element == groupId);
+
+    UserPublicModel groupRemovedUser = UserPublicModel(
+      nickname: this.nickname,
+      photoUrl: this.photoUrl,
+      job: this.job,
+      createdDate: this.createdDate,
+      updatedDate: DateTime.now(),
+      lastLogin: this.lastLogin,
+      groups: newGroups,
+    );
+    return groupRemovedUser;
+  }
 
   factory UserPublicModel.fromMap(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -70,6 +104,7 @@ class UserPublicModel {
       noticeMethods: data?['noticeMethods'] is Iterable
           ? List.from(data?['noticeMethods'])
           : null,
+      groups: data?["groups"] is Iterable ? List.from(data?["groups"]) : null,
     );
   }
 
@@ -88,6 +123,7 @@ class UserPublicModel {
       if (emailNoticeAllowed != null) "emailNoticeAllowed": emailNoticeAllowed,
       if (kakaoNoticeAllowed != null) "kakaoNoticeAllowed": kakaoNoticeAllowed,
       if (noticeMethods != null) "noticeMethods": noticeMethods,
+      if (groups != null) "groups": groups,
     };
   }
 }

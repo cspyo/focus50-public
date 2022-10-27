@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/consts/routes.dart';
+import 'package:focus42/models/group_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -10,6 +12,9 @@ import 'package:focus42/view_models.dart/appointments_notifier.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
+import 'package:focus42/widgets/group_setting_widget.dart';
+import 'package:focus42/widgets/group_widget.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -48,6 +53,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
   final CANT_RESERVE = "cant reserve";
 
   CalendarDetails? details;
+
+  late final database;
+  late String groupId;
 
   late ReservationViewModel reservationViewModel;
 
@@ -113,15 +121,33 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     setState(() {});
   }
 
+  void _changeActivatedGroup(String newGroupId) {
+    ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    groupId = ref.read(activatedGroupIdProvider);
     reservationViewModel = ref.read(reservationViewModelProvider);
     reservationViewModel.startView();
+    database = ref.read(databaseProvider);
   }
 
   @override
   Widget build(BuildContext context) {
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
+    final _oldGroupId = groupId;
+    final _groupId = ref.watch(activatedGroupIdProvider);
+    if (_oldGroupId != _groupId) {
+      reservationViewModel.cancelListener();
+      reservationViewModel = ref.read(reservationViewModelProvider);
+      groupId = _groupId;
+      reservationViewModel.startView();
+    }
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -130,11 +156,13 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
     return Container(
       width: screenWidth - 40,
-      height: screenHeight - 177,
+      // height: screenHeight - 235,
+      // height: screenHeight - 267,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
+            height: 40,
             decoration: BoxDecoration(
                 color: purple300,
                 borderRadius: BorderRadius.only(
@@ -172,6 +200,21 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                     });
                   },
                 ),
+                // Expanded(
+                //   child: ListItemsBuilder2<GroupModel>(
+                //     data: _myGroupStream,
+                //     itemBuilder: (context, model) => _buildToggleButtonUi(
+                //       context,
+                //       model,
+                //       _myActivatedGroupId == model.id ? true : false,
+                //     ),
+                //     creator: () => new GroupModel(
+                //       id: 'public',
+                //       name: '전체',
+                //     ),
+                //     axis: Axis.horizontal,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -214,7 +257,8 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   timeRegionBuilder: _timeRegionBuilder,
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
-                  appointmentBuilder: _appointmentBuilder,
+                  appointmentBuilder: (context, details) =>
+                      _appointmentBuilder(context, details, _groupId),
                 ),
               ),
             ),
@@ -222,6 +266,19 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
         ],
       ),
     );
+  }
+
+  // Widget _buildToggleButtonUi(
+  //     BuildContext context, GroupModel group, bool isThisGroupActivated) {}
+
+  Future<dynamic> _popupGroupSettingDialog(
+      BuildContext context, GroupModel group) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSettingAlertDialog(database: database, group: group);
+        });
   }
 
   Widget _timeRegionBuilder(
@@ -337,8 +394,8 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     );
   }
 
-  Widget _appointmentBuilder(
-      BuildContext context, CalendarAppointmentDetails details) {
+  Widget _appointmentBuilder(BuildContext context,
+      CalendarAppointmentDetails details, String _groupId) {
     final appointmentNotifier = ref.read(appointmentsProvider.notifier);
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
     final Appointment appointment = details.appointments.first;
@@ -397,10 +454,11 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   setState(() {
                     appointment.subject = LOADING_RESERVE;
                   });
-                  final database = ref.read(databaseProvider);
                   try {
-                    await MatchingMethods(database: database)
-                        .matchRoom(startTime: startTime, endTime: endTime);
+                    await MatchingMethods(database: database).matchRoom(
+                        startTime: startTime,
+                        endTime: endTime,
+                        groupId: _groupId);
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }

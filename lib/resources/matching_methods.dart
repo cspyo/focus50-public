@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/reservation_user_info.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -5,6 +7,22 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:logger/logger.dart';
 
 class MatchingMethods {
+  static MatchingMethods? _instance;
+
+  MatchingMethods._({required this.database}) {
+    debugPrint("[DEBUG] matching method created");
+    this.userId = database.uid;
+  }
+
+  factory MatchingMethods({required database}) {
+    if (_instance == null ||
+        _instance!.database.hashCode != database.hashCode) {
+      return _instance = MatchingMethods._(database: database);
+    } else {
+      return _instance!;
+    }
+  }
+
   late String userId;
   late String? userName;
   var userData = {};
@@ -13,53 +31,69 @@ class MatchingMethods {
   final FirestoreDatabase database;
   late UserPublicModel? user;
 
-  MatchingMethods({required this.database}) {
-    this.userId = database.uid;
-  }
-
   Future<void> matchRoom({
     required DateTime startTime,
     required DateTime endTime,
+    String? groupId,
   }) async {
-    /* matchRoom
-     * 1. 시간으로 필터링을 해서 튜플을 찾는다
-     * 2-1. 있다
-     * 3. 들어간다. 디비에 빈 유저 필드에 <- 자기 아이디 , isFull <- 1 업데이트 한다.
-     * 2-2. 없다
-     * 3-2. 만든다.
-    */
-    // 트랜잭션 어떻게 하면 좋을지 아예 모르겠음...
     user = await database.getUserPublic();
     userName = user!.nickname;
 
-    ReservationModel? notFullReservation =
-        await database.findReservationForMatch(startTime: startTime);
-
-    if (notFullReservation == null) {
-      ReservationModel newReservation = ReservationModel(
+    database.runTransaction((transaction) async {
+      ReservationModel? notFullReservation =
+          await database.findReservationForMatch(
+              startTime: startTime, groupId: groupId, transaction: transaction);
+      if (notFullReservation == null) {
+        ReservationModel newReservation = ReservationModel.newReservation(
           startTime: startTime,
           endTime: endTime,
-          headcount: 0,
-          isFull: false,
-          maxHeadcount: 4,
-          roomId: null,
-          userIds: [],
-          userInfos: {});
-      database.setReservation(newReservation.addUser(
-          userId, ReservationUserInfo(uid: userId, nickname: userName)));
-    } else {
-      database.setReservation(notFullReservation.addUser(
-          userId, ReservationUserInfo(uid: userId, nickname: userName)));
-    }
+          groupId: groupId,
+        );
+        database.setReservation(newReservation.addUser(
+            userId,
+            ReservationUserInfo(
+              uid: userId,
+              nickname: userName,
+              reservationAgent: AGENT,
+              reservationVersion: VERSION,
+              reserveDTTM: DateTime.now(),
+            )));
+      } else {
+        database.updateReservationInTransaction(
+          notFullReservation.addUser(
+              userId,
+              ReservationUserInfo(
+                uid: userId,
+                nickname: userName,
+                reservationAgent: AGENT,
+                reservationVersion: VERSION,
+                reserveDTTM: DateTime.now(),
+              )),
+          transaction,
+        );
+      }
+    });
   }
 
   Future<void> cancelRoom(String docId) async {
-    ReservationModel reservation = await database.getReservation(docId);
-    ReservationModel cancelReservation = reservation.deleteUser(userId);
-    if (cancelReservation.headcount == 0) {
-      database.deleteReservation(cancelReservation);
-    } else {
-      database.setReservation(cancelReservation);
+    database.runTransaction((transaction) async {
+      ReservationModel reservation =
+          await database.getReservationInTransaction(docId, transaction);
+      ReservationModel cancelReservation = reservation.deleteUser(userId);
+      if (cancelReservation.headcount == 0) {
+        database.deleteReservationInTransaction(cancelReservation, transaction);
+      } else {
+        database.updateReservationInTransaction(cancelReservation, transaction);
+      }
+    });
+  }
+
+  Future<void> leaveRoom(String docId) async {
+    final ReservationModel reservation = await database.getReservation(docId);
+    if (reservation.userInfos != null &&
+        reservation.userInfos!.containsKey(database.uid)) {
+      database.updateReservationUserInfo(
+          docId, database.uid, "leaveDTTM", DateTime.now());
     }
   }
 }

@@ -7,9 +7,11 @@ import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/main.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -17,7 +19,8 @@ final myNextReservationStreamProvider =
     StreamProvider.autoDispose<List<ReservationModel?>>(
   (ref) {
     final database = ref.watch(databaseProvider);
-    return database.myNextReservationStream();
+    final activatedGroupId = ref.watch(activatedGroupIdProvider);
+    return database.myNextReservationStream(activatedGroupId);
   },
 );
 
@@ -52,6 +55,10 @@ class ReservationState extends ConsumerState<Reservation> {
     final uid = database.uid;
     database.updateReservationUserInfo(
         nextReservation.id!, uid, "enterDTTM", DateTime.now());
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "sessionVersion", VERSION);
+    database.updateReservationUserInfo(
+        nextReservation.id!, uid, "sessionAgent", AGENT);
     AnalyticsMethod().logEnterSession();
     Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
   }

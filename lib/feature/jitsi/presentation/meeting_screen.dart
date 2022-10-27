@@ -7,13 +7,14 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/jitsi/consts/times.dart';
 import 'package:focus42/feature/jitsi/jitsi_meet_methods.dart';
 import 'package:focus42/feature/jitsi/presentation/google_timer_widget.dart';
-import 'package:focus42/feature/jitsi/presentation/list_items_builder.dart';
+import 'package:focus42/feature/jitsi/presentation/list_items_builder_1.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/feature/jitsi/presentation/todo_list_tile_widget.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
+import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -60,17 +61,14 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
       );
     });
     html.window.onUnload.listen((event) async {
-      database.updateReservationUserInfo(
-          reservation.id!, database.uid, "leaveDTTM", DateTime.now());
-
+      MatchingMethods(database: database).leaveRoom(reservation.id!);
       AnalyticsMethod().logForceExit();
     });
   }
 
   @override
   void dispose() {
-    database.updateReservationUserInfo(
-        reservation.id!, database.uid, "leaveDTTM", DateTime.now());
+    MatchingMethods(database: database).leaveRoom(reservation.id!);
     JitsiMeet.removeAllListeners();
     super.dispose();
   }
@@ -376,7 +374,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
                 : EdgeInsets.only(top: 8),
             // width: _missionContentWidth,
             height: _entireTodoFocusState ? 222 : 270,
-            child: ListItemsBuilder<TodoModel>(
+            child: ListItemsBuilder1<TodoModel>(
               data: (_entireTodoFocusState)
                   ? _myEntireTodoStream
                   : _mySessionTodoStream,
@@ -410,7 +408,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
         height: 50,
         child: TextButton(
           onPressed: () {
-            Get.rootDelegate.toNamed(Routes.CALENDAR);
+            Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
             AnalyticsMethod().logPressExitButton();
           },
           style: ButtonStyle(

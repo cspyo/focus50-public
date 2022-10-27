@@ -7,8 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/app_pages.dart';
+import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
+import 'package:focus42/utils/version_compare.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:universal_html/html.dart' as html;
@@ -16,6 +18,19 @@ import 'package:url_strategy/url_strategy.dart';
 
 import 'consts/app_router_delegate.dart';
 import 'firebase_options.dart';
+
+const String VERSION = "1.7.0";
+late final AGENT;
+
+Future<void> versionCheck() async {
+  const version = VERSION;
+  final remoteVersionStream = await FirestoreDatabase(uid: "none").getVersion();
+  remoteVersionStream.listen((v) {
+    if (version.isLessThan(v)) {
+      html.window.location.reload();
+    }
+  });
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +45,7 @@ void main() async {
   bool isMobile = false;
   if (kIsWeb) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
+    AGENT = userAgent;
     AnalyticsMethod().logUserAgent(userAgent);
     AnalyticsMethod().setUserAgent(userAgent);
     // smartphones
@@ -50,6 +66,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    versionCheck();
     final firebaseAuth = ref.watch(firebaseAuthProvider);
     int screenWidth = window.screen!.width!;
 

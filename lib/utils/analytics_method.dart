@@ -105,6 +105,30 @@ class AnalyticsMethod {
     await analytics.logEvent(name: "session_press_logo");
   } //O
 
+  Future logPressGroupSelectButtonWithoutSignIn() async {
+    await analytics.logEvent(name: "press_group_select_button_without_signin");
+  } //O
+
+  Future logPressGroupSelectButton() async {
+    await analytics.logEvent(name: "press_group_select_button");
+  } //O
+
+  Future logPressGroupCreateButtonWithoutSignIn() async {
+    await analytics.logEvent(name: "press_group_create_button_without_signin");
+  } //O
+
+  Future logPressGroupCreateButton() async {
+    await analytics.logEvent(name: "press_group_create_button");
+  } //O
+
+  Future logPressPublicGroupButton() async {
+    await analytics.logEvent(name: "press_total_public_button");
+  } //O
+
+  Future logPressPrivateGroupButton() async {
+    await analytics.logEvent(name: "press_private_group_button");
+  } //O
+
   Future mobileLogPageView(String pageName) async {
     await analytics.logEvent(
         name: "mobile-page-view", parameters: {"page_name": pageName});
@@ -193,4 +217,30 @@ class AnalyticsMethod {
   Future mobileLogPressSessionLogo() async {
     await analytics.logEvent(name: "mobile_session_press_logo");
   } //O
+
+  Future mobileLogPressGroupSelectButtonWithoutSignIn() async {
+    await analytics.logEvent(
+        name: "mobile_press_group_select_button_without_signin");
+  } //X
+
+  Future mobileLogPressGroupSelectButton() async {
+    await analytics.logEvent(name: "mobile_press_group_select_button");
+  } //X
+
+  Future mobileLogPressGroupCreateButtonWithoutSignIn() async {
+    await analytics.logEvent(
+        name: "mobile_press_group_create_button_without_signin");
+  } //X
+
+  Future mobilelLogPressGroupCreateButton() async {
+    await analytics.logEvent(name: "mobile_press_group_create_button");
+  } //X
+
+  Future mobileLogPressPublicGroupButton() async {
+    await analytics.logEvent(name: "mobile_press_total_public_button");
+  } //X
+
+  Future mobileLogPressPrivateGroupButton() async {
+    await analytics.logEvent(name: "mobile_press_private_group_button");
+  } //X
 }
