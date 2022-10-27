@@ -32,17 +32,18 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
 
   // 구글로 로그인
   void _loginWithGoogle() async {
-    setState(() => _isLoading = true);
     String res = await ref.read(authViewModelProvider).loginWithGoogle();
+    setState(() => _isLoading = true);
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
         Get.rootDelegate.toNamed(Routes.PROFILE);
+      } else {
+        Navigator.of(context).pop();
+        Get.rootDelegate.toNamed(Routes.CALENDAR);
       }
-      Navigator.of(context).pop();
-      Get.rootDelegate.toNamed(Routes.CALENDAR);
       _logLoginAnalyticsAboutAgent("google");
     } else {
       setState(() => _errorMessage = "로그인을 다시 진행해주세요");
@@ -53,17 +54,18 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
   // 카카오로 로그인
   void _loginWithKakao() async {
     String res = ERROR;
-    setState(() => _isLoading = true);
     res = await ref.read(authViewModelProvider).loginWithKakao();
+    setState(() => _isLoading = true);
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
         Get.rootDelegate.toNamed(Routes.PROFILE);
+      } else {
+        Navigator.of(context).pop();
+        Get.rootDelegate.toNamed(Routes.CALENDAR);
       }
-      Navigator.of(context).pop();
-      Get.rootDelegate.toNamed(Routes.CALENDAR);
       _logLoginAnalyticsAboutAgent("kakao");
     } else if (res == EMAIL_ALREADY_EXISTS) {
       setState(() => _errorMessage = "이미 가입한 이메일입니다");
@@ -190,10 +192,10 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.chat,
-              color: Colors.black,
-              size: 20,
+            Image.asset(
+              "assets/images/kakao_button_icon.png",
+              width: 20,
+              height: 20,
             ),
             SizedBox(width: 10),
             const Text(
@@ -220,10 +222,6 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
           primary: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(80),
-            // side: BorderSide(
-            //   color: Colors.grey.shade400,
-            //   width: 0.5,
-            // ),
           ),
           elevation: 4,
         ),
@@ -328,9 +326,12 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
           children: [
             Center(
               child: SizedBox(
-                width: 50,
-                height: 50,
-                child: CircularProgressIndicator(color: purple300),
+                width: 40,
+                height: 40,
+                child: CircularProgressIndicator(
+                  color: purple300,
+                  strokeWidth: 5.0,
+                ),
               ),
             ),
           ],

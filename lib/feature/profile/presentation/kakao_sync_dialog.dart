@@ -184,10 +184,10 @@ class _KakaoSyncDialogState extends ConsumerState<KakaoSyncDialog> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.chat,
-              color: Colors.black,
-              size: 20,
+            Image.asset(
+              "assets/images/kakao_button_icon.png",
+              width: 20,
+              height: 20,
             ),
             SizedBox(width: 10),
             const Text(

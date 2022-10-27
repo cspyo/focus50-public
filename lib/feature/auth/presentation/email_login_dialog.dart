@@ -41,6 +41,7 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
         .read(authViewModelProvider)
         .loginWithEmail(email: email, password: password);
     if (res == SUCCESS) {
+      Navigator.of(context).pop();
       Get.rootDelegate.offNamed(Routes.CALENDAR);
       _logLoginAnalyticsAboutAgent("email");
     } else if (res == USER_NOT_FOUND) {

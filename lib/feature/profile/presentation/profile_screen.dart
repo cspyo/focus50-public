@@ -497,11 +497,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       String text, ValueNotifier<bool> controller, bool enabled) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          if (enabled) {
-            controller.value = !controller.value;
-          }
-        });
+        if (enabled) {
+          controller.value = !controller.value;
+        }
       },
       child: Container(
         decoration: BoxDecoration(
