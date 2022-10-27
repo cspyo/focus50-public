@@ -457,8 +457,14 @@ class _GroupSearchAlertDialogState
       );
     } else {
       final UserModel? user = await ref.read(userStreamProvider.future);
-      await database.setGroup(group.addMember(database.uid));
-      await database.setUserPublic(user!.userPublicModel!.addGroup(group.id!));
+      database.runTransaction((transaction) async {
+        final GroupModel myGroup = await database.getGroupInTransaction(
+            docId: group.id!, transaction: transaction);
+        database.updateGroupInTransaction(
+            myGroup.addMember(database.uid), transaction);
+      });
+      await database.updateUser(
+          UserModel(user!.userPublicModel!.addGroup(group.id!), null));
       return showDialog(
         barrierDismissible: false,
         context: context,
