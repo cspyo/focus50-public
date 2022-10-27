@@ -5,6 +5,7 @@ import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/profile/presentation/kakao_sync_dialog.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/models/user_private_model.dart';
@@ -188,11 +189,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return _buildContent(user);
         },
         error: (_, __) => Text('Error'),
-        loading: () => const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
-            ));
+        loading: () => CircularIndicator(size: 22, color: Colors.white));
   }
 
   Widget _buildContent(UserModel user) {
@@ -558,12 +555,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               primary: purple300,
             ),
             child: _isUpdating
-                ? Center(
-                    child: SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ))
+                ? CircularIndicator(size: 10, color: Colors.white)
                 : const Text(
                     '변경사항 저장',
                     style: TextStyle(),

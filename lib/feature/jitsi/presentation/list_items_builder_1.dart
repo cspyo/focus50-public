@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
@@ -18,7 +20,7 @@ class ListItemsBuilder1<T> extends ConsumerWidget {
     return data.when(
       data: (items) =>
           items.isNotEmpty ? _buildList(items) : const EmptyContent(),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => CircularIndicator(size: 20, color: MyColors.purple300),
       error: (_, __) => const EmptyContent(
         title: '오류가 발생하였습니다',
         message: '전체 미션을 받아올 수 없습니다',
