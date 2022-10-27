@@ -891,6 +891,7 @@ class _GroupState extends ConsumerState<Group> {
                                     _changeActivatedGroup(group.id!);
                                     ref.refresh(myGroupIdFutureProvider);
                                     Navigator.pop(context);
+                                    Get.rootDelegate.offNamed(Routes.CALENDAR);
                                   },
                                   icon: Icon(
                                     Icons.close,
@@ -978,6 +979,8 @@ class _GroupState extends ConsumerState<Group> {
                                         .validate()) {
                                       enterGroup(group);
                                       Navigator.pop(context);
+                                      Get.rootDelegate
+                                          .offNamed(Routes.CALENDAR);
                                     }
                                   } else {
                                     _showSignUpDialog();

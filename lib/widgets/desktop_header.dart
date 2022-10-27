@@ -16,6 +16,8 @@ class DesktopHeader extends ConsumerStatefulWidget {
 }
 
 class DesktopHeaderState extends ConsumerState<DesktopHeader> {
+  String? invitedGroupId = Uri.base.queryParameters["g"];
+
   @override
   void initState() {
     super.initState();
@@ -58,14 +60,20 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
             children: <Widget>[
               TextButton(
                   onPressed: () {
-                    Get.rootDelegate.toNamed(Routes.ABOUT);
+                    invitedGroupId != null
+                        ? Get.rootDelegate.offNamed(Routes.ABOUT,
+                            arguments: true, parameters: {'g': invitedGroupId!})
+                        : Get.rootDelegate.offNamed(Routes.ABOUT);
                   },
                   child: const Text('소개',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                    invitedGroupId != null
+                        ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                            arguments: true, parameters: {'g': invitedGroupId!})
+                        : Get.rootDelegate.offNamed(Routes.CALENDAR);
                   },
                   child: const Text('캘린더',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
@@ -74,7 +82,11 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               (_authState != null)
                   ? TextButton(
                       onPressed: () {
-                        Get.rootDelegate.toNamed(Routes.PROFILE);
+                        invitedGroupId != null
+                            ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                                arguments: true,
+                                parameters: {'g': invitedGroupId!})
+                            : Get.rootDelegate.offNamed(Routes.PROFILE);
                       },
                       child: const Text('내 정보',
                           style: TextStyle(fontSize: 17, color: Colors.black)))

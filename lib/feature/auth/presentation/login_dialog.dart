@@ -21,6 +21,8 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
   bool _isLoading = false;
   String _errorMessage = "";
 
+  String? invitedGroupId = Uri.base.queryParameters["g"];
+
   void _logLoginAnalyticsAboutAgent(String loginMethod) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
@@ -39,10 +41,16 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
-        Get.rootDelegate.toNamed(Routes.PROFILE);
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.PROFILE);
       } else {
         Navigator.of(context).pop();
-        Get.rootDelegate.toNamed(Routes.CALENDAR);
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
       _logLoginAnalyticsAboutAgent("google");
     } else {
@@ -54,17 +62,23 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
   // 카카오로 로그인
   void _loginWithKakao() async {
     String res = ERROR;
-    res = await ref.read(authViewModelProvider).loginWithKakao();
     setState(() => _isLoading = true);
+    res = await ref.read(authViewModelProvider).loginWithKakao();
     if (res == SUCCESS) {
       final authViewModel = ref.read(authViewModelProvider);
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
-        Get.rootDelegate.toNamed(Routes.PROFILE);
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.PROFILE);
       } else {
         Navigator.of(context).pop();
-        Get.rootDelegate.toNamed(Routes.CALENDAR);
+        invitedGroupId != null
+            ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                arguments: true, parameters: {'g': invitedGroupId!})
+            : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
       _logLoginAnalyticsAboutAgent("kakao");
     } else if (res == EMAIL_ALREADY_EXISTS) {

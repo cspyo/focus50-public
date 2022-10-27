@@ -25,6 +25,8 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
   bool _isLoading = false;
   String _errorMessage = "";
 
+  String? invitedGroupId = Uri.base.queryParameters["g"];
+
   void _logLoginAnalyticsAboutAgent(String loginMethod) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
@@ -42,7 +44,10 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
         .loginWithEmail(email: email, password: password);
     if (res == SUCCESS) {
       Navigator.of(context).pop();
-      Get.rootDelegate.offNamed(Routes.CALENDAR);
+      invitedGroupId != null
+          ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+              arguments: true, parameters: {'g': invitedGroupId!})
+          : Get.rootDelegate.offNamed(Routes.CALENDAR);
       _logLoginAnalyticsAboutAgent("email");
     } else if (res == USER_NOT_FOUND) {
       setState(() => _errorMessage = "회원으로 등록되어있지 않습니다");
