@@ -13,7 +13,7 @@ class UserPublicModel {
   bool? talkMessageAgreed; // 카카오톡 메세지 수신 동의 여부 (카카오 로그인할때)
   bool? emailNoticeAllowed; // 이메일로 예약 알림 동의 여부
   bool? kakaoNoticeAllowed; // 카카오톡으로 예약 알림 동의 여부 (우리 서비스에서 알림 설정)
-  List<String?>? noticeMethods = [];
+  List<String?>? noticeMethods;
   final List<String>? groups;
 
   UserPublicModel({
