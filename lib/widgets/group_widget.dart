@@ -781,139 +781,133 @@ class _GroupState extends ConsumerState<Group> {
       GroupModel? group = await database.getGroup(groupId);
       String? groupName = group.name;
       String? password = group.password;
-      if (uid != null) {
-        return showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              content: groupName != null
-                  ? Container(
-                      child: Form(
-                        key: _invitementFormKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              alignment: Alignment.centerRight,
-                              child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: IconButton(
-                                  padding: EdgeInsets.all(0),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Get.rootDelegate.offNamed(Routes.CALENDAR);
-                                  },
-                                  icon: Icon(
-                                    Icons.close,
-                                    color: Colors.black,
-                                    size: 30,
-                                  ),
+      return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: groupName != null
+                ? Container(
+                    child: Form(
+                      key: _invitementFormKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerRight,
+                            child: SizedBox(
+                              width: 30,
+                              height: 30,
+                              child: IconButton(
+                                padding: EdgeInsets.all(0),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Get.rootDelegate.offNamed(Routes.CALENDAR);
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: Colors.black,
+                                  size: 30,
                                 ),
                               ),
                             ),
-                            Text(
-                              '초대장',
-                              style: MyTextStyle.CbS26W600,
-                            ),
-                            Text(' 귀하께서 $groupName그룹에 초대되었습니다.',
-                                style: MyTextStyle.CbS18W400),
-                            password != ''
-                                ? Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: TextFormField(
-                                      controller: _invitePwController,
-                                      validator: (value) {
-                                        if (value != password) {
-                                          return '비밀번호가 올바르지 않습니다.';
-                                        }
-                                        return null;
-                                      },
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                      cursorColor: Colors.grey.shade600,
-                                      cursorHeight: 18,
-                                      decoration: const InputDecoration(
-                                        border: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Colors.grey,
-                                            style: BorderStyle.solid,
-                                          ),
-                                        ),
-                                        hoverColor: purple300,
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide:
-                                                BorderSide(color: purple300)),
-                                        labelText: '비밀번호',
-                                        floatingLabelStyle: TextStyle(
-                                          color: purple300,
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
+                          ),
+                          Text(
+                            '초대장',
+                            style: MyTextStyle.CbS26W600,
+                          ),
+                          Text(' 귀하께서 $groupName그룹에 초대되었습니다.',
+                              style: MyTextStyle.CbS18W400),
+                          password != ''
+                              ? Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextFormField(
+                                    controller: _invitePwController,
+                                    validator: (value) {
+                                      if (value != password) {
+                                        return '비밀번호가 올바르지 않습니다.';
+                                      }
+                                      return null;
+                                    },
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                    cursorColor: Colors.grey.shade600,
+                                    cursorHeight: 18,
+                                    decoration: const InputDecoration(
+                                      border: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.grey,
+                                          style: BorderStyle.solid,
                                         ),
                                       ),
-                                      maxLines: 1,
-                                      textInputAction: TextInputAction.next,
+                                      hoverColor: purple300,
+                                      focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: purple300)),
+                                      labelText: '비밀번호',
+                                      floatingLabelStyle: TextStyle(
+                                        color: purple300,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  )
-                                : Text(
-                                    '가입하시겠습니까?',
-                                    style: MyTextStyle.CbS18W400,
+                                    maxLines: 1,
+                                    textInputAction: TextInputAction.next,
                                   ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                              height: 44,
-                              width: 110,
-                              child: TextButton(
-                                onPressed: () {
-                                  _invitePwController.clear();
-                                  if (uid != null) {
-                                    if (_invitementFormKey.currentState!
-                                        .validate()) {
-                                      enterGroup(group);
-                                      Navigator.pop(context);
-                                      Get.rootDelegate
-                                          .offNamed(Routes.CALENDAR);
-                                    }
-                                  } else {
-                                    _showSignUpDialog();
-                                  }
-                                },
-                                child: Text(
-                                  '가입하기',
-                                  style: MyTextStyle.CwS20W600,
+                                )
+                              : Text(
+                                  '가입하시겠습니까?',
+                                  style: MyTextStyle.CbS18W400,
                                 ),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          MyColors.purple300),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          SizedBox(
+                            height: 44,
+                            width: 110,
+                            child: TextButton(
+                              onPressed: () {
+                                _invitePwController.clear();
+                                if (uid != null) {
+                                  if (_invitementFormKey.currentState!
+                                      .validate()) {
+                                    enterGroup(group);
+                                  }
+                                } else {
+                                  _showSignUpDialog();
+                                }
+                              },
+                              child: Text(
+                                '가입하기',
+                                style: MyTextStyle.CwS20W600,
+                              ),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        MyColors.purple300),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    )
-                  : Container(
-                      child: Text('잘못된 링크입니다!'),
                     ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(16.0))),
-            );
-          },
-        );
-      } else {
-        _showSignUpDialog();
-      }
+                  )
+                : Container(
+                    child: Text('잘못된 링크입니다!'),
+                  ),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16.0))),
+          );
+        },
+      );
     } else {
       return null;
     }
@@ -953,6 +947,7 @@ class _GroupState extends ConsumerState<Group> {
   ) async {
     if (group.memberUids!.contains(database.uid)) {
       return showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -995,6 +990,7 @@ class _GroupState extends ConsumerState<Group> {
                     child: TextButton(
                       onPressed: () {
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                        Navigator.pop(context);
                         Navigator.pop(context);
                       },
                       child: Text(
@@ -1077,6 +1073,7 @@ class _GroupState extends ConsumerState<Group> {
                         _changeActivatedGroup(group.id!);
                         ref.refresh(myGroupIdFutureProvider);
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                        Navigator.pop(context);
                         Navigator.pop(context);
                       },
                       child: Text(
