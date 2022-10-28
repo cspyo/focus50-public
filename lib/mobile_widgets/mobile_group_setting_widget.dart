@@ -7,51 +7,17 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
-import 'package:focus42/models/user_public_model.dart';
+import 'package:focus42/models/user_model.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
+import 'package:focus42/widgets/group_setting_widget.dart';
 import 'package:focus42/widgets/group_title_and_textfield_widget.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
-Future<void> leaveGroup(FirestoreDatabase database, String docId) async {
-  await database.runTransaction((transaction) async {
-    final GroupModel myGroup = await database.getGroupInTransaction(
-        docId: docId, transaction: transaction);
-    database.updateGroupInTransaction(
-        myGroup.removeMember(database.uid), transaction);
-    final UserPublicModel myUser = await database.getUserPublic();
-    database.setUserPublic(myUser.leaveGroup(docId));
-  });
-}
-
-Future<void> modifyGroup({
-  required FirestoreDatabase database,
-  required GroupModel group,
-  required String newName,
-  required String newImageUrl,
-  required String newPassword,
-  required String newIntroduction,
-}) async {
-  final String groupId = group.id!;
-  await database.runTransaction((transaction) async {
-    final GroupModel myGroup = await database.getGroupInTransaction(
-        docId: groupId, transaction: transaction);
-    database.updateGroupInTransaction(
-        myGroup.modifyInfo(
-          newName: newName,
-          newImageUrl: newImageUrl,
-          newPassword: newPassword,
-          newIntroduction: newIntroduction,
-          newUpdatedBy: database.uid,
-        ),
-        transaction);
-  });
-}
 
 class MobileGroupSettingAlertDialog extends ConsumerStatefulWidget {
   final FirestoreDatabase database;
@@ -488,8 +454,14 @@ class _MobileGroupSettingAlertDialogState
                                                               isLeaveLoading =
                                                                   true;
                                                             });
+                                                            final UserModel?
+                                                                user =
+                                                                await ref.read(
+                                                                    userStreamProvider
+                                                                        .future);
                                                             await leaveGroup(
                                                                 database,
+                                                                user!,
                                                                 widget
                                                                     .group.id!);
                                                             _changeActivatedGroup(
