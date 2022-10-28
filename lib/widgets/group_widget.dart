@@ -297,7 +297,6 @@ class _GroupState extends ConsumerState<Group> {
     return Stack(
       children: [
         Container(
-          height: 80,
           child: TextButton(
             onPressed: () {
               _changeActivatedGroup(group.id!);
@@ -319,6 +318,9 @@ class _GroupState extends ConsumerState<Group> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  SizedBox(
+                    height: 5,
+                  ),
                   group.id != 'public'
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(10),
@@ -338,6 +340,9 @@ class _GroupState extends ConsumerState<Group> {
                             height: 24,
                           ),
                         ),
+                  SizedBox(
+                    height: 5,
+                  ),
                   Text(
                     group.name!,
                     softWrap: true,
@@ -346,6 +351,9 @@ class _GroupState extends ConsumerState<Group> {
                       fontSize: group.name!.length > 5 ? 10 : 12,
                       fontWeight: FontWeight.w600,
                     ),
+                  ),
+                  SizedBox(
+                    height: 5,
                   ),
                   isThisGroupActivated && group.id != 'public'
                       ? SizedBox(
@@ -476,6 +484,9 @@ class _GroupState extends ConsumerState<Group> {
                           ),
                         )
                       : SizedBox.shrink(),
+                  SizedBox(
+                    height: 5,
+                  ),
                 ],
               ),
             ),
