@@ -6,12 +6,14 @@ class BuildTitleAndTextField extends StatelessWidget {
   final TextEditingController controller;
   final int index;
   final bool isGroupNameOverlap;
+  final bool isAbleToModify;
   BuildTitleAndTextField(
       {Key? key,
       required this.hintText,
       required this.controller,
       required this.index,
-      required this.isGroupNameOverlap})
+      required this.isGroupNameOverlap,
+      required this.isAbleToModify})
       : super(key: key);
 
   @override
@@ -38,6 +40,7 @@ class BuildTitleAndTextField extends StatelessWidget {
             cursorColor: Colors.black,
             cursorHeight: 18,
             maxLines: index == 2 ? null : 1,
+            enabled: isAbleToModify,
             decoration: InputDecoration(
               border: UnderlineInputBorder(
                 borderSide: BorderSide(
@@ -46,7 +49,6 @@ class BuildTitleAndTextField extends StatelessWidget {
                 ),
               ),
               contentPadding: EdgeInsets.all(4),
-              hoverColor: purple300,
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: purple300)),
               labelText: hintText,

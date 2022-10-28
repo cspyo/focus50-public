@@ -13,7 +13,6 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
-import 'package:focus42/widgets/group_title_and_textfield_widget.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -176,10 +175,62 @@ class _GroupSettingAlertDialogState
                         ),
                         child: TextButton(
                           onPressed: () async {
-                            Uint8List im = await pickImage(ImageSource.gallery);
-                            setState(() {
-                              _image = im;
-                            });
+                            if (isUserCreator) {
+                              Uint8List im =
+                                  await pickImage(ImageSource.gallery);
+                              setState(() {
+                                _image = im;
+                              });
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '권한이 없습니다',
+                                              style: MyTextStyle.CbS18W400,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              '그룹 수정은 방장만 할 수 있습니다.',
+                                              style: MyTextStyle.CbS14W400,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                '확인',
+                                                style: MyTextStyle.CwS12W600,
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all<
+                                                            Color>(
+                                                        MyColors.purple300),
+                                                shape:
+                                                    MaterialStateProperty.all<
+                                                        RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ]),
+                                    );
+                                  });
+                            }
                           },
                           child: Center(
                             child: const Icon(
@@ -197,246 +248,287 @@ class _GroupSettingAlertDialogState
                   height: 10,
                 ),
                 for (int i = 0; i < hintTexts.length; i++)
-                  BuildTitleAndTextField(
-                      hintText: hintTexts[i],
-                      controller: controllers[i],
-                      index: i,
-                      isGroupNameOverlap: isGroupNameOverlap),
-                StatefulBuilder(
-                  builder: ((context, setState) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  Container(
+                    width: 400,
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    child: Column(
                       children: [
-                        isUserCreator
-                            ? SizedBox(
-                                width: 120,
-                                height: 40,
-                                child: TextButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      isModifyLoading = true;
-                                    });
-                                    if (_nameController.text !=
-                                            widget.group.name &&
-                                        await database.findIfGroupNameOverlap(
-                                            _nameController.text)) {
-                                      setState(() {
-                                        isGroupNameOverlap = true;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        isGroupNameOverlap = false;
-                                      });
-                                    }
-                                    final String dateString =
-                                        DateFormat('yyyyMMddHHmmss')
-                                            .format(DateTime.now());
-                                    final String imageUrl = (_image == null)
-                                        ? widget.group.imageUrl!
-                                        : await StorageMethods()
-                                            .uploadImageToStorage(
-                                                'groupPics/${widget.group.id}/${dateString}',
-                                                _image!);
-                                    if (_modifyGroupFormKey.currentState!
-                                            .validate() &&
-                                        isGroupNameOverlap == false) {
-                                      await modifyGroup(
-                                        database: widget.database,
-                                        group: widget.group,
-                                        newName: _nameController.text,
-                                        newImageUrl: imageUrl,
-                                        newIntroduction:
-                                            _introductionController.text,
-                                        newPassword: _passwordController.text,
-                                      );
-                                      ref.refresh(myGroupFutureProvider);
-                                      Navigator.pop(parentContext);
-                                    }
-                                    setState(() {
-                                      isModifyLoading = false;
-                                    });
-                                  },
-                                  child: isModifyLoading
-                                      ? CircularIndicator(
-                                          size: 22, color: MyColors.purple300)
-                                      : Text(
-                                          '그룹 정보 수정',
-                                          style: MyTextStyle.CpS12W600,
-                                        ),
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        MaterialStateProperty.all<Color>(
-                                            Colors.white),
-                                    shape: MaterialStateProperty.all<
-                                        RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: MyColors.purple300,
-                                            width: 1),
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : SizedBox.shrink(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(
-                          width: 100,
-                          height: 40,
-                          child: TextButton(
-                            onPressed: () {
-                              showDialog(
-                                  context: parentContext,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      content: SizedBox(
-                                        width: 260,
-                                        child: StatefulBuilder(
-                                          builder: ((context, setState) {
-                                            return Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    '정말 ${widget.group.name} 그룹을 나가시겠습니까?',
-                                                    style:
-                                                        MyTextStyle.CbS16W400,
-                                                  ),
-                                                  SizedBox(
-                                                    height: 20,
-                                                  ),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SizedBox(
-                                                        height: 36,
-                                                        child: TextButton(
-                                                          onPressed: () async {
-                                                            setState(() {
-                                                              isLeaveLoading =
-                                                                  true;
-                                                            });
-                                                            final UserModel?
-                                                                user =
-                                                                await ref.read(
-                                                                    userStreamProvider
-                                                                        .future);
-                                                            await leaveGroup(
-                                                                database,
-                                                                user!,
-                                                                widget
-                                                                    .group.id!);
-                                                            _changeActivatedGroup(
-                                                                'public');
-                                                            ref.refresh(
-                                                                myGroupIdFutureProvider);
-                                                            setState(() {
-                                                              isLeaveLoading =
-                                                                  false;
-                                                            });
-                                                            Navigator.pop(
-                                                                context);
-                                                            Navigator.pop(
-                                                                parentContext);
-                                                          },
-                                                          child: isLeaveLoading
-                                                              ? CircularIndicator(
-                                                                  size: 22,
-                                                                  color: MyColors
-                                                                      .purple300)
-                                                              : Text(
-                                                                  '나가기',
-                                                                  style: MyTextStyle
-                                                                      .CwS16W400,
-                                                                ),
-                                                          style: ButtonStyle(
-                                                            backgroundColor:
-                                                                MaterialStateProperty
-                                                                    .all<Color>(
-                                                                        MyColors
-                                                                            .purple300),
-                                                            shape: MaterialStateProperty
-                                                                .all<
-                                                                    RoundedRectangleBorder>(
-                                                              RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: 10,
-                                                      ),
-                                                      SizedBox(
-                                                        height: 36,
-                                                        child: TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.pop(
-                                                                  context),
-                                                          child: Text(
-                                                            '나가지 않기',
-                                                            style: MyTextStyle
-                                                                .CpS16W400,
-                                                          ),
-                                                          style: ButtonStyle(
-                                                            backgroundColor:
-                                                                MaterialStateProperty
-                                                                    .all<Color>(
-                                                                        Colors
-                                                                            .white),
-                                                            shape: MaterialStateProperty
-                                                                .all<
-                                                                    RoundedRectangleBorder>(
-                                                              RoundedRectangleBorder(
-                                                                side: BorderSide(
-                                                                    width: 1,
-                                                                    color: MyColors
-                                                                        .purple300),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            16),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ]);
-                                          }),
-                                        ),
-                                      ),
-                                    );
-                                  });
-                            },
-                            child: Text(
-                              '그룹 나가기',
-                              style: MyTextStyle.CwS12W600,
-                            ),
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  MyColors.purple300),
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
+                        TextFormField(
+                          validator: (value) {
+                            return i == 0
+                                ? (value == null || value.isEmpty)
+                                    ? '${hintTexts[i]}를 입력해주세요'
+                                    : isGroupNameOverlap
+                                        ? '이미 있는 그룹 명입니다. 다른 이름을 적어주세요'
+                                        : value.length > 12
+                                            ? '12자 이내의 이름을 적어주세요'
+                                            : null
+                                : null;
+                            // return isGroupNameOverlap.toString();
+                          },
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                          controller: controllers[i],
+                          cursorColor: Colors.black,
+                          cursorHeight: 18,
+                          maxLines: i == 2 ? null : 1,
+                          enabled: isUserCreator ? true : false,
+                          decoration: InputDecoration(
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey,
+                                style: BorderStyle.solid,
                               ),
+                            ),
+                            contentPadding: EdgeInsets.all(4),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: purple300)),
+                            labelText: hintTexts[i],
+                            labelStyle: TextStyle(
+                                color: Color.fromARGB(255, 75, 75, 75),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300),
+                            floatingLabelStyle: TextStyle(
+                              color: purple300,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 30,
+                        ),
                       ],
-                    );
-                  }),
+                    ),
+                  ),
+                // BuildTitleAndTextField(
+                //   hintText: hintTexts[i],
+                //   controller: controllers[i],
+                //   index: i,
+                //   isGroupNameOverlap: isGroupNameOverlap,
+                //   isAbleToModify: isUserCreator,
+                // ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    isUserCreator
+                        ? SizedBox(
+                            width: 120,
+                            height: 40,
+                            child: TextButton(
+                              onPressed: () async {
+                                setState(() {
+                                  isModifyLoading = true;
+                                });
+                                if (_nameController.text != widget.group.name &&
+                                    await database.findIfGroupNameOverlap(
+                                        _nameController.text)) {
+                                  setState(() {
+                                    isGroupNameOverlap = true;
+                                  });
+                                } else {
+                                  setState(() {
+                                    isGroupNameOverlap = false;
+                                  });
+                                }
+                                final String dateString =
+                                    DateFormat('yyyyMMddHHmmss')
+                                        .format(DateTime.now());
+                                final String imageUrl = (_image == null)
+                                    ? widget.group.imageUrl!
+                                    : await StorageMethods().uploadImageToStorage(
+                                        'groupPics/${widget.group.id}/${dateString}',
+                                        _image!);
+                                if (_modifyGroupFormKey.currentState!
+                                        .validate() &&
+                                    isGroupNameOverlap == false) {
+                                  await modifyGroup(
+                                    database: widget.database,
+                                    group: widget.group,
+                                    newName: _nameController.text,
+                                    newImageUrl: imageUrl,
+                                    newIntroduction:
+                                        _introductionController.text,
+                                    newPassword: _passwordController.text,
+                                  );
+                                  ref.refresh(myGroupFutureProvider);
+                                  Navigator.pop(parentContext);
+                                }
+                                setState(() {
+                                  isModifyLoading = false;
+                                });
+                              },
+                              child: isModifyLoading
+                                  ? CircularIndicator(
+                                      size: 22, color: MyColors.purple300)
+                                  : Text(
+                                      '그룹 정보 수정',
+                                      style: MyTextStyle.CpS12W600,
+                                    ),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: MyColors.purple300, width: 1),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    SizedBox(
+                      width: 100,
+                      height: 40,
+                      child: TextButton(
+                        onPressed: () {
+                          showDialog(
+                              context: parentContext,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: SizedBox(
+                                    width: 260,
+                                    child: StatefulBuilder(
+                                      builder: ((context, setState) {
+                                        return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                '정말 ${widget.group.name} 그룹을 나가시겠습니까?',
+                                                style: MyTextStyle.CbS16W400,
+                                              ),
+                                              SizedBox(
+                                                height: 20,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    height: 36,
+                                                    child: TextButton(
+                                                      onPressed: () async {
+                                                        setState(() {
+                                                          isLeaveLoading = true;
+                                                        });
+                                                        final UserModel? user =
+                                                            await ref.read(
+                                                                userStreamProvider
+                                                                    .future);
+                                                        await leaveGroup(
+                                                            database,
+                                                            user!,
+                                                            widget.group.id!);
+                                                        _changeActivatedGroup(
+                                                            'public');
+                                                        ref.refresh(
+                                                            myGroupIdFutureProvider);
+                                                        setState(() {
+                                                          isLeaveLoading =
+                                                              false;
+                                                        });
+                                                        Navigator.pop(context);
+                                                        Navigator.pop(
+                                                            parentContext);
+                                                      },
+                                                      child: isLeaveLoading
+                                                          ? CircularIndicator(
+                                                              size: 22,
+                                                              color: MyColors
+                                                                  .purple300)
+                                                          : Text(
+                                                              '나가기',
+                                                              style: MyTextStyle
+                                                                  .CwS16W400,
+                                                            ),
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(MyColors
+                                                                    .purple300),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  SizedBox(
+                                                    height: 36,
+                                                    child: TextButton(
+                                                      onPressed: () =>
+                                                          Navigator.pop(
+                                                              context),
+                                                      child: Text(
+                                                        '나가지 않기',
+                                                        style: MyTextStyle
+                                                            .CpS16W400,
+                                                      ),
+                                                      style: ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStateProperty
+                                                                .all<Color>(
+                                                                    Colors
+                                                                        .white),
+                                                        shape: MaterialStateProperty
+                                                            .all<
+                                                                RoundedRectangleBorder>(
+                                                          RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                width: 1,
+                                                                color: MyColors
+                                                                    .purple300),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ]);
+                                      }),
+                                    ),
+                                  ),
+                                );
+                              });
+                        },
+                        child: Text(
+                          '그룹 나가기',
+                          style: MyTextStyle.CwS12W600,
+                        ),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              MyColors.purple300),
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 )
               ]),
             ),

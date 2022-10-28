@@ -622,10 +622,12 @@ class _GroupState extends ConsumerState<Group> {
                           ),
                           for (int i = 0; i < hintTexts.length; i++)
                             BuildTitleAndTextField(
-                                hintText: hintTexts[i],
-                                controller: controllers[i],
-                                index: i,
-                                isGroupNameOverlap: isGroupNameOverlap),
+                              hintText: hintTexts[i],
+                              controller: controllers[i],
+                              index: i,
+                              isGroupNameOverlap: isGroupNameOverlap,
+                              isAbleToModify: true,
+                            ),
                           SizedBox(
                             width: 140,
                             height: 45,
