@@ -48,10 +48,7 @@ class BuildTitleAndTextField extends StatelessWidget {
                   style: BorderStyle.solid,
                 ),
               ),
-              filled: isAbleToModify ? true : false,
-              fillColor: isAbleToModify ? Colors.transparent : Colors.red,
               contentPadding: EdgeInsets.all(4),
-              hoverColor: purple300,
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: purple300)),
               labelText: hintText,
