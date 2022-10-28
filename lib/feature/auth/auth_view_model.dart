@@ -90,8 +90,9 @@ class AuthViewModel {
       String third = phoneNumber.substring(7, 11);
       String fourth = phoneNumber.substring(12);
       return first + second + third + fourth;
+    } else {
+      return null;
     }
-    return null;
   }
 
   // 로그인 (카카오)
@@ -105,14 +106,27 @@ class AuthViewModel {
       String? email = user.kakaoAccount?.email;
       String? photoURL = user.kakaoAccount?.profile?.profileImageUrl;
       String? phoneNumber = user.kakaoAccount?.phoneNumber;
+      Map<String, dynamic> userForCreateCustomToken;
 
-      final token = await _firebaseAuthRemoteDataSource.createCustomToken({
-        "uid": uid,
-        "displayName": nickname,
-        "email": email,
-        "photoURL": photoURL,
-        "phoneNumber": _substringPhoneNumber(phoneNumber),
-      });
+      if (phoneNumber != null) {
+        userForCreateCustomToken = {
+          "uid": uid,
+          "displayName": nickname,
+          "email": email,
+          "photoURL": photoURL,
+          "phoneNumber": _substringPhoneNumber(phoneNumber),
+        };
+      } else {
+        userForCreateCustomToken = {
+          "uid": uid,
+          "displayName": nickname,
+          "email": email,
+          "photoURL": photoURL,
+        };
+      }
+
+      final token = await _firebaseAuthRemoteDataSource
+          .createCustomToken(userForCreateCustomToken);
 
       if (token == EMAIL_ALREADY_EXISTS) {
         res = token;
