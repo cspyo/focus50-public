@@ -13,7 +13,6 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/utils.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
-import 'package:focus42/widgets/group_title_and_textfield_widget.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -363,14 +362,67 @@ class _MobileGroupSettingAlertDialogState
                   height: 20,
                 ),
                 for (int i = 0; i < hintTexts.length; i++)
-                  BuildTitleAndTextField(
-                    hintText: hintTexts[i],
-                    controller: controllers[i],
-                    index: i,
-                    isGroupNameOverlap: isGroupNameOverlap,
-                    isAbleToModify: isUserCreator,
-                  ), //for 문 안쓰고 어케 하지??
-
+                  // BuildTitleAndTextField(
+                  //   hintText: hintTexts[i],
+                  //   controller: controllers[i],
+                  //   index: i,
+                  //   isGroupNameOverlap: isGroupNameOverlap,
+                  //   isAbleToModify: isUserCreator,
+                  // ), //for 문 안쓰고 어케 하지??
+                  Container(
+                    width: 400,
+                    padding: EdgeInsets.only(left: 16, right: 16),
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          //TODO: 왜 buildtitleandtextfield를 쓰면 그룹 명 중복을 못 잡을까?
+                          validator: (value) {
+                            return i == 0
+                                ? (value == null || value.isEmpty)
+                                    ? '${hintTexts[i]}를 입력해주세요'
+                                    : isGroupNameOverlap
+                                        ? '이미 있는 그룹 명입니다. 다른 이름을 적어주세요'
+                                        : value.length > 12
+                                            ? '12자 이내의 이름을 적어주세요'
+                                            : null
+                                : null;
+                            // return isGroupNameOverlap.toString();
+                          },
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                          controller: controllers[i],
+                          cursorColor: Colors.black,
+                          cursorHeight: 18,
+                          maxLines: i == 2 ? null : 1,
+                          enabled: isUserCreator ? true : false,
+                          decoration: InputDecoration(
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.grey,
+                                style: BorderStyle.solid,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.all(4),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: purple300)),
+                            labelText: hintTexts[i],
+                            labelStyle: TextStyle(
+                                color: Color.fromARGB(255, 75, 75, 75),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300),
+                            floatingLabelStyle: TextStyle(
+                              color: purple300,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                      ],
+                    ),
+                  ),
                 StatefulBuilder(
                   builder: ((context, setState) {
                     return Row(
