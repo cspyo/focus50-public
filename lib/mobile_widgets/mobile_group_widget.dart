@@ -328,11 +328,12 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                             ),
                             for (int i = 0; i < hintTexts.length; i++)
                               BuildTitleAndTextField(
-                                  hintText: hintTexts[i],
-                                  controller: controllers[i],
-                                  index: i,
-                                  isGroupNameOverlap:
-                                      isGroupNameOverlap), //for 문 안쓰고 어케 하지??
+                                hintText: hintTexts[i],
+                                controller: controllers[i],
+                                index: i,
+                                isGroupNameOverlap: isGroupNameOverlap,
+                                isAbleToModify: true,
+                              ), //for 문 안쓰고 어케 하지??
                             SizedBox(
                               width: 140,
                               height: 45,

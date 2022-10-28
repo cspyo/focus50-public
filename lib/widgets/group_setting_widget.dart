@@ -173,10 +173,62 @@ class _GroupSettingAlertDialogState
                         ),
                         child: TextButton(
                           onPressed: () async {
-                            Uint8List im = await pickImage(ImageSource.gallery);
-                            setState(() {
-                              _image = im;
-                            });
+                            if (isUserCreator) {
+                              Uint8List im =
+                                  await pickImage(ImageSource.gallery);
+                              setState(() {
+                                _image = im;
+                              });
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '권한이 없습니다',
+                                              style: MyTextStyle.CbS18W400,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              '그룹 수정은 방장만 할 수 있습니다.',
+                                              style: MyTextStyle.CbS14W400,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text(
+                                                '확인',
+                                                style: MyTextStyle.CwS12W600,
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all<
+                                                            Color>(
+                                                        MyColors.purple300),
+                                                shape:
+                                                    MaterialStateProperty.all<
+                                                        RoundedRectangleBorder>(
+                                                  RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ]),
+                                    );
+                                  });
+                            }
                           },
                           child: Center(
                             child: const Icon(
@@ -195,10 +247,12 @@ class _GroupSettingAlertDialogState
                 ),
                 for (int i = 0; i < hintTexts.length; i++)
                   BuildTitleAndTextField(
-                      hintText: hintTexts[i],
-                      controller: controllers[i],
-                      index: i,
-                      isGroupNameOverlap: isGroupNameOverlap),
+                    hintText: hintTexts[i],
+                    controller: controllers[i],
+                    index: i,
+                    isGroupNameOverlap: isGroupNameOverlap,
+                    isAbleToModify: isUserCreator,
+                  ),
                 StatefulBuilder(
                   builder: ((context, setState) {
                     return Row(

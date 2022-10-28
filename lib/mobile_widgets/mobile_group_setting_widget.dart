@@ -368,6 +368,7 @@ class _MobileGroupSettingAlertDialogState
                     controller: controllers[i],
                     index: i,
                     isGroupNameOverlap: isGroupNameOverlap,
+                    isAbleToModify: isUserCreator,
                   ), //for 문 안쓰고 어케 하지??
 
                 StatefulBuilder(
