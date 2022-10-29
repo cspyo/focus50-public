@@ -6,7 +6,7 @@ import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/presentation/email_sign_up_dialog.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
@@ -42,10 +42,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
-        invitedGroupId != null
-            ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                arguments: true, parameters: {'g': invitedGroupId!})
-            : Get.rootDelegate.offNamed(Routes.PROFILE);
+        Navigator.of(context).pop();
+        ShowAuthDialog().showGoToProfileDialog(context);
       } else {
         Navigator.of(context).pop();
         invitedGroupId != null
@@ -70,10 +68,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
-        invitedGroupId != null
-            ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                arguments: true, parameters: {'g': invitedGroupId!})
-            : Get.rootDelegate.offNamed(Routes.PROFILE);
+        Navigator.of(context).pop();
+        ShowAuthDialog().showGoToProfileDialog(context);
       } else {
         Navigator.of(context).pop();
         invitedGroupId != null
