@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:focus42/feature/auth/presentation/email_login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/email_sign_up_dialog.dart';
 import 'package:focus42/feature/auth/presentation/go_to_profile_dialog.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
@@ -15,6 +16,7 @@ class ShowAuthDialog {
   // 로그인 다이얼로그
   Future<void> showLoginDialog(BuildContext context) async {
     return showDialog<void>(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return LoginDialog();
@@ -22,9 +24,10 @@ class ShowAuthDialog {
     );
   }
 
-  //회원가입 다이얼로그
+  // 회원가입 다이얼로그
   Future<void> showSignUpDialog(BuildContext context) async {
     return showDialog<void>(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return SignUpDialog();
@@ -32,9 +35,21 @@ class ShowAuthDialog {
     );
   }
 
-  // 이메일 회원가입 다이얼로그
+  // 이메일 로그인 폼 다이얼로그
+  Future<void> showEmailLoginDialog(BuildContext context) async {
+    return showDialog<void>(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return EmailLoginDialog();
+      },
+    );
+  }
+
+  // 이메일 회원가입 폼 다이얼로그
   Future<void> showEmailSignUpDialog(BuildContext context) async {
     return showDialog<void>(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return EmailSignUpDialog();
@@ -45,6 +60,7 @@ class ShowAuthDialog {
   // 프로필 확인하시겠습니까? 다이얼로그
   Future<void> showGoToProfileDialog(BuildContext context) async {
     return showDialog<void>(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return GoToProfileDialog();

@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
@@ -26,24 +25,6 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
   @override
   void dispose() {
     super.dispose();
-  }
-
-  Future<void> _showLoginDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginDialog();
-      },
-    );
-  }
-
-  Future<void> _showSignUpDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SignUpDialog();
-      },
-    );
   }
 
   @override
@@ -113,7 +94,8 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                       style: OutlinedButton.styleFrom(
                         primary: purple300,
                       ),
-                      onPressed: _showSignUpDialog,
+                      onPressed: () =>
+                          ShowAuthDialog().showSignUpDialog(context),
                       child: const Text(
                         '회원가입',
                         style: TextStyle(
@@ -127,7 +109,8 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                       style: ElevatedButton.styleFrom(
                         primary: purple300,
                       ),
-                      onPressed: _showLoginDialog,
+                      onPressed: () =>
+                          ShowAuthDialog().showLoginDialog(context),
                       child: const Text(
                         '  로그인  ',
                         style: TextStyle(

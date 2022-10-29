@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
@@ -43,24 +42,6 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         getUserInfo = true;
       });
     }
-  }
-
-  Future<void> _showLoginDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginDialog();
-      },
-    );
-  }
-
-  Future<void> _showSignUpDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SignUpDialog();
-      },
-    );
   }
 
   @override
@@ -193,7 +174,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                         borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: () {
-                    _showSignUpDialog();
+                    ShowAuthDialog().showSignUpDialog(context);
                   },
                   child: const Text(
                     '  회원가입  ',
@@ -223,7 +204,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                         borderRadius: BorderRadius.circular(16)),
                   ),
                   onPressed: () {
-                    _showLoginDialog();
+                    ShowAuthDialog().showLoginDialog(context);
                   },
                   child: const Text(
                     '  로그인  ',

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/auth/presentation/login_dialog.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 
@@ -87,16 +86,6 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     }
   }
 
-  // 로그인 다이얼로그
-  Future<void> _showLoginDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginDialog();
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -124,24 +113,49 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Focus',
-              style: TextStyle(
-                fontFamily: 'Okddung',
-                fontSize: 25,
-                color: Colors.black,
-              ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: 36,
+              height: 36,
             ),
-            Text(
-              '50',
-              style: TextStyle(
-                fontFamily: 'Okddung',
-                fontSize: 25,
-                color: purple300,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const <Widget>[
+                Text(
+                  'Focus',
+                  style: TextStyle(
+                    fontFamily: 'Okddung',
+                    fontSize: 25,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  '50',
+                  style: TextStyle(
+                    fontFamily: 'Okddung',
+                    fontSize: 25,
+                    color: purple300,
+                  ),
+                ),
+              ],
             ),
+            SizedBox(
+              width: 36,
+              height: 36,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  child: Icon(
+                    Icons.clear,
+                    color: Colors.black,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            )
           ],
         ),
         SizedBox(
@@ -339,7 +353,7 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
           InkWell(
             onTap: () {
               Navigator.of(context).pop();
-              _showLoginDialog();
+              ShowAuthDialog().showLoginDialog(context);
             },
             child: Text(
               "로그인",
