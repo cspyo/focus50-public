@@ -61,8 +61,9 @@ class _GroupSearchAlertDialogState
     final searchedGroups = ref.watch(searchedGroupStreamProvider(query));
     database = ref.watch(databaseProvider);
     uid = FirebaseAuth.instance.currentUser?.uid;
+    double widgetWidth = 300;
     return SizedBox(
-        width: 300,
+        width: widgetWidth,
         child: AlertDialog(
           contentPadding: EdgeInsets.zero,
           insetPadding: EdgeInsets.zero,
@@ -71,12 +72,12 @@ class _GroupSearchAlertDialogState
               borderRadius: BorderRadius.all(Radius.circular(16.0))),
           content: Container(
             padding: EdgeInsets.zero,
-            width: 300,
+            width: widgetWidth,
             height: 560,
             child: Column(
               children: [
                 Container(
-                  width: 300,
+                  width: widgetWidth,
                   height: 56,
                   padding: EdgeInsets.only(right: 8),
                   decoration: BoxDecoration(
@@ -110,7 +111,7 @@ class _GroupSearchAlertDialogState
                 ),
                 Container(
                   height: 68,
-                  width: 300,
+                  width: widgetWidth,
                   padding: EdgeInsets.all(8),
                   child: TextField(
                     decoration: InputDecoration(
@@ -144,7 +145,7 @@ class _GroupSearchAlertDialogState
                   ),
                 ),
                 Container(
-                  width: 300,
+                  width: widgetWidth,
                   padding: EdgeInsets.all(10),
                   height: 432,
                   decoration: BoxDecoration(
@@ -300,40 +301,35 @@ class _GroupSearchAlertDialogState
                               width: 300,
                               child: TextFormField(
                                 controller: _passwordController,
-                                cursorColor: Colors.black,
-                                validator: (value) {
-                                  return value != password
-                                      ? '비밀번호가 올바르지 않습니다.'
-                                      : null;
+                                validator: (_) {
+                                  if (_passwordController.text != password) {
+                                    return '비밀번호가 올바르지 않습니다.';
+                                  }
+                                  return null;
                                 },
-                                decoration: InputDecoration(
-                                  hintStyle: MyTextStyle.CgS18W500,
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                cursorColor: Colors.grey.shade600,
+                                cursorHeight: 18,
+                                decoration: const InputDecoration(
                                   border: UnderlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: MyColors.border300,
-                                      width: 1,
+                                      color: Colors.grey,
+                                      style: BorderStyle.solid,
                                     ),
                                   ),
+                                  hoverColor: purple300,
                                   focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  errorBorder: InputBorder.none,
-                                  disabledBorder: InputBorder.none,
-                                  hintText: '비밀번호',
-                                  errorStyle: TextStyle(
-                                    fontSize: 10,
-                                    height: 0.4,
+                                      borderSide: BorderSide(color: purple300)),
+                                  labelText: '비밀번호',
+                                  floatingLabelStyle: TextStyle(
+                                    color: purple300,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
+                                maxLines: 1,
+                                textInputAction: TextInputAction.next,
                               ),
                             ),
                           ],
