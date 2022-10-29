@@ -824,8 +824,9 @@ class _GroupState extends ConsumerState<Group> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: TextFormField(
                                     controller: _invitePwController,
-                                    validator: (value) {
-                                      if (value != password) {
+                                    validator: (_) {
+                                      if (_invitePwController.text !=
+                                          password) {
                                         return '비밀번호가 올바르지 않습니다.';
                                       }
                                       return null;
@@ -869,12 +870,12 @@ class _GroupState extends ConsumerState<Group> {
                             width: 110,
                             child: TextButton(
                               onPressed: () {
-                                _invitePwController.clear();
                                 if (uid != null) {
                                   if (_invitementFormKey.currentState!
                                       .validate()) {
                                     enterGroup(group);
                                   }
+                                  _invitePwController.clear();
                                 } else {
                                   _showSignUpDialog();
                                 }
