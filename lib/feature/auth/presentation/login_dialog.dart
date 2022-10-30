@@ -41,7 +41,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
         Navigator.of(context).pop();
-        ShowAuthDialog().showGoToProfileDialog(context);
+        ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
         Navigator.of(context).pop();
         invitedGroupId != null
@@ -67,7 +67,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
         Navigator.of(context).pop();
-        ShowAuthDialog().showGoToProfileDialog(context);
+        ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
         Navigator.of(context).pop();
         invitedGroupId != null

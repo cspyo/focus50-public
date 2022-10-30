@@ -7,7 +7,7 @@ import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:get/get.dart';
 
-class GoToProfileDialog extends ConsumerWidget {
+class SignUpCompleteDialog extends ConsumerWidget {
   String? invitedGroupId = Uri.base.queryParameters["g"];
 
   @override
@@ -158,7 +158,8 @@ class GoToProfileDialog extends ConsumerWidget {
                       ),
                     ),
                   ],
-                )
+                ),
+                SizedBox(height: 20),
               ],
             ),
           ),

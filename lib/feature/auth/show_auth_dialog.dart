@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:focus42/feature/auth/presentation/email_login_dialog.dart';
 import 'package:focus42/feature/auth/presentation/email_sign_up_dialog.dart';
-import 'package:focus42/feature/auth/presentation/go_to_profile_dialog.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/auth/presentation/sign_up_complete_dialog.dart';
 import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
 
 class ShowAuthDialog {
@@ -58,12 +58,12 @@ class ShowAuthDialog {
   }
 
   // 프로필 확인하시겠습니까? 다이얼로그
-  Future<void> showGoToProfileDialog(BuildContext context) async {
+  Future<void> showSignUpCompleteDialog(BuildContext context) async {
     return showDialog<void>(
       barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
-        return GoToProfileDialog();
+        return SignUpCompleteDialog();
       },
     );
   }

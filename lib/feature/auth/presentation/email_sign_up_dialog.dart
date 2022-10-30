@@ -40,7 +40,7 @@ class _EmailSignUpDialogState extends ConsumerState<EmailSignUpDialog> {
       await ref.read(authViewModelProvider).saveUserProfile(
           nickname: _nicknameController.text, signUpMethod: "email");
       Navigator.of(context).pop();
-      ShowAuthDialog().showGoToProfileDialog(context);
+      ShowAuthDialog().showSignUpCompleteDialog(context);
     } else {
       setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }
