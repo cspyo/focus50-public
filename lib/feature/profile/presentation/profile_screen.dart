@@ -398,7 +398,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               width: 10,
             ),
             Text(
-              "*세션 시작 5분 전에 알림을 드립니다",
+              "*세션 시작 10분 전에 알림을 드립니다",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/auth/presentation/sign_up_dialog.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/models/group_model.dart';
@@ -44,15 +44,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
   bool isGroupNameOverlap = false; //null이면 아직 체크 안한거.
   String? invitedGroupId = Uri.base.queryParameters["g"];
   String? uid = FirebaseAuth.instance.currentUser?.uid;
-
-  Future<void> _showSignUpDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SignUpDialog();
-      },
-    );
-  }
 
   @override
   void initState() {
@@ -120,7 +111,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                   _popupCreateGroupDialog(context);
                 } else {
                   AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
-                  _showSignUpDialog();
+                  ShowAuthDialog().showSignUpDialog(context);
                 }
               },
               style: ButtonStyle(
@@ -597,7 +588,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                   }
                                   _invitePwController.clear();
                                 } else {
-                                  _showSignUpDialog();
+                                  ShowAuthDialog().showSignUpDialog(context);
                                 }
                               },
                               child: Text(
