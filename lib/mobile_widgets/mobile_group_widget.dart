@@ -535,11 +535,9 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                               ],
                             ),
                           ),
-                          password != ''
-                              ? SizedBox.shrink()
-                              : SizedBox(
-                                  height: 40,
-                                ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           Text('귀하께서 $groupName그룹에 초대되었습니다.',
                               style: MyTextStyle.CbS14W400),
                           password != ''
@@ -585,6 +583,9 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                   '가입하시겠습니까?',
                                   style: MyTextStyle.CbS14W400,
                                 ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           SizedBox(
                             height: 44,
                             width: 110,
