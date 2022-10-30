@@ -4,10 +4,7 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
-import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/resources/storage_method.dart';
 import 'package:focus42/top_level_providers.dart';
-import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 
@@ -21,205 +18,157 @@ class MobileDrawer extends ConsumerStatefulWidget {
 }
 
 class _MobileDrawerState extends ConsumerState<MobileDrawer> {
-  bool getUserInfo = false;
-  String userPhotoUrl = StorageMethods.defaultImageUrl;
-  String userNickname = '';
-
-  Future<void> getUserData() async {
-    final usersNotifier = ref.read(usersProvider.notifier);
-    final database = ref.read(databaseProvider);
-    final auth = ref.read(firebaseAuthProvider);
-    final uid = auth.currentUser?.uid;
-    if (uid != null) {
-      if (!usersNotifier.containsKey(uid)) {
-        UserPublicModel user = await database.getUserPublic(othersUid: uid);
-        usersNotifier.addAll({uid: user});
-      }
-      final users = ref.read(usersProvider);
-      userPhotoUrl = users[uid]!.photoUrl!;
-      userNickname = users[uid]!.nickname!;
-      setState(() {
-        getUserInfo = true;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getUserData();
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateChangesProvider).asData?.value;
+
+    return _buildDrawer(authState != null);
+  }
+
+  Widget _buildDrawer(bool isLogin) {
     return Drawer(
       backgroundColor: purple300,
-      child: ListView(padding: EdgeInsets.symmetric(horizontal: 20), children: [
-        SizedBox(
-          height: 20,
-        ),
-        SizedBox(
-            height: 60,
-            child: getUserInfo
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                        Image.network(
-                          userPhotoUrl,
-                        ),
-                        SizedBox(width: 20),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(userNickname,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w700),
-                                textAlign: TextAlign.left),
-                          ],
-                        )
-                      ])
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                        Image.asset('assets/images/default_profile.png'),
-                        SizedBox(width: 20),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(userNickname,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w700),
-                                textAlign: TextAlign.left),
-                          ],
-                        )
-                      ])
-            // : Container(
-            //     alignment: Alignment.center,
-            //     width: 20,
-            //     height: 20,
-            //     child:
-            //         CircularProgressIndicator(color: Colors.white)),
-            ),
-        SizedBox(
-          height: 10,
-        ),
-        buildMenuItem(
-            text: 'About', icon: Icons.waving_hand, route: Routes.ABOUT),
-        SizedBox(
-          height: 10,
-        ),
-        buildMenuItem(
-            text: 'Calendar',
-            icon: Icons.calendar_month,
-            route: Routes.CALENDAR),
-        SizedBox(
-          height: 10,
-        ),
-        (authState != null)
-            ? buildMenuItem(
-                text: 'Profile', icon: Icons.person, route: Routes.PROFILE)
-            : SizedBox.shrink(),
-        (authState != null)
-            ? SizedBox(
-                height: 10,
-              )
-            : SizedBox.shrink(),
-        Divider(
-          color: Colors.white,
-          thickness: 1,
-        ),
-        SizedBox(
-          height: 20,
-        ),
-        (authState != null)
-            ? SizedBox(
-                height: 40,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: () {
-                    ref.read(authViewModelProvider).signOut();
-                    // setState(() {});
-                    Get.rootDelegate.toNamed(Routes.ABOUT);
-                  },
-                  child: const Text(
-                    '  로그아웃  ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: purple300,
-                    ),
-                  ),
-                ),
-              )
-            : SizedBox(
-                height: 40,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: () {
-                    ShowAuthDialog().showSignUpDialog(context);
-                  },
-                  child: const Text(
-                    '  회원가입  ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: purple300,
-                    ),
-                  ),
-                ),
-              ),
-        SizedBox(
-          height: 10,
-        ),
-        (authState != null)
-            ? Container()
-            : SizedBox(
-                height: 40,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: purple300,
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                        side: BorderSide(
-                            color: Colors.white,
-                            width: 1,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: () {
-                    ShowAuthDialog().showLoginDialog(context);
-                  },
-                  child: const Text(
-                    '  로그인  ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-      ]),
+      child: isLogin ? _buildWhenLogin() : _buildWhenNotLogin(),
     );
   }
 
-  Widget buildMenuItem({
+  Widget _buildWhenLogin() {
+    final user = ref.watch(userProvider);
+    return user.when(
+        data: (user) {
+          return ListView(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                    height: 60,
+                    child: _buildLoginProfile(user.userPublicModel!.photoUrl!,
+                        user.userPublicModel!.nickname!)),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildMenuItem(
+                    text: 'About',
+                    icon: Icons.waving_hand,
+                    route: Routes.ABOUT),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildMenuItem(
+                    text: 'Calendar',
+                    icon: Icons.calendar_month,
+                    route: Routes.CALENDAR),
+                SizedBox(
+                  height: 10,
+                ),
+                _buildMenuItem(
+                    text: 'Profile', icon: Icons.person, route: Routes.PROFILE),
+                SizedBox(height: 10),
+                Divider(
+                  color: Colors.white,
+                  thickness: 1,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                _buildLogoutButton(),
+              ]);
+        },
+        error: (_, __) => Text(""),
+        loading: () => _buildCircularIndicator());
+  }
+
+  Widget _buildWhenNotLogin() {
+    return ListView(padding: EdgeInsets.symmetric(horizontal: 20), children: [
+      SizedBox(
+        height: 20,
+      ),
+      SizedBox(height: 60, child: _buildNotLoginProfile()),
+      SizedBox(
+        height: 10,
+      ),
+      _buildMenuItem(
+          text: 'About', icon: Icons.waving_hand, route: Routes.ABOUT),
+      SizedBox(
+        height: 10,
+      ),
+      _buildMenuItem(
+          text: 'Calendar', icon: Icons.calendar_month, route: Routes.CALENDAR),
+      SizedBox(
+        height: 10,
+      ),
+      SizedBox.shrink(),
+      Divider(
+        color: Colors.white,
+        thickness: 1,
+      ),
+      SizedBox(
+        height: 20,
+      ),
+      _buildSignUpButton(),
+      SizedBox(height: 10),
+      _buildLoginButton(),
+    ]);
+  }
+
+  Widget _buildLoginProfile(String photoUrl, String nickname) {
+    return SizedBox(
+        height: 60,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Image.network(
+                photoUrl,
+              ),
+              SizedBox(width: 20),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(nickname,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.left),
+                ],
+              )
+            ]));
+  }
+
+  Widget _buildNotLoginProfile() {
+    return SizedBox(
+        height: 60,
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Image.asset('assets/images/default_profile.png'),
+              SizedBox(width: 20),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.left),
+                ],
+              )
+            ]));
+  }
+
+  Widget _buildMenuItem({
     required String text,
     required IconData icon,
     required String route,
@@ -234,5 +183,93 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
           text,
           style: TextStyle(color: color),
         ));
+  }
+
+  Widget _buildLoginButton() {
+    return SizedBox(
+      height: 40,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: purple300,
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(
+                  color: Colors.white, width: 1, style: BorderStyle.solid),
+              borderRadius: BorderRadius.circular(16)),
+        ),
+        onPressed: () {
+          ShowAuthDialog().showLoginDialog(context);
+        },
+        child: const Text(
+          '  로그인  ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignUpButton() {
+    return SizedBox(
+      height: 40,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.white,
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        onPressed: () {
+          ShowAuthDialog().showSignUpDialog(context);
+        },
+        child: const Text(
+          '  회원가입  ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: purple300,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton() {
+    return SizedBox(
+      height: 40,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          primary: Colors.white,
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        onPressed: () {
+          ref.read(authViewModelProvider).signOut();
+          Get.rootDelegate.toNamed(Routes.ABOUT);
+        },
+        child: const Text(
+          '  로그아웃  ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: purple300,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCircularIndicator() {
+    return Center(
+      child: SizedBox(
+        width: 40,
+        height: 40,
+        child: CircularProgressIndicator(
+          color: purple300,
+          strokeWidth: 5.0,
+        ),
+      ),
+    );
   }
 }
