@@ -4,9 +4,7 @@ import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/consts/routes.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/auth/presentation/email_sign_up_dialog.dart';
-import 'package:focus42/feature/auth/presentation/login_dialog.dart';
-import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:get/get.dart';
 import 'package:universal_html/html.dart' as html;
@@ -42,10 +40,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
-        invitedGroupId != null
-            ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                arguments: true, parameters: {'g': invitedGroupId!})
-            : Get.rootDelegate.offNamed(Routes.PROFILE);
+        Navigator.of(context).pop();
+        ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
         Navigator.of(context).pop();
         invitedGroupId != null
@@ -70,10 +66,8 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
-        invitedGroupId != null
-            ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                arguments: true, parameters: {'g': invitedGroupId!})
-            : Get.rootDelegate.offNamed(Routes.PROFILE);
+        Navigator.of(context).pop();
+        ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
         Navigator.of(context).pop();
         invitedGroupId != null
@@ -88,27 +82,6 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }
     setState(() => _isLoading = false);
-  }
-
-  // 이메일 회원가입 다이얼로그
-  Future<void> _showEmailSignUpDialog() async {
-    Navigator.of(context).pop();
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return EmailSignUpDialog();
-      },
-    );
-  }
-
-  // 로그인 다이얼로그
-  Future<void> _showLoginDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginDialog();
-      },
-    );
   }
 
   @override
@@ -136,24 +109,49 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Focus',
-              style: TextStyle(
-                fontFamily: 'Okddung',
-                fontSize: 25,
-                color: Colors.black,
-              ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: 36,
+              height: 36,
             ),
-            Text(
-              '50',
-              style: TextStyle(
-                fontFamily: 'Okddung',
-                fontSize: 25,
-                color: purple300,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const <Widget>[
+                Text(
+                  'Focus',
+                  style: TextStyle(
+                    fontFamily: 'Okddung',
+                    fontSize: 25,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  '50',
+                  style: TextStyle(
+                    fontFamily: 'Okddung',
+                    fontSize: 25,
+                    color: purple300,
+                  ),
+                ),
+              ],
             ),
+            SizedBox(
+              width: 36,
+              height: 36,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  child: Icon(
+                    Icons.clear,
+                    color: Colors.black,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            )
           ],
         ),
         SizedBox(
@@ -284,7 +282,10 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           ),
           elevation: 4,
         ),
-        onPressed: _showEmailSignUpDialog,
+        onPressed: () {
+          Navigator.of(context).pop();
+          ShowAuthDialog().showEmailSignUpDialog(context);
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -325,7 +326,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           InkWell(
             onTap: () {
               Navigator.of(context).pop();
-              _showLoginDialog();
+              ShowAuthDialog().showLoginDialog(context);
             },
             child: Text(
               "로그인",

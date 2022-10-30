@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
@@ -58,15 +59,6 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   late ReservationViewModel reservationViewModel;
 
-  Future<void> _showLoginDialog() async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return LoginDialog();
-      },
-    );
-  }
-
   void _calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = _auth.currentUser?.uid;
     DateTime? tappedDate = calendarTapDetails.date;
@@ -74,9 +66,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     final appointmentsNotifier = ref.read(appointmentsProvider.notifier);
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
 
-    // 로그인이 안되어있으면 로그인 페이지로
+    // 로그인이 안되어있으면 회원가입 페이지로
     if (uid == null) {
-      _showLoginDialog();
+      ShowAuthDialog().showSignUpDialog(context);
       return;
     }
 
