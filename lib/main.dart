@@ -46,8 +46,6 @@ void main() async {
   if (kIsWeb) {
     String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
     AGENT = userAgent;
-    AnalyticsMethod().logUserAgent(userAgent);
-    AnalyticsMethod().setUserAgent(userAgent);
     // smartphones
     if (userAgent.contains("iphone") || userAgent.contains("android")) {
       isMobile = true;
