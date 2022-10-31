@@ -59,20 +59,25 @@ class _GoogleTimerState extends State<GoogleTimer>
   bool _isStartSoundCompleted = false;
   bool _isFinishSoundCompleted = false;
 
+  String startSound = "assets/sound/ring.mp3";
+  String finishSound = "assets/sound/ring.mp3";
+
+  void _initSoundController() {
+    // sound controller initialize
+    _startSoundController = VideoPlayerController.asset(startSound);
+    _startSoundController.initialize();
+    _startSoundController.addListener(_startSoundDispose);
+
+    _finishSoundController = VideoPlayerController.asset(finishSound);
+    _finishSoundController.initialize();
+    _finishSoundController.addListener(_finishSoundDispose);
+  }
+
   @override
   void initState() {
     super.initState();
 
-    // sound controller initialize
-    _startSoundController =
-        VideoPlayerController.asset('assets/sound/ring.mp3');
-    _startSoundController.initialize();
-    _startSoundController.addListener(_startSoundDispose);
-
-    _finishSoundController =
-        VideoPlayerController.asset('assets/sound/ring.mp3');
-    _finishSoundController.initialize();
-    _finishSoundController.addListener(_finishSoundDispose);
+    // _initSoundController();
 
     // animation controller initialize - animation for google timer
     // Todo: animation dismiss 가 종료 소리 trigger 라 화면에 떠있어야 함
@@ -81,7 +86,7 @@ class _GoogleTimerState extends State<GoogleTimer>
       duration: duration,
     )..addStatusListener((status) {
         if (status == AnimationStatus.dismissed) {
-          _playFinishSound();
+          // _playFinishSound();
         }
       });
 
@@ -180,7 +185,7 @@ class _GoogleTimerState extends State<GoogleTimer>
   }
 
   void _startTimer() {
-    _playStartSound();
+    // _playStartSound();
 
     if (!_animationController.isAnimating) {
       _animationController.reverse(
