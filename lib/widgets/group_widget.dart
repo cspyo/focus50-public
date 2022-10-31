@@ -386,8 +386,8 @@ class _GroupState extends ConsumerState<Group> {
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(16.0))),
                                         content: SizedBox(
-                                          height: 264,
                                           child: Column(
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Container(
                                                 alignment:
@@ -409,7 +409,7 @@ class _GroupState extends ConsumerState<Group> {
                                                 ),
                                               ),
                                               Text('이제, 문구를 복사해 그룹원들을 모집해 봅시다!',
-                                                  style: MyTextStyle.CbS18W400),
+                                                  style: MyTextStyle.CbS18W600),
                                               SizedBox(
                                                 height: 20,
                                               ),
