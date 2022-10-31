@@ -567,7 +567,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                                       ),
                                     ),
                                     maxLines: 1,
-                                    textInputAction: TextInputAction.next,
                                   ),
                                 )
                               : Text(

@@ -382,6 +382,7 @@ class _MobileGroupSettingAlertDialogState
                               fontWeight: FontWeight.w500,
                             ),
                           ),
+                          textInputAction: TextInputAction.next,
                         ),
                         SizedBox(
                           height: 30,
