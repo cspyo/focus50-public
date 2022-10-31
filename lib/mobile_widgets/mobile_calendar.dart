@@ -2,7 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
+import 'package:focus42/models/group_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -10,7 +13,8 @@ import 'package:focus42/view_models.dart/appointments_notifier.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
-import 'package:get/get.dart';
+import 'package:focus42/widgets/group_setting_widget.dart';
+import 'package:focus42/widgets/group_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -50,7 +54,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   CalendarDetails? details;
 
-  late final database;
+  late var database;
   late String groupId;
 
   late ReservationViewModel reservationViewModel;
@@ -62,15 +66,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     final appointmentsNotifier = ref.read(appointmentsProvider.notifier);
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
 
-    // 로그인이 안되어있으면 로그인 페이지로
+    // 로그인이 안되어있으면 회원가입 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.LOGIN);
-      return;
-    }
-
-    // 프로필 작성이 안되어 있으면 add profile 페이지로
-    if (!reservationViewModel.isSignedUp) {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      ShowAuthDialog().showSignUpDialog(context);
       return;
     }
 
@@ -130,12 +128,19 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   @override
   Widget build(BuildContext context) {
-    final _oldGroupId = groupId;
-    final _groupId = ref.watch(activatedGroupIdProvider);
-    if (_oldGroupId != _groupId) {
+    final _myGroupStream = ref.watch(myGroupFutureProvider);
+    final _myActivatedGroupId = ref.watch(activatedGroupIdProvider);
+
+    final newDatabase = ref.watch(databaseProvider);
+
+    final oldGroupId = groupId;
+    final newGroupId = ref.watch(activatedGroupIdProvider);
+
+    if (database.uid != newDatabase.uid || oldGroupId != newGroupId) {
       reservationViewModel.cancelListener();
       reservationViewModel = ref.read(reservationViewModelProvider);
-      groupId = _groupId;
+      groupId = newGroupId;
+      database = newDatabase;
       reservationViewModel.startView();
     }
 
@@ -147,11 +152,13 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
     return Container(
       width: screenWidth - 40,
-      height: screenHeight - 177,
+      // height: screenHeight - 235,
+      // height: screenHeight - 267,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
+            height: 40,
             decoration: BoxDecoration(
                 color: purple300,
                 borderRadius: BorderRadius.only(
@@ -189,6 +196,21 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                     });
                   },
                 ),
+                // Expanded(
+                //   child: ListItemsBuilder2<GroupModel>(
+                //     data: _myGroupStream,
+                //     itemBuilder: (context, model) => _buildToggleButtonUi(
+                //       context,
+                //       model,
+                //       _myActivatedGroupId == model.id ? true : false,
+                //     ),
+                //     creator: () => new GroupModel(
+                //       id: 'public',
+                //       name: '전체',
+                //     ),
+                //     axis: Axis.horizontal,
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -232,7 +254,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
                   appointmentBuilder: (context, details) =>
-                      _appointmentBuilder(context, details, _groupId),
+                      _appointmentBuilder(context, details, newGroupId),
                 ),
               ),
             ),
@@ -240,6 +262,19 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
         ],
       ),
     );
+  }
+
+  // Widget _buildToggleButtonUi(
+  //     BuildContext context, GroupModel group, bool isThisGroupActivated) {}
+
+  Future<dynamic> _popupGroupSettingDialog(
+      BuildContext context, GroupModel group) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GroupSettingAlertDialog(database: database, group: group);
+        });
   }
 
   Widget _timeRegionBuilder(
@@ -379,25 +414,18 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
           ),
         ),
         child: Center(
-          child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(color: purple300)),
-        ),
+            child: CircularIndicator(
+          color: MyColors.purple300,
+          size: 15,
+        )),
       );
     } else if (subject == LOADING_CANCEL) {
       return Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.red, width: 1.5)),
-        child: Center(
-          child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(color: Colors.red)),
-        ),
-      );
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red, width: 1.5)),
+          child: CircularIndicator(size: 15, color: Colors.red));
     }
     // 캘린더 그냥 탭했을 때 (예약하시겠습니까?)
     else if (subject == RESERVE) {

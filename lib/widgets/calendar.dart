@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
+import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/resources/matching_methods.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
@@ -11,7 +12,6 @@ import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/view_models.dart/timeregions_notifier.dart';
 import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:focus42/widgets/current_time_indicator.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -43,9 +43,8 @@ class CalendarState extends ConsumerState<Calendar> {
 
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   late ReservationViewModel reservationViewModel;
-  // String? groupId = Uri.base.queryParameters['id'];
-  // String? groupPw = Uri.base.queryParameters['pw'];
-  late final database;
+
+  late var database;
   late String groupId;
   //highlighter 위치 정하는 함수
   int _getFirstDayOfWeek(int highlighterPosition) {
@@ -58,14 +57,14 @@ class CalendarState extends ConsumerState<Calendar> {
   double _getCurrentDayPosition(screenWidth) {
     int defaultPositionValue = 49;
     int currentDay = DateTime.tuesday;
-    int oneBoxWidth = ((screenWidth - 489.5) / 7).round();
+    int oneBoxWidth = ((screenWidth - 560) / 7).round();
     return defaultPositionValue + oneBoxWidth * (currentDay - 1);
   }
 
   double _getCurrentDayPositionSmall(screenWidth) {
     int defaultPositionValue = 49;
     int currentDay = DateTime.tuesday;
-    int oneBoxWidth = ((screenWidth - defaultPositionValue) / 7).round();
+    int oneBoxWidth = ((screenWidth - 100 - defaultPositionValue) / 7).round();
     return defaultPositionValue + oneBoxWidth * (currentDay - 1);
   }
 
@@ -76,15 +75,9 @@ class CalendarState extends ConsumerState<Calendar> {
     final appointmentsNotifier = ref.read(appointmentsProvider.notifier);
     final timeRegionNotifier = ref.read(timeRegionsProvider.notifier);
 
-    // 로그인이 안되어있으면 로그인 페이지로
+    // 로그인이 안되어있으면 회원가입 페이지로
     if (uid == null) {
-      Get.rootDelegate.toNamed(Routes.SIGNUP);
-      return;
-    }
-
-    // 프로필 작성이 안되어 있으면 add profile 페이지로
-    if (!reservationViewModel.isSignedUp) {
-      Get.rootDelegate.toNamed(Routes.ADD_PROFILE);
+      ShowAuthDialog().showSignUpDialog(context);
       return;
     }
 
@@ -197,13 +190,16 @@ class CalendarState extends ConsumerState<Calendar> {
 
     final appointments = ref.watch(appointmentsProvider);
     final timeRegions = ref.watch(timeRegionsProvider);
+    final newDatabase = ref.watch(databaseProvider);
 
-    final _oldGroupId = groupId;
-    final _groupId = ref.watch(activatedGroupIdProvider);
-    if (_oldGroupId != _groupId) {
+    final oldGroupId = groupId;
+    final newGroupId = ref.watch(activatedGroupIdProvider);
+
+    if (database.uid != newDatabase.uid || oldGroupId != newGroupId) {
       reservationViewModel.cancelListener();
       reservationViewModel = ref.read(reservationViewModelProvider);
-      groupId = _groupId;
+      groupId = newGroupId;
+      database = newDatabase;
       reservationViewModel.startView();
     }
 
@@ -266,7 +262,7 @@ class CalendarState extends ConsumerState<Calendar> {
                   // 내 예약 보여주는 부분
                   dataSource: _DataSource(appointments),
                   appointmentBuilder: (context, details) => _appointmentBuilder(
-                      context, details, isTabletSize, _groupId),
+                      context, details, isTabletSize, newGroupId),
                 ),
               ),
             ),
@@ -339,9 +335,11 @@ class CalendarState extends ConsumerState<Calendar> {
 
   Widget _buildCalendarItem(
       BuildContext context, users, userIds, reservedUserCount, nickname) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    bool isTabletSize = screenWidth < tabletBoundSize ? true : false;
     return Container(
       padding: EdgeInsets.only(
-        left: 8,
+        left: 4,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -349,14 +347,16 @@ class CalendarState extends ConsumerState<Calendar> {
           _buildUserProfileImage(reservedUserCount, users, userIds),
           Flexible(
             child: Container(
-              padding: EdgeInsets.only(left: 8),
+              padding: EdgeInsets.only(left: 4),
               height: 30,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 60,
+                    width: isTabletSize
+                        ? (screenWidth - 49) / 7 - 61
+                        : (screenWidth - 489.5) / 7 - 58,
                     alignment: Alignment.centerLeft,
                     child: reservedUserCount == 1
                         ? Text(
@@ -366,8 +366,8 @@ class CalendarState extends ConsumerState<Calendar> {
                                 fontSize: 11,
                                 color: Colors.black),
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
+                            // maxLines: 1,
+                            // textAlign: TextAlign.center,
                           )
                         : Text(
                             "${nickname} 외 ${reservedUserCount - 1}명",
@@ -376,8 +376,8 @@ class CalendarState extends ConsumerState<Calendar> {
                                 fontSize: 11,
                                 color: Colors.black),
                             overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            textAlign: TextAlign.center,
+                            // maxLines: 1,
+                            // textAlign: TextAlign.center,
                           ),
                   ),
                 ],
@@ -418,25 +418,21 @@ class CalendarState extends ConsumerState<Calendar> {
           ),
         ),
         child: Center(
-          child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(color: purple300)),
-        ),
+            child: CircularIndicator(
+          color: MyColors.purple300,
+          size: 15,
+        )),
       );
     } else if (subject == LOADING_CANCEL) {
       return Container(
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.red, width: 1.5)),
-        child: Center(
-          child: SizedBox(
-              width: 15,
-              height: 15,
-              child: CircularProgressIndicator(color: Colors.red)),
-        ),
-      );
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.red, width: 1.5)),
+          child: CircularIndicator(
+            color: Colors.red,
+            size: 15,
+          ));
     }
     // 캘린더 그냥 탭했을 때 (예약하시겠습니까?)
     else if (subject == RESERVE) {

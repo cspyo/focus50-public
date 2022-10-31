@@ -2,17 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/resources/auth_method.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
+import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
 
-class DesktopHeader extends ConsumerWidget {
-  DesktopHeader({Key? key}) : super(key: key);
+class DesktopHeader extends ConsumerStatefulWidget {
+  @override
+  DesktopHeaderState createState() => DesktopHeaderState();
+}
+
+class DesktopHeaderState extends ConsumerState<DesktopHeader> {
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final _authState = ref.watch(authStateChangesProvider).asData?.value;
     return // 데스크탑 헤더
         Container(
@@ -25,37 +39,50 @@ class DesktopHeader extends ConsumerWidget {
             children: <Widget>[
               TextButton(
                   onPressed: () {
-                    Get.rootDelegate.toNamed(Routes.ABOUT);
+                    String? invitedGroupId = Uri.base.queryParameters["g"];
+                    invitedGroupId != null
+                        ? Get.rootDelegate.offNamed(Routes.ABOUT,
+                            arguments: true, parameters: {'g': invitedGroupId})
+                        : Get.rootDelegate.offNamed(Routes.ABOUT);
                   },
                   child: const Text('소개',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
-                    Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
+                    String? invitedGroupId = Uri.base.queryParameters["g"];
+                    invitedGroupId != null
+                        ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                            arguments: true, parameters: {'g': invitedGroupId})
+                        : Get.rootDelegate.offNamed(Routes.CALENDAR);
                   },
                   child: const Text('캘린더',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
               SizedBox(width: 10),
               // 마이페이지 숨기기
-              // (_auth.currentUser != null)
-              //     ? TextButton(
-              //         onPressed: () {
-              //           Get.rootDelegate.toNamed(Routes.PROFILE);
-              //         },
-              //         child: const Text('마이페이지',
-              //             style: TextStyle(fontSize: 17, color: Colors.black)))
-              //     : Container(),
-              // SizedBox(width: 10),
+              (_authState != null)
+                  ? TextButton(
+                      onPressed: () {
+                        String? invitedGroupId = Uri.base.queryParameters["g"];
+                        invitedGroupId != null
+                            ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                                arguments: true,
+                                parameters: {'g': invitedGroupId})
+                            : Get.rootDelegate.offNamed(Routes.PROFILE);
+                      },
+                      child: const Text('내 정보',
+                          style: TextStyle(fontSize: 17, color: Colors.black)))
+                  : Container(),
+              SizedBox(width: 10),
               (_authState != null)
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: purple300,
                       ),
                       onPressed: () {
-                        AuthMethods().signOut();
+                        ref.read(authViewModelProvider).signOut();
                         AnalyticsMethod().logSignOut();
-                        Get.rootDelegate.toNamed(Routes.LOGIN);
+                        Get.rootDelegate.toNamed(Routes.ABOUT);
                       },
                       child: const Text(
                         '  로그아웃  ',
@@ -68,9 +95,8 @@ class DesktopHeader extends ConsumerWidget {
                       style: OutlinedButton.styleFrom(
                         primary: purple300,
                       ),
-                      onPressed: () {
-                        Get.rootDelegate.toNamed(Routes.SIGNUP);
-                      },
+                      onPressed: () =>
+                          ShowAuthDialog().showSignUpDialog(context),
                       child: const Text(
                         '회원가입',
                         style: TextStyle(
@@ -84,16 +110,15 @@ class DesktopHeader extends ConsumerWidget {
                       style: ElevatedButton.styleFrom(
                         primary: purple300,
                       ),
-                      onPressed: () {
-                        Get.rootDelegate.toNamed(Routes.LOGIN);
-                      },
+                      onPressed: () =>
+                          ShowAuthDialog().showLoginDialog(context),
                       child: const Text(
                         '  로그인  ',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
+                    )
             ],
           ),
         ],

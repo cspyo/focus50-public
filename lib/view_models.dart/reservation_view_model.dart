@@ -12,7 +12,11 @@ import 'package:focus42/view_models.dart/users_notifier.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 final activatedGroupIdProvider = StateProvider<String>((ref) {
-  final _ret = "public";
+  String _ret = "public";
+  final database = ref.watch(databaseProvider);
+  if (database.uid == 'none') {
+    _ret = "public";
+  }
   return _ret;
 });
 
@@ -59,10 +63,12 @@ class ReservationViewModel {
 
   bool isSignedUp = false;
 
-  late StreamSubscription<List<ReservationModel>> streamSubscription;
+  StreamSubscription<List<ReservationModel>>? streamSubscription;
 
   void cancelListener() {
-    streamSubscription.cancel();
+    if (streamSubscription != null) {
+      streamSubscription!.cancel();
+    }
   }
 
   void startView() {

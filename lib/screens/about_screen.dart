@@ -35,6 +35,11 @@ class _AboutScreenState extends State<AboutScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+    bool isTabletColumn =
+        screenWidth < 900 && screenHeight > 1000 ? true : false;
+    bool isOnlyWidthSmall =
+        screenWidth <= 900 && screenHeight <= 1000 ? true : false;
+
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -45,25 +50,44 @@ class _AboutScreenState extends State<AboutScreen>
             Stack(
               children: [
                 Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                         width: screenWidth,
                         height: screenHeight - 140,
-                        color: purple300,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        decoration: BoxDecoration(
+                          color: purple300,
+                        ),
+                        child: Flex(
+                          direction:
+                              isTabletColumn ? Axis.vertical : Axis.horizontal,
+                          mainAxisAlignment: isTabletColumn
+                              ? MainAxisAlignment.center
+                              : MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              height: screenHeight - 400,
+                            Container(
+                              // decoration: BoxDecoration(
+                              //     border:
+                              //         Border.all(width: 1, color: Colors.red)),
+                              // height: isSmall
+                              //     ? screenHeight - 500
+                              //     : screenHeight - 400,
+                              height: isTabletColumn
+                                  ? screenHeight - 760
+                                  : screenHeight - 400,
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: isTabletColumn
+                                    ? MainAxisAlignment.spaceEvenly
+                                    : MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: isTabletColumn
+                                    ? CrossAxisAlignment.center
+                                    : CrossAxisAlignment.start,
                                 children: [
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: isTabletColumn
+                                        ? CrossAxisAlignment.center
+                                        : CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '낮은 집중력, 당신의 문제가 아닙니다.',
@@ -78,8 +102,9 @@ class _AboutScreenState extends State<AboutScreen>
                                     ],
                                   ),
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: isTabletColumn
+                                        ? CrossAxisAlignment.center
+                                        : CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '스탠포드 행동설계 연구에 입각한',
@@ -89,6 +114,8 @@ class _AboutScreenState extends State<AboutScreen>
                                             fontWeight: FontWeight.w500),
                                       ),
                                       Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             '집중향상 ',
@@ -161,21 +188,20 @@ class _AboutScreenState extends State<AboutScreen>
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              width: screenHeight - 300,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: isTabletColumn ? 400 : 460,
+                                  child: Image.asset(
                                     "assets/images/demo.png",
-                                    height: screenHeight - 350,
                                   ),
-                                  Text(
-                                    'Chrome PC 사용을 권장합니다',
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  'Chrome PC 사용을 권장합니다',
+                                  style: TextStyle(color: Colors.white),
+                                )
+                              ],
                             ),
                           ],
                         )),
@@ -276,27 +302,32 @@ class _AboutScreenState extends State<AboutScreen>
                 ],
               ),
             ),
-            // Container(
-            //   width: screenWidth,
-            //   height: screenHeight,
-            //   padding: EdgeInsets.only(top: 100),
-            //   child: SvgPicture.asset('assets/images/three_informations.svg'),
-            // ),
-            SizedBox(
-              height: 500,
+            Container(
+              // height: isSmall ? 500 : 200,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SvgPicture.asset('assets/images/postit1.svg'),
-                  SvgPicture.asset('assets/images/postit2.svg'),
-                  SvgPicture.asset('assets/images/postit3.svg'),
+                  SvgPicture.asset(
+                    'assets/images/postit1.svg',
+                    width: screenWidth * 0.3,
+                  ),
+                  SvgPicture.asset(
+                    'assets/images/postit2.svg',
+                    width: screenWidth * 0.3,
+                  ),
+                  SvgPicture.asset(
+                    'assets/images/postit3.svg',
+                    width: screenWidth * 0.3,
+                  ),
                 ],
               ),
             ),
-
+            SizedBox(
+              height: 20,
+            ),
             Container(
-              padding: EdgeInsets.only(left: 100, right: 100),
+              padding: EdgeInsets.only(left: 40, right: 40),
               width: screenWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,7 +394,7 @@ class _AboutScreenState extends State<AboutScreen>
             ),
             SizedBox(height: 100),
             Container(
-              padding: EdgeInsets.only(left: 100, right: 100),
+              padding: EdgeInsets.only(left: 40, right: 40),
               width: screenWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,7 +473,7 @@ class _AboutScreenState extends State<AboutScreen>
             ),
             SizedBox(height: 110),
             Container(
-              padding: EdgeInsets.only(left: 100, right: 100),
+              padding: EdgeInsets.only(left: 40, right: 40),
               width: screenWidth,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

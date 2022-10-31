@@ -49,6 +49,10 @@ dependencies:
   pointer_interceptor: ^0.9.3+3
   url_launcher: ^6.1.5
   http: ^0.13.5
+  kakao_flutter_sdk: ^1.3.0-beta.4
+  flutter_advanced_switch: ^3.0.1
+  flutter_speed_dial: ^6.2.0
+  carousel_slider: ^4.1.1
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +79,7 @@ flutter:
     - assets/images/contributor3.jpeg
     - assets/images/instagram.svg
     - assets/images/kakao.svg
+    - assets/images/kakao_button_icon.png
     - assets/images/postit1.svg
     - assets/images/postit2.svg
     - assets/images/postit3.svg
@@ -83,7 +88,6 @@ flutter:
     - assets/images/photoInSession.png
     - assets/images/report.png
     - assets/images/earth.png
-    - assets/sound/ring.mp3
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

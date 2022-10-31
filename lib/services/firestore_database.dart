@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:focus42/models/group_model.dart';
+import 'package:focus42/models/notice_model.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -21,13 +22,29 @@ class FirestoreDatabase {
   // 유저 저장 및 업데이트
   Future<void> setUser(UserModel user) async {
     if (user.userPublicModel != null)
-      _service.setData(
+      await _service.setData(
           path: FirestorePath.userPublic(uid),
           data: user.userPublicModel!.toMap());
     if (user.userPrivateModel != null)
-      _service.setData(
+      await _service.setData(
           path: FirestorePath.userPrivate(uid),
           data: user.userPrivateModel!.toMap());
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    if (user.userPublicModel != null)
+      await _service.updateData(
+          path: FirestorePath.userPublic(uid),
+          data: user.userPublicModel!.toMap());
+    if (user.userPrivateModel != null)
+      await _service.updateData(
+          path: FirestorePath.userPrivate(uid),
+          data: user.userPrivateModel!.toMap());
+  }
+
+  Future<UserModel> getUser() async {
+    UserModel user = UserModel(await getUserPublic(), await getUserPrivate());
+    return user;
   }
 
   Future<void> setUserPublic(UserPublicModel user) async {
@@ -53,6 +70,14 @@ class FirestoreDatabase {
         path: FirestorePath.userPrivate(uid),
         builder: (snapshot, options) =>
             UserPrivateModel.fromMap(snapshot, options));
+  }
+
+  Future<bool> possibleNickname(String nickname) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection(FirestorePath.users())
+        .where("nickname", isEqualTo: nickname)
+        .get();
+    return querySnapshot.size == 0;
   }
 
   // userPublic 스트림이랑 userPrivate 스트림이랑 combine
@@ -291,12 +316,52 @@ class FirestoreDatabase {
         builder: (snapshot, options) => GroupModel.fromMap(snapshot, options));
   }
 
+  Future<GroupModel> getGroupInTransaction(
+      {required String docId, required Transaction transaction}) async {
+    return await _service.getDataInTransaction(
+      path: FirestorePath.group(docId),
+      builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      transaction: transaction,
+    );
+  }
+
+  Stream<List<GroupModel>> getGroupsOfName(String key) {
+    late final maxKey;
+    if (key.length == 0) {
+      return _service.collectionStream(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) =>
+            query.where("name", isGreaterThanOrEqualTo: key),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      );
+    } else {
+      List<int> codeUnits = [...key.codeUnits];
+      codeUnits.last++;
+      maxKey = String.fromCharCodes(codeUnits);
+      return _service.collectionStream(
+        path: FirestorePath.groups(),
+        queryBuilder: (query) => query
+            .where("name", isGreaterThanOrEqualTo: key)
+            .where("name", isLessThanOrEqualTo: maxKey),
+        builder: (snapshot, options) => GroupModel.fromMap(snapshot, options),
+      );
+    }
+  }
+
   Future<String> setGroup(GroupModel group) => _service.setData(
         path: group.id != null
             ? FirestorePath.group(group.id!)
             : FirestorePath.groups(),
         data: group.toMap(),
         isAdd: group.id == null,
+      );
+
+  Future<void> updateGroupInTransaction(
+          GroupModel group, Transaction transaction) =>
+      _service.updateDataInTransaction(
+        path: FirestorePath.group(group.id!),
+        data: group.toMap(),
+        transaction: transaction,
       );
 
   Future<void> deleteGroup(GroupModel group) =>
@@ -325,6 +390,14 @@ class FirestoreDatabase {
         path: FirestorePath.version(),
         builder: (snapshot, options) => builder(snapshot, options));
   }
+
+  //----------------------notice----------------------//
+  Stream<List<NoticeModel>> getNotices() =>
+      _service.collectionStream<NoticeModel>(
+          path: FirestorePath.notices(),
+          queryBuilder: (query) => query.where('isActive', isEqualTo: true),
+          builder: (snapshot, options) =>
+              NoticeModel.fromMap(snapshot, options));
 
   //----------------------transaction----------------------//
   Future<void> runTransaction(TransactionHandler transactionHandler) async {
