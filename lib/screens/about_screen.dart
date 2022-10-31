@@ -62,9 +62,13 @@ class _AboutScreenState extends State<AboutScreen>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              height: isSmall
-                                  ? screenHeight - 700
-                                  : screenHeight - 400,
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 1, color: Colors.red)),
+                              // height: isSmall
+                              //     ? screenHeight - 500
+                              //     : screenHeight - 400,
+                              height: screenHeight - 500,
                               child: Column(
                                 mainAxisAlignment: isSmall
                                     ? MainAxisAlignment.spaceEvenly
@@ -181,9 +185,7 @@ class _AboutScreenState extends State<AboutScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width: isSmall
-                                      ? screenWidth * 0.6
-                                      : screenWidth * 0.4,
+                                  width: isSmall ? 400 : 460,
                                   child: Image.asset(
                                     "assets/images/demo.png",
                                   ),
