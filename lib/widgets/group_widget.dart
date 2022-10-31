@@ -858,7 +858,6 @@ class _GroupState extends ConsumerState<Group> {
                                       ),
                                     ),
                                     maxLines: 1,
-                                    textInputAction: TextInputAction.next,
                                   ),
                                 )
                               : Text(
