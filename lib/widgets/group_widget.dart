@@ -529,12 +529,172 @@ class _GroupState extends ConsumerState<Group> {
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            content: Container(
-              width: 626,
-              child: !isCreateGroupFinished
-                  ? Form(
-                      key: _createGroupFormKey,
-                      child: Column(
+            content: SingleChildScrollView(
+              child: Container(
+                width: 626,
+                child: !isCreateGroupFinished
+                    ? Form(
+                        key: _createGroupFormKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              alignment: Alignment.centerRight,
+                              child: SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: IconButton(
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () {
+                                    _nameController.clear();
+                                    _passwordController.clear();
+                                    _introductionController.clear();
+                                    setState(() {
+                                      _image = null;
+                                    });
+                                    if (groupDocId != '') {
+                                      _changeActivatedGroup(groupDocId);
+                                      ref.refresh(myGroupIdFutureProvider);
+                                    } else {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.black,
+                                    size: 30,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '그룹 만들기',
+                              style: MyTextStyle.CbS26W600,
+                            ),
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Stack(
+                              children: [
+                                _image != null
+                                    ? CircleAvatar(
+                                        radius: 64,
+                                        backgroundColor: Colors.black38,
+                                        backgroundImage: MemoryImage(_image!),
+                                      )
+                                    : CircleAvatar(
+                                        radius: 64,
+                                        backgroundColor: Colors.black38,
+                                        backgroundImage: NetworkImage(
+                                            StorageMethods.defaultImageUrl),
+                                      ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                          color: Colors.black, width: 2),
+                                    ),
+                                    child: TextButton(
+                                      onPressed: () async {
+                                        Uint8List im = await pickImage(
+                                            ImageSource.gallery);
+                                        setState(() {
+                                          _image = im;
+                                        });
+                                      },
+                                      child: Center(
+                                        child: const Icon(
+                                          Icons.add_a_photo,
+                                          color: Colors.black,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            for (int i = 0; i < hintTexts.length; i++)
+                              BuildTitleAndTextField(
+                                hintText: hintTexts[i],
+                                controller: controllers[i],
+                                index: i,
+                                isGroupNameOverlap: isGroupNameOverlap,
+                                isAbleToModify: true,
+                              ),
+                            SizedBox(
+                              width: 140,
+                              height: 45,
+                              child: TextButton(
+                                onPressed: () async {
+                                  if (await database.findIfGroupNameOverlap(
+                                      _nameController.text)) {
+                                    setState(() {
+                                      isGroupNameOverlap = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isGroupNameOverlap = false;
+                                    });
+                                  }
+                                  if (_createGroupFormKey.currentState!
+                                          .validate() &&
+                                      isGroupNameOverlap == false) {
+                                    setState(() {
+                                      isCreateGroupLoading = true;
+                                    });
+                                    groupDocId = await createGroup(
+                                      _nameController.text,
+                                      _passwordController.text,
+                                      _introductionController.text,
+                                    );
+                                    setState(() {
+                                      isCreateGroupLoading = false;
+                                      isCreateGroupFinished = true;
+                                      groupName = _nameController.text;
+                                      groupPassword = _passwordController.text;
+                                    });
+                                    _nameController.clear();
+                                    _passwordController.clear();
+                                    _introductionController.clear();
+                                    setState(() {
+                                      _image = null;
+                                    });
+                                  }
+                                },
+                                child: !isCreateGroupLoading
+                                    ? Text(
+                                        '그룹 만들기',
+                                        style: MyTextStyle.CwS20W600,
+                                      )
+                                    : CircularIndicator(
+                                        size: 22, color: Colors.white),
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          MyColors.purple300),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    : Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
@@ -545,18 +705,10 @@ class _GroupState extends ConsumerState<Group> {
                               child: IconButton(
                                 padding: EdgeInsets.all(0),
                                 onPressed: () {
-                                  _nameController.clear();
-                                  _passwordController.clear();
-                                  _introductionController.clear();
-                                  setState(() {
-                                    _image = null;
-                                  });
-                                  if (groupDocId != '') {
-                                    _changeActivatedGroup(groupDocId);
-                                    ref.refresh(myGroupIdFutureProvider);
-                                  } else {
-                                    Navigator.pop(context);
-                                  }
+                                  _changeActivatedGroup(groupDocId);
+                                  ref.refresh(myGroupIdFutureProvider);
+                                  debugPrint("[DEBUG] onPressed / $groupDocId");
+                                  Navigator.pop(context);
                                 },
                                 icon: Icon(
                                   Icons.close,
@@ -566,161 +718,11 @@ class _GroupState extends ConsumerState<Group> {
                               ),
                             ),
                           ),
-                          Text(
-                            '그룹 만들기',
-                            style: MyTextStyle.CbS26W600,
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Stack(
-                            children: [
-                              _image != null
-                                  ? CircleAvatar(
-                                      radius: 64,
-                                      backgroundColor: Colors.black38,
-                                      backgroundImage: MemoryImage(_image!),
-                                    )
-                                  : CircleAvatar(
-                                      radius: 64,
-                                      backgroundColor: Colors.black38,
-                                      backgroundImage: NetworkImage(
-                                          StorageMethods.defaultImageUrl),
-                                    ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  width: 36,
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                        color: Colors.black, width: 2),
-                                  ),
-                                  child: TextButton(
-                                    onPressed: () async {
-                                      Uint8List im =
-                                          await pickImage(ImageSource.gallery);
-                                      setState(() {
-                                        _image = im;
-                                      });
-                                    },
-                                    child: Center(
-                                      child: const Icon(
-                                        Icons.add_a_photo,
-                                        color: Colors.black,
-                                        size: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          for (int i = 0; i < hintTexts.length; i++)
-                            BuildTitleAndTextField(
-                              hintText: hintTexts[i],
-                              controller: controllers[i],
-                              index: i,
-                              isGroupNameOverlap: isGroupNameOverlap,
-                              isAbleToModify: true,
-                            ),
-                          SizedBox(
-                            width: 140,
-                            height: 45,
-                            child: TextButton(
-                              onPressed: () async {
-                                if (await database.findIfGroupNameOverlap(
-                                    _nameController.text)) {
-                                  setState(() {
-                                    isGroupNameOverlap = true;
-                                  });
-                                } else {
-                                  setState(() {
-                                    isGroupNameOverlap = false;
-                                  });
-                                }
-                                if (_createGroupFormKey.currentState!
-                                        .validate() &&
-                                    isGroupNameOverlap == false) {
-                                  setState(() {
-                                    isCreateGroupLoading = true;
-                                  });
-                                  groupDocId = await createGroup(
-                                    _nameController.text,
-                                    _passwordController.text,
-                                    _introductionController.text,
-                                  );
-                                  setState(() {
-                                    isCreateGroupLoading = false;
-                                    isCreateGroupFinished = true;
-                                    groupName = _nameController.text;
-                                    groupPassword = _passwordController.text;
-                                  });
-                                  _nameController.clear();
-                                  _passwordController.clear();
-                                  _introductionController.clear();
-                                  setState(() {
-                                    _image = null;
-                                  });
-                                }
-                              },
-                              child: !isCreateGroupLoading
-                                  ? Text(
-                                      '그룹 만들기',
-                                      style: MyTextStyle.CwS20W600,
-                                    )
-                                  : CircularIndicator(
-                                      size: 22, color: Colors.white),
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        MyColors.purple300),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
+                          _buildCreateGroupSuccess(
+                              context, groupName, groupPassword, groupDocId),
                         ],
                       ),
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          alignment: Alignment.centerRight,
-                          child: SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: IconButton(
-                              padding: EdgeInsets.all(0),
-                              onPressed: () {
-                                _changeActivatedGroup(groupDocId);
-                                ref.refresh(myGroupIdFutureProvider);
-                                debugPrint("[DEBUG] onPressed / $groupDocId");
-                                Navigator.pop(context);
-                              },
-                              icon: Icon(
-                                Icons.close,
-                                color: Colors.black,
-                                size: 30,
-                              ),
-                            ),
-                          ),
-                        ),
-                        _buildCreateGroupSuccess(
-                            context, groupName, groupPassword, groupDocId),
-                      ],
-                    ),
+              ),
             ),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(16.0))),
