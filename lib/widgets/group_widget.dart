@@ -782,34 +782,46 @@ class _GroupState extends ConsumerState<Group> {
                     child: Form(
                       key: _invitementFormKey,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            alignment: Alignment.centerRight,
-                            child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: IconButton(
-                                padding: EdgeInsets.all(0),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Get.rootDelegate.offNamed(Routes.CALENDAR);
-                                },
-                                icon: Icon(
-                                  Icons.close,
-                                  color: Colors.black,
-                                  size: 30,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width: 30,
                                 ),
-                              ),
+                                Text(
+                                  '초대장',
+                                  style: MyTextStyle.CbS26W600,
+                                ),
+                                SizedBox(
+                                  width: 30,
+                                  height: 30,
+                                  child: IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    onPressed: () {
+                                      _invitePwController.clear();
+                                      Navigator.pop(context);
+                                      Get.rootDelegate
+                                          .offNamed(Routes.CALENDAR);
+                                    },
+                                    icon: Icon(
+                                      Icons.close,
+                                      color: Colors.black,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            '초대장',
-                            style: MyTextStyle.CbS26W600,
+                          SizedBox(
+                            height: 10,
                           ),
-                          Text(' 귀하께서 $groupName그룹에 초대되었습니다.',
-                              style: MyTextStyle.CbS18W400),
+                          Text('귀하께서 $groupName그룹에 초대되었습니다.',
+                              style: MyTextStyle.CbS14W400),
                           password != ''
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -851,10 +863,10 @@ class _GroupState extends ConsumerState<Group> {
                                 )
                               : Text(
                                   '가입하시겠습니까?',
-                                  style: MyTextStyle.CbS18W400,
+                                  style: MyTextStyle.CbS14W400,
                                 ),
                           SizedBox(
-                            height: 20,
+                            height: 10,
                           ),
                           SizedBox(
                             height: 44,
