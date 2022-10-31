@@ -35,7 +35,11 @@ class _AboutScreenState extends State<AboutScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    bool isSmall = screenWidth < 720 ? true : false;
+    bool isTabletColumn =
+        screenWidth < 900 && screenHeight > 1000 ? true : false;
+    bool isOnlyWidthSmall =
+        screenWidth <= 900 && screenHeight <= 1000 ? true : false;
+
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -55,30 +59,33 @@ class _AboutScreenState extends State<AboutScreen>
                           color: purple300,
                         ),
                         child: Flex(
-                          direction: isSmall ? Axis.vertical : Axis.horizontal,
-                          mainAxisAlignment: isSmall
+                          direction:
+                              isTabletColumn ? Axis.vertical : Axis.horizontal,
+                          mainAxisAlignment: isTabletColumn
                               ? MainAxisAlignment.center
                               : MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 1, color: Colors.red)),
+                              // decoration: BoxDecoration(
+                              //     border:
+                              //         Border.all(width: 1, color: Colors.red)),
                               // height: isSmall
                               //     ? screenHeight - 500
                               //     : screenHeight - 400,
-                              height: screenHeight - 500,
+                              height: isTabletColumn
+                                  ? screenHeight - 760
+                                  : screenHeight - 400,
                               child: Column(
-                                mainAxisAlignment: isSmall
+                                mainAxisAlignment: isTabletColumn
                                     ? MainAxisAlignment.spaceEvenly
                                     : MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: isSmall
+                                crossAxisAlignment: isTabletColumn
                                     ? CrossAxisAlignment.center
                                     : CrossAxisAlignment.start,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: isSmall
+                                    crossAxisAlignment: isTabletColumn
                                         ? CrossAxisAlignment.center
                                         : CrossAxisAlignment.start,
                                     children: [
@@ -95,7 +102,7 @@ class _AboutScreenState extends State<AboutScreen>
                                     ],
                                   ),
                                   Column(
-                                    crossAxisAlignment: isSmall
+                                    crossAxisAlignment: isTabletColumn
                                         ? CrossAxisAlignment.center
                                         : CrossAxisAlignment.start,
                                     children: [
@@ -185,7 +192,7 @@ class _AboutScreenState extends State<AboutScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 SizedBox(
-                                  width: isSmall ? 400 : 460,
+                                  width: isTabletColumn ? 400 : 460,
                                   child: Image.asset(
                                     "assets/images/demo.png",
                                   ),
