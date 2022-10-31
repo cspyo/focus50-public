@@ -1,7 +1,7 @@
 class FirebaseFunctionsUrl {
   static String createCustomTokenUrl =
-      "https://asia-northeast3-focus50-dev.cloudfunctions.net/createCustomToken";
+      "https://asia-northeast3-focus-50.cloudfunctions.net/createCustomToken";
 
   static String saveNetworkImageToStorageUrl =
-      "https://asia-northeast3-focus50-dev.cloudfunctions.net/saveNetworkImageToStorage";
+      "https://asia-northeast3-focus-50.cloudfunctions.net/saveNetworkImageToStorage";
 }
