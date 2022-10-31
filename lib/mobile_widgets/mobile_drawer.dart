@@ -198,7 +198,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
               'https://cspyo.notion.site/Focus-50-88016be305f245f4b9b626db19a7c0f0'));
         },
         title: Text(
-          'Notification',
+          'Notice',
           style: TextStyle(color: Colors.white),
         ));
   }
