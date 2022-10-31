@@ -15,8 +15,6 @@ class DesktopHeader extends ConsumerStatefulWidget {
 }
 
 class DesktopHeaderState extends ConsumerState<DesktopHeader> {
-  String? invitedGroupId = Uri.base.queryParameters["g"];
-
   @override
   void initState() {
     super.initState();
@@ -41,9 +39,10 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
             children: <Widget>[
               TextButton(
                   onPressed: () {
+                    String? invitedGroupId = Uri.base.queryParameters["g"];
                     invitedGroupId != null
                         ? Get.rootDelegate.offNamed(Routes.ABOUT,
-                            arguments: true, parameters: {'g': invitedGroupId!})
+                            arguments: true, parameters: {'g': invitedGroupId})
                         : Get.rootDelegate.offNamed(Routes.ABOUT);
                   },
                   child: const Text('소개',
@@ -51,9 +50,10 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               SizedBox(width: 10),
               TextButton(
                   onPressed: () {
+                    String? invitedGroupId = Uri.base.queryParameters["g"];
                     invitedGroupId != null
                         ? Get.rootDelegate.offNamed(Routes.CALENDAR,
-                            arguments: true, parameters: {'g': invitedGroupId!})
+                            arguments: true, parameters: {'g': invitedGroupId})
                         : Get.rootDelegate.offNamed(Routes.CALENDAR);
                   },
                   child: const Text('캘린더',
@@ -63,10 +63,11 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               (_authState != null)
                   ? TextButton(
                       onPressed: () {
+                        String? invitedGroupId = Uri.base.queryParameters["g"];
                         invitedGroupId != null
                             ? Get.rootDelegate.offNamed(Routes.PROFILE,
                                 arguments: true,
-                                parameters: {'g': invitedGroupId!})
+                                parameters: {'g': invitedGroupId})
                             : Get.rootDelegate.offNamed(Routes.PROFILE);
                       },
                       child: const Text('내 정보',
