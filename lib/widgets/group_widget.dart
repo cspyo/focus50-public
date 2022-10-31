@@ -125,6 +125,8 @@ class _GroupState extends ConsumerState<Group> {
                     style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.white),
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.zero),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -159,6 +161,7 @@ class _GroupState extends ConsumerState<Group> {
               style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.all<Color>(MyColors.purple300),
+                padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -269,6 +272,8 @@ class _GroupState extends ConsumerState<Group> {
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(MyColors.purple300),
+                  padding:
+                      MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -296,6 +301,8 @@ class _GroupState extends ConsumerState<Group> {
                 ? ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(MyColors.purple100),
+                    padding:
+                        MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -354,6 +361,8 @@ class _GroupState extends ConsumerState<Group> {
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   MyColors.purple300),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.zero),
                               shape: MaterialStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
@@ -445,6 +454,11 @@ class _GroupState extends ConsumerState<Group> {
                                                         MaterialStateProperty
                                                             .all<Color>(MyColors
                                                                 .purple300),
+                                                    padding:
+                                                        MaterialStateProperty
+                                                            .all<EdgeInsets>(
+                                                                EdgeInsets
+                                                                    .zero),
                                                     shape: MaterialStateProperty
                                                         .all<
                                                             RoundedRectangleBorder>(
@@ -468,7 +482,7 @@ class _GroupState extends ConsumerState<Group> {
                               '초대',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 12,
+                                fontSize: 11,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -893,6 +907,8 @@ class _GroupState extends ConsumerState<Group> {
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
                                         MyColors.purple300),
+                                padding: MaterialStateProperty.all<EdgeInsets>(
+                                    EdgeInsets.zero),
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
@@ -1006,6 +1022,8 @@ class _GroupState extends ConsumerState<Group> {
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
                             MyColors.purple300),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.zero),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -1089,6 +1107,8 @@ class _GroupState extends ConsumerState<Group> {
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(
                             MyColors.purple300),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.zero),
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
