@@ -7,6 +7,7 @@ import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MobileDrawer extends ConsumerStatefulWidget {
   const MobileDrawer({
@@ -68,6 +69,10 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                 SizedBox(
                   height: 10,
                 ),
+                _buildNotificationListTile(),
+                SizedBox(
+                  height: 10,
+                ),
                 _buildMenuItem(
                     text: 'Profile', icon: Icons.person, route: Routes.PROFILE),
                 SizedBox(height: 10),
@@ -104,7 +109,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
       SizedBox(
         height: 10,
       ),
-      SizedBox.shrink(),
+      _buildNotificationListTile(),
       Divider(
         color: Colors.white,
         thickness: 1,
@@ -182,6 +187,19 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         title: Text(
           text,
           style: TextStyle(color: color),
+        ));
+  }
+
+  Widget _buildNotificationListTile() {
+    return ListTile(
+        leading: Icon(Icons.push_pin, color: Colors.white),
+        onTap: () {
+          launchUrl(Uri.parse(
+              'https://cspyo.notion.site/Focus-50-88016be305f245f4b9b626db19a7c0f0'));
+        },
+        title: Text(
+          'Notification',
+          style: TextStyle(color: Colors.white),
         ));
   }
 
