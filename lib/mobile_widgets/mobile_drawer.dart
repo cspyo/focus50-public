@@ -56,20 +56,18 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                   height: 10,
                 ),
                 _buildMenuItem(
-                    text: 'About',
-                    icon: Icons.waving_hand,
-                    route: Routes.ABOUT),
+                    text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
                 SizedBox(
                   height: 10,
                 ),
                 _buildMenuItem(
-                    text: 'Calendar',
+                    text: '캘린더',
                     icon: Icons.calendar_month,
                     route: Routes.CALENDAR),
                 SizedBox(
                   height: 10,
                 ),
-                _buildNotificationListTile(),
+                _buildNoticeListTile(),
                 SizedBox(
                   height: 10,
                 ),
@@ -99,17 +97,16 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
       SizedBox(
         height: 10,
       ),
-      _buildMenuItem(
-          text: 'About', icon: Icons.waving_hand, route: Routes.ABOUT),
+      _buildMenuItem(text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
       SizedBox(
         height: 10,
       ),
       _buildMenuItem(
-          text: 'Calendar', icon: Icons.calendar_month, route: Routes.CALENDAR),
+          text: '캘린더', icon: Icons.calendar_month, route: Routes.CALENDAR),
       SizedBox(
         height: 10,
       ),
-      _buildNotificationListTile(),
+      _buildNoticeListTile(),
       Divider(
         color: Colors.white,
         thickness: 1,
@@ -190,7 +187,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         ));
   }
 
-  Widget _buildNotificationListTile() {
+  Widget _buildNoticeListTile() {
     return ListTile(
         leading: Icon(Icons.push_pin, color: Colors.white),
         onTap: () {
@@ -198,7 +195,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
               'https://cspyo.notion.site/Focus-50-88016be305f245f4b9b626db19a7c0f0'));
         },
         title: Text(
-          'Notice',
+          '공지사항',
           style: TextStyle(color: Colors.white),
         ));
   }
