@@ -256,7 +256,7 @@ class AuthViewModel {
   Future<bool> isSignedUp() async {
     final user = await database.getUserPublic();
 
-    return user.createdDate != null;
+    return user.nickname != null;
   }
 
   Future<bool> possibleNickname(String nickname) async {
