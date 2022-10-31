@@ -27,7 +27,6 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateChangesProvider).asData?.value;
-
     return _buildDrawer(authState != null);
   }
 
@@ -39,85 +38,95 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
   }
 
   Widget _buildWhenLogin() {
-    final user = ref.watch(userProvider);
+    final user = ref.watch(userStreamProvider);
     return user.when(
         data: (user) {
-          return ListView(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                    height: 60,
-                    child: _buildLoginProfile(user.userPublicModel!.photoUrl!,
-                        user.userPublicModel!.nickname!)),
-                SizedBox(
-                  height: 10,
-                ),
-                _buildMenuItem(
-                    text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
-                SizedBox(
-                  height: 10,
-                ),
-                _buildMenuItem(
-                    text: '캘린더',
-                    icon: Icons.calendar_month,
-                    route: Routes.CALENDAR),
-                SizedBox(
-                  height: 10,
-                ),
-                _buildNoticeListTile(),
-                SizedBox(
-                  height: 10,
-                ),
-                _buildMenuItem(
-                    text: 'Profile', icon: Icons.person, route: Routes.PROFILE),
-                SizedBox(height: 10),
-                Divider(
-                  color: Colors.white,
-                  thickness: 1,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                _buildLogoutButton(),
-              ]);
+          if (user.userPublicModel!.createdDate != null) {
+            return ListView(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                      height: 60,
+                      child: _buildLoginProfile(user.userPublicModel!.photoUrl!,
+                          user.userPublicModel!.nickname!)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildMenuItem(
+                      text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildMenuItem(
+                      text: '캘린더',
+                      icon: Icons.calendar_month,
+                      route: Routes.CALENDAR),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildNoticeListTile(),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  _buildMenuItem(
+                      text: 'Profile',
+                      icon: Icons.person,
+                      route: Routes.PROFILE),
+                  SizedBox(height: 10),
+                  Divider(
+                    color: Colors.white,
+                    thickness: 1,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  _buildLogoutButton(),
+                ]);
+          } else {
+            return _buildWhenNotLogin();
+          }
         },
         error: (_, __) => Text(""),
-        loading: () => _buildCircularIndicator());
+        loading: () => _buildWhenNotLogin());
   }
 
   Widget _buildWhenNotLogin() {
-    return ListView(padding: EdgeInsets.symmetric(horizontal: 20), children: [
-      SizedBox(
-        height: 20,
-      ),
-      SizedBox(height: 60, child: _buildNotLoginProfile()),
-      SizedBox(
-        height: 10,
-      ),
-      _buildMenuItem(text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
-      SizedBox(
-        height: 10,
-      ),
-      _buildMenuItem(
-          text: '캘린더', icon: Icons.calendar_month, route: Routes.CALENDAR),
-      SizedBox(
-        height: 10,
-      ),
-      _buildNoticeListTile(),
-      Divider(
-        color: Colors.white,
-        thickness: 1,
-      ),
-      SizedBox(
-        height: 20,
-      ),
-      _buildSignUpButton(),
-      SizedBox(height: 10),
-      _buildLoginButton(),
-    ]);
+    return ListView(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        SizedBox(height: 60, child: _buildNotLoginProfile()),
+        SizedBox(
+          height: 10,
+        ),
+        _buildMenuItem(
+            text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
+        SizedBox(
+          height: 10,
+        ),
+        _buildMenuItem(
+            text: '캘린더', icon: Icons.calendar_month, route: Routes.CALENDAR),
+        SizedBox(
+          height: 10,
+        ),
+        _buildNoticeListTile(),
+        Divider(
+          color: Colors.white,
+          thickness: 1,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        _buildSignUpButton(),
+        SizedBox(height: 10),
+        _buildLoginButton(),
+      ],
+    );
   }
 
   Widget _buildLoginProfile(String photoUrl, String nickname) {
@@ -275,13 +284,31 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
     );
   }
 
+  Widget _buildLoading() {
+    return ListView(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      children: [
+        Text(
+          "로딩중...",
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 10),
+        _buildCircularIndicator(),
+      ],
+    );
+  }
+
   Widget _buildCircularIndicator() {
     return Center(
       child: SizedBox(
-        width: 40,
-        height: 40,
+        width: 50,
+        height: 50,
         child: CircularProgressIndicator(
-          color: purple300,
+          color: Colors.white,
           strokeWidth: 5.0,
         ),
       ),
