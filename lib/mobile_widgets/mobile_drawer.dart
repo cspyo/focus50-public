@@ -72,9 +72,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                     height: 10,
                   ),
                   _buildMenuItem(
-                      text: 'Profile',
-                      icon: Icons.person,
-                      route: Routes.PROFILE),
+                      text: '프로필', icon: Icons.person, route: Routes.PROFILE),
                   SizedBox(height: 10),
                   Divider(
                     color: Colors.white,
