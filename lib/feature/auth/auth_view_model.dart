@@ -108,6 +108,10 @@ class AuthViewModel {
       String? phoneNumber = user.kakaoAccount?.phoneNumber;
       Map<String, dynamic> userForCreateCustomToken;
 
+      if (user.kakaoAccount!.profile!.isDefaultImage!) {
+        photoURL = defaultPhotoUrl;
+      }
+
       if (phoneNumber != null) {
         userForCreateCustomToken = {
           "uid": uid,
@@ -188,10 +192,6 @@ class AuthViewModel {
         kakaoNickname = _auth.currentUser!.displayName;
         nickname = kakaoNickname;
 
-        final user = await kakao.UserApi.instance.me();
-        if (user.kakaoAccount!.profile!.isDefaultImage!) {
-          photoUrl = defaultPhotoUrl;
-        }
         talkMessageAgreed = await getTalkMessageAgreed();
         kakaoNoticeAllowed = talkMessageAgreed!;
         if (kakaoNoticeAllowed) noticeMethods.add("kakao");
@@ -200,7 +200,7 @@ class AuthViewModel {
         nickname = googleNickname;
       } else if (signUpMethod == "email") {}
 
-      if (photoUrl == null) {
+      if (photoUrl == null || photoUrl == defaultPhotoUrl) {
         photoUrl = defaultPhotoUrl;
       } else {
         try {
