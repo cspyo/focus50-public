@@ -53,6 +53,9 @@ class DefaultFirebaseOptions {
       storageBucket: \"$6\",
       measurementId: \"$7\",
     );
+
+  static const String saveNetworkImageToStorageUrl = \"$8\";
+  static const String createCustomTokenUrl = \"$9\";
 }
 
 " >> $(dirname "$0")/../lib/firebase_options.dart
