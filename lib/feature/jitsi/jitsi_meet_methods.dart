@@ -101,6 +101,19 @@ class JitsiMeetMethods {
           "disableSelfViewSettings": true,
           "readOnlyName": true,
           "startWithAudioMuted": true,
+          /* Performance setting. reference: https://community.jitsi.org/t/reducing-resource-usage-to-improve-performance-both-client-side-and-server-side/39891 */
+          "disableAudioLevels": true,
+          "enableLayerSuspension": true,
+          "disableH264": true,
+          "resolution": 480,
+          "constraints": {
+            "video": {
+              "height": {
+                "ideal": 480,
+                "max": 480,
+              },
+            },
+          },
         },
         "interfaceConfigOverwrite": {
           "TOOLBAR_BUTTONS": [
@@ -110,6 +123,10 @@ class JitsiMeetMethods {
             'tileview',
           ],
           "SHOW_CHROME_EXTENSION_BANNER": false,
+          /* Performance setting. reference: https://community.jitsi.org/t/reducing-resource-usage-to-improve-performance-both-client-side-and-server-side/39891 */
+          "DISABLE_FOCUS_INDICATOR": true,
+          "DISABLE_DOMINANT_SPEAKER_INDICATOR": true,
+          "VIDEO_QUALITY_LABEL_DISABLED": true,
         },
       };
 
