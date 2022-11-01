@@ -1,11 +1,12 @@
-import 'package:focus42/consts/firebase_functions_url.dart';
+import 'package:focus42/firebase_options.dart';
 import 'package:http/http.dart' as http;
 
 class FirebaseAuthRemoteDataSource {
-  final String createCustomTokenUrl = FirebaseFunctionsUrl.createCustomTokenUrl;
+  final String createCustomTokenUrl =
+      DefaultFirebaseOptions.createCustomTokenUrl;
 
   final String saveNetworkImageToStorageUrl =
-      FirebaseFunctionsUrl.saveNetworkImageToStorageUrl;
+      DefaultFirebaseOptions.saveNetworkImageToStorageUrl;
 
   Future<String> createCustomToken(Map<String, dynamic> user) async {
     final customTokenResponse =
