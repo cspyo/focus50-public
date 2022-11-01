@@ -267,7 +267,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               border: Border(
                                   bottom: BorderSide(
                                       color: border100, width: 1.5))),
-                          child: Group(),
+                          child: Group(
+                            isNotificationOpen: isNotificationOpen,
+                          ),
                         ),
                         Container(
                           height: isNotificationOpen
@@ -306,7 +308,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               border: Border(
                                   bottom: BorderSide(
                                       color: border100, width: 1.5))),
-                          child: Group(),
+                          child: Group(isNotificationOpen: isNotificationOpen),
                         ),
                         Container(
                           width: screenWidth - 520,

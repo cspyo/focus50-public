@@ -49,6 +49,9 @@ final myGroupFutureProvider =
 });
 
 class Group extends ConsumerStatefulWidget {
+  final bool isNotificationOpen;
+  const Group({required this.isNotificationOpen});
+
   @override
   _GroupState createState() => _GroupState();
 }
@@ -140,6 +143,7 @@ class _GroupState extends ConsumerState<Group> {
             ),
           ),
           _buildColumnGroupToggleButton(context),
+          Spacer(),
           SizedBox(
             width: 80,
             height: 30,
@@ -173,7 +177,6 @@ class _GroupState extends ConsumerState<Group> {
           SizedBox(
             height: 5,
           ),
-          // Spacer(),
         ],
       ),
     );
@@ -185,9 +188,13 @@ class _GroupState extends ConsumerState<Group> {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     bool isTabletSize = screenWidth < 1200 ? true : false;
+    double notificationHeight = widget.isNotificationOpen ? 0 : 50;
+
     return SizedBox(
       width: 80,
-      height: isTabletSize ? screenHeight - 362 : screenHeight - 267,
+      height: isTabletSize
+          ? screenHeight + notificationHeight - 362
+          : screenHeight + notificationHeight - 267,
       child: ListItemsBuilder2<GroupModel>(
         data: _myGroupStream,
         itemBuilder: (context, model) => _buildToggleButtonUi(
@@ -205,20 +212,6 @@ class _GroupState extends ConsumerState<Group> {
       // child: Text('없어열'),
     );
   }
-
-  // Widget _buildMyGroupIndicator(BuildContext context, String groupId) {
-  //   final _myGroupStream = ref.watch(myActivatedGroupFutureProvider);
-  //   return _myGroupStream.when(
-  //     data: (data) => _buildToggleButtonUi(context, data),
-  //     loading: () => const Center(
-  //         child: CircularProgressIndicator(
-  //       color: MyColors.purple300,
-  //     )),
-  //     error: (_, __) => EmptyContent(
-  //       title: '오류가 발생하였습니다',
-  //     ),
-  //   );
-  // }
 
   Widget _buildCreateGroupSuccess(BuildContext context, String groupName,
       String groupPassword, String groupDocId) {
