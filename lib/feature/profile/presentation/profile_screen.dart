@@ -126,6 +126,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     showSnackBar("업데이트 완료", context);
 
+    _image = null;
     ref.read(isUpdatingProvider.notifier).state = false;
   }
 
