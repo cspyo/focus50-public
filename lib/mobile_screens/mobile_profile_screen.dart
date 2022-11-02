@@ -28,9 +28,9 @@ class MobileProfileScreen extends ConsumerStatefulWidget {
 
 class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _nicknameController;
-  late TextEditingController _emailController;
 
+  late String _currentNickname;
+  late String _currentEmail;
   Uint8List? _image;
   late UserModel myInfo;
 
@@ -50,7 +50,6 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
 
   @override
   void dispose() {
-    _nicknameController.dispose();
     super.dispose();
   }
 
@@ -67,7 +66,7 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
 
   bool _somethingChanged() {
     bool nicknameChanged =
-        myInfo.userPublicModel!.nickname! != _nicknameController.text;
+        myInfo.userPublicModel!.nickname! != _currentNickname;
     bool photoChanged = _image != null;
     bool emailNoticeChanged = myInfo.userPublicModel!.emailNoticeAllowed! !=
         _emailNoticeController.value;
@@ -88,7 +87,7 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
       return;
     }
 
-    String? nickname = _nicknameController.text;
+    String? nickname = _currentNickname;
     bool emailNoticeAllowed = _emailNoticeController.value;
     bool kakaoNoticeAllowed = _kakaoNoticeController.value;
     bool talkMessageAgreed = kakaoNoticeAllowed;
@@ -126,12 +125,13 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
 
     showSnackBar("업데이트 완료", context);
 
+    _image = null;
     ref.read(isUpdatingProvider.notifier).state = false;
   }
 
   Future<void> _nicknameValidator() async {
     String initialValue = myInfo.userPublicModel!.nickname!;
-    String nickname = _nicknameController.text;
+    String nickname = _currentNickname;
     if (nickname.isEmpty) {
       nicknameValidate = '닉네임은 필수사항입니다';
     } else if (nickname.length > 12) {
@@ -156,10 +156,8 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
 
   void _initStates(UserModel user) {
     myInfo = user;
-    _nicknameController =
-        TextEditingController(text: user.userPublicModel!.nickname);
-    _emailController =
-        TextEditingController(text: user.userPrivateModel!.email);
+    _currentNickname = user.userPublicModel!.nickname!;
+    _currentEmail = user.userPrivateModel!.email!;
 
     // kakaoSynced 로 카카오 연동하기 박스 생성
     if (user.userPublicModel!.kakaoSynced == null)
@@ -349,7 +347,7 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
           ),
           SizedBox(height: 5),
           TextFormField(
-            controller: _nicknameController,
+            initialValue: _currentNickname,
             cursorColor: Colors.grey.shade600,
             decoration: const InputDecoration(
               isDense: true,
@@ -363,6 +361,9 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
             maxLength: 12,
             validator: (_) {
               return nicknameValidate;
+            },
+            onChanged: (value) {
+              _currentNickname = value;
             },
             onFieldSubmitted: (_) async {
               await _nicknameValidator();
@@ -385,7 +386,7 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
           ),
           SizedBox(height: 5),
           TextFormField(
-            controller: _emailController,
+            initialValue: _currentEmail,
             decoration: const InputDecoration(
               isDense: true,
               contentPadding: EdgeInsets.fromLTRB(12, 26, 10, 0),
