@@ -46,7 +46,7 @@ dependencies:
   flutter_riverpod: ^1.0.4
   rxdart: ^0.27.5
   jitsi_meet: ^4.0.0
-  pointer_interceptor: ^0.9.3+3
+  pointer_interceptor: 0.9.1
   url_launcher: ^6.1.5
   http: ^0.13.5
   kakao_flutter_sdk: ^1.3.0-beta.4
