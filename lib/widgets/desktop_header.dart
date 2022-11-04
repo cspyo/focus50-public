@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/top_level_providers.dart';
-import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
+import 'package:focus42/widgets/profile_popup_menu_button_widget.dart';
 import 'package:get/get.dart';
 
 class DesktopHeader extends ConsumerStatefulWidget {
@@ -61,51 +60,41 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               SizedBox(width: 10),
               // 마이페이지 숨기기
               (_authState != null)
-                  ? TextButton(
-                      onPressed: () {
-                        String? invitedGroupId = Uri.base.queryParameters["g"];
-                        invitedGroupId != null
-                            ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                                arguments: true,
-                                parameters: {'g': invitedGroupId})
-                            : Get.rootDelegate.offNamed(Routes.PROFILE);
-                      },
-                      child: const Text('내 정보',
-                          style: TextStyle(fontSize: 17, color: Colors.black)))
-                  : Container(),
-              SizedBox(width: 10),
+                  ? ProfilePopupMenuButton()
+                  : SizedBox.shrink(),
+              // SizedBox(width: 10),
+              // (_authState != null)
+              //     ? ElevatedButton(
+              //         style: ElevatedButton.styleFrom(
+              //           primary: purple300,
+              //         ),
+              //         onPressed: () {
+              //           ref.read(authViewModelProvider).signOut();
+              //           AnalyticsMethod().logSignOut();
+              //           Get.rootDelegate.toNamed(Routes.ABOUT);
+              //         },
+              //         child: const Text(
+              //           '  로그아웃  ',
+              //           style: TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //           ),
+              //         ),
+              //       )
+              // : OutlinedButton(
+              //     style: OutlinedButton.styleFrom(
+              //       primary: purple300,
+              //     ),
+              //     onPressed: () =>
+              //         ShowAuthDialog().showSignUpDialog(context),
+              //     child: const Text(
+              //       '회원가입',
+              //       style: TextStyle(
+              //         fontWeight: FontWeight.bold,
+              //       ),
+              //     )),
+
               (_authState != null)
-                  ? ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        primary: purple300,
-                      ),
-                      onPressed: () {
-                        ref.read(authViewModelProvider).signOut();
-                        AnalyticsMethod().logSignOut();
-                        Get.rootDelegate.toNamed(Routes.ABOUT);
-                      },
-                      child: const Text(
-                        '  로그아웃  ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        primary: purple300,
-                      ),
-                      onPressed: () =>
-                          ShowAuthDialog().showSignUpDialog(context),
-                      child: const Text(
-                        '회원가입',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )),
-              (_authState != null) ? Container() : SizedBox(width: 20),
-              (_authState != null)
-                  ? Container()
+                  ? SizedBox.shrink()
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         primary: purple300,
@@ -118,7 +107,23 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
+                    ),
+              (_authState != null) ? SizedBox.shrink() : SizedBox(width: 10),
+              (_authState != null)
+                  ? SizedBox.shrink()
+                  : OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        primary: purple300,
+                      ),
+                      onPressed: () =>
+                          ShowAuthDialog().showSignUpDialog(context),
+                      child: const Text(
+                        '회원가입',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
             ],
           ),
         ],

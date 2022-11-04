@@ -21,6 +21,7 @@ class HeaderLogo extends StatelessWidget {
               fontFamily: 'Okddung',
               fontSize: 30,
               color: Colors.black,
+              // fontWeight: FontWeight.w900,
             ),
           ),
           Text(
@@ -29,6 +30,7 @@ class HeaderLogo extends StatelessWidget {
               fontFamily: 'Okddung',
               fontSize: 30,
               color: purple300,
+              // fontWeight: FontWeight.w900,
             ),
           ),
         ],
