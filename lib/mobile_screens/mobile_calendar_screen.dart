@@ -59,7 +59,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                 'Focus',
                 style: TextStyle(
                   fontFamily: 'Okddung',
-                  fontSize: 30,
+                  fontSize: 24,
                   color: Colors.black,
                 ),
               ),
@@ -67,7 +67,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                 '50',
                 style: TextStyle(
                   fontFamily: 'Okddung',
-                  fontSize: 30,
+                  fontSize: 24,
                   color: purple300,
                 ),
               ),
@@ -76,6 +76,21 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
           backgroundColor: Colors.white,
           iconTheme: IconThemeData(color: purple300),
         ),
+        // bottomNavigationBar:
+        //     BottomNavigationBar(items: const <BottomNavigationBarItem>[
+        //   BottomNavigationBarItem(
+        //     icon: Icon(Icons.waving_hand),
+        //     label: '소개',
+        //   ),
+        //   BottomNavigationBarItem(
+        //     icon: Icon(Icons.calendar_month),
+        //     label: '캘린더',
+        //   ),
+        //   BottomNavigationBarItem(
+        //     icon: Icon(Icons.menu),
+        //     label: '메뉴',
+        //   ),
+        // ]),
         drawer: MobileDrawer(),
         body: SingleChildScrollView(
           child: Column(

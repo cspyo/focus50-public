@@ -75,18 +75,6 @@ class _ProfilePopupMenuButtonState
               ),
             ),
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              // PopupMenuItem(
-              //     child: Container(
-              //   width: 100,
-              //   height: 50,
-              //   color: MyColors.purple300,
-              //   child: Column(children: [
-              //     Text(
-              //       '${user.userPublicModel!.nickname}',
-              //     ),
-              //     Text('${user.userPublicModel!.nickname!}')
-              //   ]),
-              // )),
               PopupMenuItem(
                 child: TextButton(
                     onPressed: () {

@@ -57,7 +57,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                   },
                   child: const Text('캘린더',
                       style: TextStyle(fontSize: 17, color: Colors.black))),
-              SizedBox(width: 10),
+              (_authState != null) ? SizedBox(width: 20) : SizedBox(width: 10),
               // 마이페이지 숨기기
               (_authState != null)
                   ? ProfilePopupMenuButton()
