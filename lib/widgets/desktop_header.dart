@@ -92,7 +92,21 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               //         fontWeight: FontWeight.bold,
               //       ),
               //     )),
-
+              (_authState != null)
+                  ? SizedBox.shrink()
+                  : OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        primary: purple300,
+                      ),
+                      onPressed: () =>
+                          ShowAuthDialog().showSignUpDialog(context),
+                      child: const Text(
+                        '회원가입',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
               (_authState != null)
                   ? SizedBox.shrink()
                   : ElevatedButton(
@@ -109,21 +123,6 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                       ),
                     ),
               (_authState != null) ? SizedBox.shrink() : SizedBox(width: 10),
-              (_authState != null)
-                  ? SizedBox.shrink()
-                  : OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        primary: purple300,
-                      ),
-                      onPressed: () =>
-                          ShowAuthDialog().showSignUpDialog(context),
-                      child: const Text(
-                        '회원가입',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
             ],
           ),
         ],
