@@ -50,7 +50,12 @@ final myGroupFutureProvider =
 
 class Group extends ConsumerStatefulWidget {
   final bool isNotificationOpen;
-  const Group({required this.isNotificationOpen});
+  final GlobalKey groupCreateKey;
+  final GlobalKey groupSearchKey;
+  const Group(
+      {required this.isNotificationOpen,
+      required this.groupCreateKey,
+      required this.groupSearchKey});
 
   @override
   _GroupState createState() => _GroupState();
@@ -118,6 +123,7 @@ class _GroupState extends ConsumerState<Group> {
                   width: 80,
                   height: 30,
                   child: TextButton(
+                    key: widget.groupSearchKey,
                     onPressed: () {
                       _popupSearchGroupDialog(context); //TODO: GA 달기
                     },
@@ -148,6 +154,7 @@ class _GroupState extends ConsumerState<Group> {
             width: 80,
             height: 30,
             child: TextButton(
+              key: widget.groupCreateKey,
               onPressed: () {
                 if (uid != null) {
                   AnalyticsMethod().logPressGroupCreateButton();

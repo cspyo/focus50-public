@@ -53,6 +53,8 @@ dependencies:
   flutter_advanced_switch: ^3.0.1
   flutter_speed_dial: ^6.2.0
   carousel_slider: ^4.1.1
+  tutorial_coach_mark: ^1.2.4
+  animated_text_kit: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -88,6 +90,8 @@ flutter:
     - assets/images/photoInSession.png
     - assets/images/report.png
     - assets/images/earth.png
+    - assets/images/calendar_screen_reserve.gif
+    - assets/images/fogong_character.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

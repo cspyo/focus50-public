@@ -17,6 +17,11 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 class Calendar extends ConsumerStatefulWidget {
+  // final GlobalKey calendarKey;
+  final void Function() showTutorial;
+  final void Function() createTutorial;
+  const Calendar({required this.createTutorial, required this.showTutorial});
+
   @override
   CalendarState createState() => CalendarState();
 }
@@ -275,6 +280,7 @@ class CalendarState extends ConsumerState<Calendar> {
       BuildContext context, TimeRegionDetails timeRegionDetails) {
     if (timeRegionDetails.region.text == HOVER) {
       return Container(
+        // key: widget.calendarKey, // TODO: key 여기다 박아놨음.
         decoration: BoxDecoration(
           border: Border.all(color: purple300, width: 2),
           borderRadius: BorderRadius.circular(8),
@@ -460,6 +466,8 @@ class CalendarState extends ConsumerState<Calendar> {
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }
+                  widget.createTutorial();
+                  widget.showTutorial();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: purple300,
