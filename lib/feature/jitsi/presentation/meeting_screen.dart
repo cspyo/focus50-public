@@ -11,6 +11,7 @@ import 'package:focus42/feature/jitsi/presentation/list_items_builder_1.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/feature/jitsi/presentation/todo_list_tile_widget.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
+import 'package:focus42/feature/peer_feedback/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -45,6 +46,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
     database = ref.read(databaseProvider);
 
     reservation = widget.reservation;
+    ref.read(runningSessionIdProvider.notifier).state = reservation.id!;
 
     JitsiMeet.addListener(JitsiMeetingListener(
         onConferenceWillJoin: _onConferenceWillJoin,
@@ -87,11 +89,6 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
       home: Scaffold(
         body: Row(
           children: [
-            // Flexible(
-            //   child: Container(
-            //     color: Colors.red,
-            //   ),
-            // ),
             Expanded(
               child: Stack(
                 children: [
@@ -395,6 +392,8 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
         child: GoogleTimer(
           duration: Times.min50,
           startTime: reservation.startTime!,
+          // duration: Duration(seconds: 10),
+          // startTime: DateTime.now(),
         ),
       ),
     );

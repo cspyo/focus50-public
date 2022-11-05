@@ -4,9 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:focus42/feature/jitsi/presentation/custom_timer_painter.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
+import 'package:focus42/feature/peer_feedback/presentation/peer_feedback_dialog.dart';
 import 'package:video_player/video_player.dart';
 
-// Todo: 시간 provider 가 있어서 해당 시간으로 화면 그리기 가능 ?
+Future<dynamic> peerFeedbackPopup(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return PeerFeedbackDialog();
+    },
+  );
+}
 
 const TextStyle style1 = TextStyle(
     fontSize: 15.0,
@@ -86,6 +94,7 @@ class _GoogleTimerState extends State<GoogleTimer>
       duration: duration,
     )..addStatusListener((status) {
         if (status == AnimationStatus.dismissed) {
+          peerFeedbackPopup(context);
           // _playFinishSound();
         }
       });

@@ -9,6 +9,7 @@ import 'package:focus42/feature/jitsi/jitsi_meet_methods.dart';
 import 'package:focus42/feature/jitsi/presentation/google_timer_widget.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
+import 'package:focus42/feature/peer_feedback/provider/provider.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/resources/matching_methods.dart';
@@ -41,6 +42,7 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
     database = ref.read(databaseProvider);
 
     reservation = widget.reservation;
+    ref.read(runningSessionIdProvider.notifier).state = reservation.id!;
 
     JitsiMeet.addListener(JitsiMeetingListener(
         onConferenceWillJoin: _onConferenceWillJoin,
