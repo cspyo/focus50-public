@@ -8,6 +8,7 @@ import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/analytics_method.dart';
 import 'package:focus42/widgets/header_logo.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class DesktopHeader extends ConsumerStatefulWidget {
   @override
@@ -15,6 +16,13 @@ class DesktopHeader extends ConsumerStatefulWidget {
 }
 
 class DesktopHeaderState extends ConsumerState<DesktopHeader> {
+  void testAlimTalk() async {
+    String url =
+        "https://asia-northeast3-focus50-dev.cloudfunctions.net/testForGetReservationData";
+
+    final response = await http.post(Uri.parse(url), body: {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +47,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
             children: <Widget>[
               TextButton(
                   onPressed: () {
+                    testAlimTalk();
                     String? invitedGroupId = Uri.base.queryParameters["g"];
                     invitedGroupId != null
                         ? Get.rootDelegate.offNamed(Routes.ABOUT,
