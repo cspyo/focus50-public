@@ -3,12 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/jitsi/presentation/list_items_builder_2.dart';
 import 'package:focus42/feature/jitsi/presentation/text_style.dart';
+import 'package:focus42/feature/peer_feedback/presentation/popup_peer_feedback.dart';
 import 'package:focus42/mobile_widgets/mobile_calendar.dart';
 import 'package:focus42/mobile_widgets/mobile_drawer.dart';
 import 'package:focus42/mobile_widgets/mobile_group_widget.dart';
 import 'package:focus42/mobile_widgets/mobile_reservation.dart';
 import 'package:focus42/mobile_widgets/mobile_row_group_toggle_button_widget.dart';
 import 'package:focus42/models/group_model.dart';
+import 'package:focus42/services/firestore_database.dart';
+import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:get/get.dart';
@@ -23,17 +26,16 @@ class MobileCalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
+  late final FirestoreDatabase database;
   bool isNotificationOpen = true;
-  final Uri toLaunch = Uri(
-    scheme: 'https',
-    host: 'forms.gle',
-    path: '/3bGecKhsiAwtyk4k9',
-  );
   CalendarController calendarController = CalendarController();
 
   @override
   void initState() {
     super.initState();
+    database = ref.read(databaseProvider);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => popupPeerFeedbacks(database, context));
   }
 
   @override
