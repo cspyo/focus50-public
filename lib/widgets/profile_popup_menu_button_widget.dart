@@ -100,12 +100,8 @@ class _ProfilePopupMenuButtonState
                 // value: SampleItem.itemTwo,
                 child: TextButton(
                     onPressed: () {
-                      String? invitedGroupId = Uri.base.queryParameters["g"];
-                      invitedGroupId != null
-                          ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                              arguments: true,
-                              parameters: {'g': invitedGroupId})
-                          : Get.rootDelegate.offNamed(Routes.PROFILE);
+                      _launchURL(
+                          'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08');
                     },
                     child: const Text('공지사항',
                         style: TextStyle(fontSize: 17, color: Colors.black))),
@@ -121,6 +117,7 @@ class _ProfilePopupMenuButtonState
                   onPressed: () {
                     ref.read(authViewModelProvider).signOut();
                     AnalyticsMethod().logSignOut();
+                    Navigator.pop(context);
                     Get.rootDelegate.toNamed(Routes.ABOUT);
                   },
                   child: const Text(

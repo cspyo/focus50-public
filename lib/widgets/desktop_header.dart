@@ -107,7 +107,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                         ),
                       ),
                     ),
-              (_authState != null) ? SizedBox.shrink() : SizedBox(width: 10),
+              (_authState != null) ? SizedBox.shrink() : SizedBox(width: 20),
               (_authState != null)
                   ? SizedBox.shrink()
                   : ElevatedButton(
