@@ -33,10 +33,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late String _currentEmail;
   Uint8List? _image;
   late UserModel myInfo;
-
-  bool _isUpdating = false;
   bool _talkNoticeEnable = false;
-  bool _kakaoSyncSuccess = false;
 
   String? nicknameValidate = null;
 
@@ -55,6 +52,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _showSyncKakaoDialog() {
     return showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return KakaoSyncDialog(
@@ -408,11 +406,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ],
         ),
-        // !_talkNoticeEnable ? SizedBox(height: 16) : Container(),
-        // !_talkNoticeEnable ? _buildKakaoSyncNotification() : Container(),
-        // SizedBox(height: 16),
-        // _buildSwitchButton(
-        //     "카카오톡으로 알림 받기", _kakaoNoticeController, _talkNoticeEnable),
+        !_talkNoticeEnable ? SizedBox(height: 16) : Container(),
+        !_talkNoticeEnable ? _buildKakaoSyncNotification() : Container(),
+        SizedBox(height: 16),
+        _buildSwitchButton(
+            "카카오톡으로 알림 받기", _kakaoNoticeController, _talkNoticeEnable),
         SizedBox(height: 20),
         _buildSwitchButton("이메일로 알림 받기", _emailNoticeController, true),
       ],
@@ -493,43 +491,46 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget _buildSwitchButton(
       String text, ValueNotifier<bool> controller, bool enabled) {
-    return GestureDetector(
-      onTap: () {
-        if (enabled) {
-          controller.value = !controller.value;
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 0.6,
-            color: enabled ? Colors.black : Colors.grey,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          if (enabled) {
+            controller.value = !controller.value;
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 0.6,
+              color: enabled ? Colors.black : Colors.grey,
+            ),
+            borderRadius: BorderRadius.circular(16),
           ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              text,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: enabled ? Colors.black : Colors.grey,
+          padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                text,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  color: enabled ? Colors.black : Colors.grey,
+                ),
               ),
-            ),
-            AdvancedSwitch(
-              inactiveColor: Colors.grey,
-              activeColor: purple300,
-              inactiveChild: Text('off'),
-              activeChild: Text('on'),
-              width: 60,
-              height: 30,
-              controller: controller,
-              enabled: enabled,
-            ),
-          ],
+              AdvancedSwitch(
+                inactiveColor: Colors.grey,
+                activeColor: purple300,
+                inactiveChild: Text('off'),
+                activeChild: Text('on'),
+                width: 60,
+                height: 30,
+                controller: controller,
+                enabled: enabled,
+              ),
+            ],
+          ),
         ),
       ),
     );
