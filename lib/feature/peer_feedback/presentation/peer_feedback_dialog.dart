@@ -111,7 +111,7 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
                                 (_feedbackItemHeight + _feedbackDividerHeight) *
                                 _feedbackListLength),
                         child: ListView.separated(
-                          scrollDirection: Axis.vertical,
+                          physics: const NeverScrollableScrollPhysics(),
                           itemCount: userIds.length,
                           separatorBuilder: (context, index) => const Divider(
                             height: 0.5,
@@ -210,7 +210,8 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
                                                 _feedbackDividerHeight) *
                                             _feedbackListLength,
                                         child: ListView.separated(
-                                          scrollDirection: Axis.vertical,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
                                           itemCount:
                                               FeedbackType.values.length - 1,
                                           separatorBuilder: (context, j) =>
