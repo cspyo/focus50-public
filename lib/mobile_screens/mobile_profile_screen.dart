@@ -34,9 +34,7 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
   Uint8List? _image;
   late UserModel myInfo;
 
-  bool _isUpdating = false;
   bool _talkNoticeEnable = false;
-  bool _kakaoSyncSuccess = false;
 
   String? nicknameValidate = null;
 
@@ -434,11 +432,11 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
             ),
           ],
         ),
-        // !_talkNoticeEnable ? SizedBox(height: 16) : Container(),
-        // !_talkNoticeEnable ? _buildKakaoSyncNotification() : Container(),
-        // SizedBox(height: 16),
-        // _buildSwitchButton(
-        //     "카카오톡으로 알림 받기", _kakaoNoticeController, _talkNoticeEnable),
+        !_talkNoticeEnable ? SizedBox(height: 16) : Container(),
+        !_talkNoticeEnable ? _buildKakaoSyncNotification() : Container(),
+        SizedBox(height: 16),
+        _buildSwitchButton(
+            "카카오톡으로 알림 받기", _kakaoNoticeController, _talkNoticeEnable),
         SizedBox(height: 20),
         _buildSwitchButton("이메일로 알림 받기", _emailNoticeController, true),
       ],
@@ -463,13 +461,26 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "카카오 연동을 하시면 카카오톡으로 알림을 받을 수 있습니다.",
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                  color: Colors.black,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "카카오 연동을 하시면",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    "카카오톡으로 알림을 받을 수 있습니다.",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 3),
               Row(
@@ -495,17 +506,6 @@ class _MobileProfileScreenState extends ConsumerState<MobileProfileScreen> {
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    "카카오톡 수신 선택 항목에 동의해주세요.",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 11,
-                      color: Colors.black,
                     ),
                   ),
                 ],

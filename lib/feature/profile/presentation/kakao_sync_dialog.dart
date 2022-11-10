@@ -104,37 +104,51 @@ class _KakaoSyncDialogState extends ConsumerState<KakaoSyncDialog> {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'Focus',
-              style: TextStyle(
-                fontFamily: 'Okddung',
-                fontSize: 25,
-                color: Colors.black,
-              ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              width: 36,
+              height: 36,
             ),
-            Text(
-              '50',
-              style: TextStyle(
-                fontFamily: 'Okddung',
-                fontSize: 25,
-                color: purple300,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const <Widget>[
+                Text(
+                  'Focus',
+                  style: TextStyle(
+                    fontFamily: 'Okddung',
+                    fontSize: 25,
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  '50',
+                  style: TextStyle(
+                    fontFamily: 'Okddung',
+                    fontSize: 25,
+                    color: purple300,
+                  ),
+                ),
+              ],
             ),
+            SizedBox(
+              width: 36,
+              height: 36,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  child: Icon(
+                    Icons.clear,
+                    color: Colors.black,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            )
           ],
         ),
-        // SizedBox(
-        //   height: 5,
-        // ),
-        // Text(
-        //   '카카오 연동하기',
-        //   style: TextStyle(
-        //     fontSize: 25,
-        //     fontWeight: FontWeight.w600,
-        //     color: Colors.black,
-        //   ),
-        // ),
       ],
     );
   }

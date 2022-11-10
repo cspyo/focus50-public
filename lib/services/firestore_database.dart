@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/notice_model.dart';
 import 'package:focus42/models/reservation_model.dart';
@@ -398,6 +399,34 @@ class FirestoreDatabase {
           queryBuilder: (query) => query.where('isActive', isEqualTo: true),
           builder: (snapshot, options) =>
               NoticeModel.fromMap(snapshot, options));
+
+  //----------------------feedback----------------------//
+
+  Future<void> setFeedback(
+    PeerFeedbackModel feedback,
+  ) =>
+      _service.setData(
+        path: feedback.id != null
+            ? FirestorePath.feedback(feedback.id!)
+            : FirestorePath.feedbacks(),
+        data: feedback.toMap(),
+        isAdd: feedback.id == null,
+      );
+
+  Future<void> updateFeedback(PeerFeedbackModel peerFeedback) async {
+    await _service.updateData(
+        path: FirestorePath.feedback(peerFeedback.id!),
+        data: peerFeedback.toMap());
+  }
+
+  Future<List<PeerFeedbackModel>> getPeerFeedbacks() =>
+      _service.getDataWithQuery(
+          path: FirestorePath.feedbacks(),
+          queryBuilder: (query) => query
+              .where("toUid", isEqualTo: uid)
+              .where('isShowed', isEqualTo: false),
+          builder: (snapshot, options) =>
+              PeerFeedbackModel.fromMap(snapshot, options));
 
   //----------------------transaction----------------------//
   Future<void> runTransaction(TransactionHandler transactionHandler) async {

@@ -2,7 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/peer_feedback/presentation/popup_peer_feedback.dart';
 import 'package:focus42/models/notice_model.dart';
+import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/utils/color_convert.dart';
 import 'package:focus42/widgets/calendar.dart';
@@ -30,6 +32,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   int remainingTime = 0;
   int tabletBoundSize = 1200;
   DateTime now = new DateTime.now();
+  late final FirestoreDatabase database;
 
   String fastReservation = '10시';
 
@@ -42,6 +45,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => Onboarding.popupOnboardingStart(ref, context));
+    database = ref.read(databaseProvider);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => popupPeerFeedbacks(database, context));
   }
 
   @override
