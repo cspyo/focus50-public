@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/models/group_model.dart';
@@ -455,8 +456,16 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }
-                  widget.createTutorial();
-                  widget.showTutorial();
+                  final user = await database.getUserPublic();
+                  bool? isOnboarded = user.isOnboarded;
+                  final authViewModel = ref.read(authViewModelProvider);
+                  print('${user.nickname}: ${isOnboarded}');
+                  if (isOnboarded != null &&
+                      !isOnboarded &&
+                      (await authViewModel.isSignedUp())) {
+                    widget.createTutorial();
+                    widget.showTutorial();
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   primary: purple300,
