@@ -459,7 +459,7 @@ class Onboarding {
               return Container(
                 width: 200,
                 height: 500,
-                padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
