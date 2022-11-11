@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:focus42/feature/focus_rating/data/rating_model.dart';
 import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/notice_model.dart';
@@ -427,6 +428,13 @@ class FirestoreDatabase {
               .where('isShowed', isEqualTo: false),
           builder: (snapshot, options) =>
               PeerFeedbackModel.fromMap(snapshot, options));
+  //----------------------rating----------------------//
+
+  Future<void> setRating(RatingModel rating) => _service.setData(
+        path: FirestorePath.ratings(),
+        data: rating.toMap(),
+        isAdd: rating.id == null,
+      );
 
   //----------------------transaction----------------------//
   Future<void> runTransaction(TransactionHandler transactionHandler) async {
