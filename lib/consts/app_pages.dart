@@ -1,4 +1,5 @@
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/dashboard/presentation/dashboard_screen.dart';
 import 'package:focus42/feature/jitsi/presentation/meeting_screen.dart';
 import 'package:focus42/feature/profile/presentation/profile_screen.dart';
 import 'package:focus42/mobile_screens/mobile_about_screen.dart';
@@ -26,8 +27,8 @@ abstract class AppPages {
       page: () => CalendarScreen(),
     ),
     GetPage(
-      name: Routes.GROUPCALENDAR,
-      page: () => CalendarScreen(),
+      name: Routes.DASHBOARD,
+      page: () => DashboardScreen(),
     ),
     GetPage(
       name: Routes.MEET,
@@ -47,10 +48,6 @@ abstract class AppPages {
     ),
     GetPage(
       name: Routes.CALENDAR,
-      page: () => MobileCalendarScreen(),
-    ),
-    GetPage(
-      name: Routes.GROUPCALENDAR,
       page: () => MobileCalendarScreen(),
     ),
     GetPage(

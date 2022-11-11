@@ -36,6 +36,20 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
           HeaderLogo(),
           Row(
             children: <Widget>[
+              (_authState != null)
+                  ? TextButton(
+                      onPressed: () {
+                        String? invitedGroupId = Uri.base.queryParameters["g"];
+                        invitedGroupId != null
+                            ? Get.rootDelegate.offNamed(Routes.DASHBOARD,
+                                arguments: true,
+                                parameters: {'g': invitedGroupId})
+                            : Get.rootDelegate.offNamed(Routes.DASHBOARD);
+                      },
+                      child: const Text('대시보드',
+                          style: TextStyle(fontSize: 17, color: Colors.black)))
+                  : Container(),
+              SizedBox(width: 10),
               TextButton(
                   onPressed: () {
                     String? invitedGroupId = Uri.base.queryParameters["g"];
@@ -59,6 +73,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
                       style: TextStyle(fontSize: 17, color: Colors.black))),
               (_authState != null) ? SizedBox(width: 20) : SizedBox(width: 10),
               // 마이페이지 숨기기
+              SizedBox(width: 10),
               (_authState != null)
                   ? ProfilePopupMenuButton()
                   : SizedBox.shrink(),
