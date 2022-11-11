@@ -26,9 +26,12 @@ class _ProfilePopupMenuButtonState
       data: (user) {
         if (user.userPublicModel!.createdDate != null) {
           return PopupMenuButton(
+            padding: EdgeInsets.zero,
+            tooltip: '',
             position: PopupMenuPosition.under,
             offset: Offset(0, 16),
             elevation: 10,
+            constraints: BoxConstraints.tight(Size(120, 208)),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(16.0),
@@ -76,54 +79,70 @@ class _ProfilePopupMenuButtonState
             ),
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(
-                child: TextButton(
-                    onPressed: () {
-                      String? invitedGroupId = Uri.base.queryParameters["g"];
-                      invitedGroupId != null
-                          ? Get.rootDelegate.offNamed(Routes.PROFILE,
-                              arguments: true,
-                              parameters: {'g': invitedGroupId})
-                          : Get.rootDelegate.offNamed(Routes.PROFILE);
-                    },
-                    child: const Text('내 정보',
-                        style: TextStyle(fontSize: 17, color: Colors.black))),
-              ),
-              PopupMenuItem(
-                child: TextButton(
-                    onPressed: () {
-                      _launchURL('https://open.kakao.com/o/s1lFdjse');
-                    },
-                    child: const Text('1:1 문의하기',
-                        style: TextStyle(fontSize: 17, color: Colors.black))),
-              ),
-              PopupMenuItem(
-                // value: SampleItem.itemTwo,
-                child: TextButton(
-                    onPressed: () {
-                      _launchURL(
-                          'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08');
-                    },
-                    child: const Text('공지사항',
-                        style: TextStyle(fontSize: 17, color: Colors.black))),
-              ),
-              PopupMenuItem(
-                // value: ,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      primary: purple300,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      )),
-                  onPressed: () {
-                    ref.read(authViewModelProvider).signOut();
-                    AnalyticsMethod().logSignOut();
-                    Navigator.pop(context);
-                    Get.rootDelegate.toNamed(Routes.ABOUT);
-                  },
+                height: 36,
+                onTap: (() {
+                  String? invitedGroupId = Uri.base.queryParameters["g"];
+                  invitedGroupId != null
+                      ? Get.rootDelegate.offNamed(Routes.PROFILE,
+                          arguments: true, parameters: {'g': invitedGroupId})
+                      : Get.rootDelegate.offNamed(Routes.PROFILE);
+                }),
+                child: Center(
                   child: const Text(
-                    '  로그아웃  ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                    '내 정보',
+                    style: TextStyle(fontSize: 17, color: Colors.black),
+                  ),
+                ),
+              ),
+              PopupMenuDivider(),
+              PopupMenuItem(
+                height: 36,
+                onTap: () => _launchURL('https://open.kakao.com/o/s1lFdjse'),
+                child: Center(
+                  child: const Text(
+                    '1:1 문의',
+                    style: TextStyle(fontSize: 17, color: Colors.black),
+                  ),
+                ),
+              ),
+              PopupMenuDivider(),
+              PopupMenuItem(
+                height: 36,
+                onTap: () => _launchURL(
+                    'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08'),
+                child: Center(
+                  child: const Text(
+                    '공지사항',
+                    style: TextStyle(fontSize: 17, color: Colors.black),
+                  ),
+                ),
+              ),
+              PopupMenuDivider(),
+              PopupMenuItem(
+                height: 36,
+                padding: EdgeInsets.zero,
+                child: Center(
+                  child: SizedBox(
+                    width: 90,
+                    height: 30,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: purple300,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          )),
+                      onPressed: () {
+                        ref.read(authViewModelProvider).signOut();
+                        AnalyticsMethod().logSignOut();
+                        Navigator.pop(context);
+                        Get.rootDelegate.toNamed(Routes.ABOUT);
+                      },
+                      child: const Text(
+                        '로그아웃',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ),
