@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
+import 'package:focus42/models/user_model.dart';
+import 'package:focus42/models/user_private_model.dart';
+import 'package:focus42/models/user_public_model.dart';
+import 'package:focus42/top_level_providers.dart';
 
 void watchFeedbacks(dynamic database, List<PeerFeedbackModel> peerFeedbacks) {
   peerFeedbacks.forEach((element) {
@@ -8,11 +15,13 @@ void watchFeedbacks(dynamic database, List<PeerFeedbackModel> peerFeedbacks) {
 }
 
 Future<dynamic> popupPeerFeedbacks(
-    dynamic database, BuildContext context) async {
-  if (database.uid == 'none') return;
+    WidgetRef ref, dynamic database, BuildContext context) async {
+  final fToast = FToast();
+  fToast.init(context);
+  // if (database.uid == 'none') return;
 
   List<PeerFeedbackModel> peerFeedbacks = await database.getPeerFeedbacks();
-  if (peerFeedbacks.isEmpty) return;
+  // if (peerFeedbacks.isEmpty) return;
 
   Map<String, List<PeerFeedbackModel>> peerFeedbackMap = new Map();
   peerFeedbacks.forEach((element) {
@@ -36,154 +45,280 @@ Future<dynamic> popupPeerFeedbacks(
   const double feedbackItemHeight = 96;
   const double feedbackTextHeight = 40;
   const double feedbackDividerHeight = 0.5;
+  int? currentScore;
+  final user = await database.getUserPublic();
+  int? netPromoterScore = user.netPromoterScore;
   watchFeedbacks(database, peerFeedbacks);
   return showDialog(
     barrierDismissible: true,
     context: context,
     builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(32.0))),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Center(
-                child: Container(
-                  width: _dialogWidth,
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: Text("🔥 당신의 열정을 응원합니다 🔥",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        )),
+      return StatefulBuilder(builder: ((context, setState) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: Container(
+                    width: _dialogWidth,
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: Text("🔥 당신의 열정을 응원합니다 🔥",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                width: 350,
-                height: feedbackListLength *
-                        (feedbackItemHeight + feedbackDividerHeight) +
-                    dateKeyListLength * (dateItemHeight + dateDividerHeight),
-                child: ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  itemCount: peerFeedbackKeys.length,
-                  separatorBuilder: (context, index) => const Divider(
-                    height: dateDividerHeight,
-                    color: Colors.transparent,
-                  ),
-                  itemBuilder: (context, i) {
-                    return Column(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                            height: dateItemHeight,
-                            child: Text(
-                              "${peerFeedbackKeys[i]} 에 받은 응원이에요",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 14,
+                Container(
+                  width: 350,
+                  height: feedbackListLength *
+                          (feedbackItemHeight + feedbackDividerHeight) +
+                      dateKeyListLength * (dateItemHeight + dateDividerHeight),
+                  child: ListView.separated(
+                    scrollDirection: Axis.vertical,
+                    itemCount: peerFeedbackKeys.length,
+                    separatorBuilder: (context, index) => const Divider(
+                      height: dateDividerHeight,
+                      color: Colors.transparent,
+                    ),
+                    itemBuilder: (context, i) {
+                      return Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                              height: dateItemHeight,
+                              child: Text(
+                                "${peerFeedbackKeys[i]} 에 받은 응원이에요",
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          width: 350,
-                          height: (feedbackItemHeight + feedbackDividerHeight) *
-                              peerFeedbackMap[peerFeedbackKeys[i]]!.length,
-                          child: ListView.separated(
-                            scrollDirection: Axis.vertical,
-                            itemCount:
+                          Container(
+                            width: 350,
+                            height: (feedbackItemHeight +
+                                    feedbackDividerHeight) *
                                 peerFeedbackMap[peerFeedbackKeys[i]]!.length,
-                            separatorBuilder: (context, index) => const Divider(
-                              height: feedbackDividerHeight,
-                              color: Colors.transparent,
-                            ),
-                            itemBuilder: (context, j) {
-                              final List<PeerFeedbackModel>
-                                  peerFeedbacksInTime =
-                                  peerFeedbackMap[peerFeedbackKeys[i]]!;
-                              return Container(
-                                height: feedbackItemHeight,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: Image.network(
-                                            peerFeedbacksInTime[j]
-                                                .fromPhotoUrl!,
-                                            fit: BoxFit.cover,
-                                            width: 30,
-                                            height: 30,
+                            child: ListView.separated(
+                              scrollDirection: Axis.vertical,
+                              itemCount:
+                                  peerFeedbackMap[peerFeedbackKeys[i]]!.length,
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
+                                height: feedbackDividerHeight,
+                                color: Colors.transparent,
+                              ),
+                              itemBuilder: (context, j) {
+                                final List<PeerFeedbackModel>
+                                    peerFeedbacksInTime =
+                                    peerFeedbackMap[peerFeedbackKeys[i]]!;
+                                return Container(
+                                  height: feedbackItemHeight,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: Image.network(
+                                              peerFeedbacksInTime[j]
+                                                  .fromPhotoUrl!,
+                                              fit: BoxFit.cover,
+                                              width: 30,
+                                              height: 30,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          "${peerFeedbacksInTime[j].fromNickname}",
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
+                                          Text(
+                                            "${peerFeedbacksInTime[j].fromNickname}",
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          " 님의 응원",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
+                                          Text(
+                                            " 님의 응원",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          width: 240,
-                                          height: feedbackTextHeight,
-                                          child: Center(
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: FittedBox(
-                                                fit: BoxFit.cover,
-                                                child: Text(
-                                                    "${peerFeedbacksInTime[j].contentText!}"),
+                                        ],
+                                      ),
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            width: 240,
+                                            height: feedbackTextHeight,
+                                            child: Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: FittedBox(
+                                                  fit: BoxFit.cover,
+                                                  child: Text(
+                                                      "${peerFeedbacksInTime[j].contentText!}"),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Colors.black38,
-                                              width: 0.5,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.black38,
+                                                width: 0.5,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+                netPromoterScore == null
+                    ? Column(
+                        children: [
+                          Center(
+                            child: Container(
+                              width: _dialogWidth,
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: Text(
+                                  "Focus50을 친구/지인 등 주변에 얼마나 추천하고 싶으신가요?\n추천 정도를 0~10점 사이로 선택해주세요!",
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: _dialogWidth,
+                            height: 28,
+                            child: ListView.separated(
+                              itemCount: 11,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (BuildContext context, int index) {
+                                return SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: TextButton(
+                                    child: Text(
+                                      '$index',
+                                      style: TextStyle(
+                                          color: currentScore == index
+                                              ? Colors.white
+                                              : MyColors.purple300,
+                                          fontSize: 10),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    onPressed: () {
+                                      print(index);
+                                      setState(() {
+                                        currentScore = index;
+                                        updateNetPromoterScore(ref, index);
+                                        _showNpsCompleteToast(fToast);
+                                      });
+                                    },
+                                    style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStateProperty.all<Color>(
+                                              currentScore == index
+                                                  ? MyColors.purple300
+                                                  : Colors.white),
+                                      shape: MaterialStateProperty.all<
+                                          RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: MyColors.purple300),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              separatorBuilder:
+                                  (BuildContext context, int index) =>
+                                      SizedBox(width: 3),
+                            ),
+                          )
+                        ],
+                      )
+                    : SizedBox.shrink(),
+              ],
+            ),
+          ),
+        );
+      }));
+    },
+  );
+}
+
+void updateNetPromoterScore(ref, int score) async {
+  final database = ref.read(databaseProvider);
+  UserPublicModel userPublic = UserPublicModel(
+    netPromoterScore: score,
+  );
+  UserPrivateModel userPrivate = UserPrivateModel();
+  UserModel updateUser = UserModel(userPublic, userPrivate);
+  await database.updateUser(updateUser);
+}
+
+void _showNpsCompleteToast(FToast fToast) {
+  Widget toast = Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(25.0),
+      color: Colors.black45,
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
+        SizedBox(
+          width: 12.0,
+        ),
+        Text(
+          "피드백 주셔서 감사합니다😊",
+          style: TextStyle(
+            color: Colors.white,
           ),
         ),
-      );
-    },
+      ],
+    ),
+  );
+
+  fToast.showToast(
+    child: toast,
+    gravity: ToastGravity.CENTER,
+    toastDuration: Duration(seconds: 1),
   );
 }

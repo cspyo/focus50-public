@@ -37,8 +37,8 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
     WidgetsBinding.instance.addPostFrameCallback(
         (_) => Onboarding.popupOnboardingStart(ref, context));
     database = ref.read(databaseProvider);
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => popupPeerFeedbacks(database, context));
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => popupPeerFeedbacks(ref, database, context));
   }
 
   @override

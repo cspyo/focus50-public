@@ -16,6 +16,7 @@ class UserPublicModel {
   List<String?>? noticeMethods;
   final List<String>? groups;
   bool? isOnboarded; // 온보딩 페이지 봤는 지 안봤는 지 null이면 안보여주기
+  int? netPromoterScore;
 
   UserPublicModel({
     this.nickname,
@@ -33,6 +34,7 @@ class UserPublicModel {
     this.noticeMethods,
     this.groups,
     this.isOnboarded,
+    this.netPromoterScore,
   });
 
   UserPublicModel addGroup(String groupId) {
@@ -98,6 +100,7 @@ class UserPublicModel {
           : null,
       groups: data?["groups"] is Iterable ? List.from(data?["groups"]) : null,
       isOnboarded: data?["isOnboarded"],
+      netPromoterScore: data?['netPromoterScore'],
     );
   }
 
@@ -118,6 +121,7 @@ class UserPublicModel {
       if (noticeMethods != null) "noticeMethods": noticeMethods,
       if (groups != null) "groups": groups,
       if (isOnboarded != null) "isOnboarded": isOnboarded,
+      if (netPromoterScore != null) "netPromoterScore": netPromoterScore,
     };
   }
 }
