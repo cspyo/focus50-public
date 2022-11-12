@@ -136,6 +136,12 @@ class MyTextStyle {
       color: Colors.white,
       decoration: TextDecoration.none);
 
+  static const TextStyle CwS22W600 = TextStyle(
+      fontSize: 22.0,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+      decoration: TextDecoration.none);
+
   static const TextStyle CwS80W600 = TextStyle(
       fontSize: 80.0,
       fontWeight: FontWeight.w600,

@@ -30,6 +30,7 @@ class Onboarding {
         context: context,
         builder: (BuildContext context) {
           double _screenWidth = MediaQuery.of(context).size.width;
+          bool isMobile = _screenWidth < 500 ? true : false;
           return AlertDialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
@@ -50,27 +51,39 @@ class Onboarding {
                   animatedTexts: [
                     TypewriterAnimatedText(
                       '안녕하세요 ${user.nickname}님!',
-                      textStyle: MyTextStyle.CbS20W400,
+                      textStyle: isMobile
+                          ? MyTextStyle.CbS18W400
+                          : MyTextStyle.CbS20W400,
+                      textAlign: TextAlign.center,
                       speed: const Duration(milliseconds: 70),
                     ),
                     TypewriterAnimatedText(
-                      "손님이 오셨다고 해서\n마중 나온 '포공이'입니다",
-                      textStyle: MyTextStyle.CbS20W400,
+                      "손님이 오셨다고 해서 \n마중 나온 '포공이'입니다",
+                      textStyle: isMobile
+                          ? MyTextStyle.CbS18W400
+                          : MyTextStyle.CbS20W400,
+                      textAlign: TextAlign.center,
                       speed: const Duration(milliseconds: 50),
                     ),
                     TypewriterAnimatedText(
-                      '세상에서 가장 집중이 잘되는 공간,\nFocus50에 오신 걸 환영합니다.',
-                      textStyle: MyTextStyle.CbS20W400,
+                      '세상에서 가장 집중이 잘되는 공간, \nFocus50에 오신 걸 환영합니다.',
+                      textStyle: isMobile
+                          ? MyTextStyle.CbS18W400
+                          : MyTextStyle.CbS20W400,
+                      textAlign: TextAlign.center,
                       speed: const Duration(milliseconds: 50),
                     ),
                     TypewriterAnimatedText(
                       '화면에서 직접 설명드릴게요!\n따라오세요!',
-                      textStyle: MyTextStyle.CbS20W400,
+                      textStyle: isMobile
+                          ? MyTextStyle.CbS18W400
+                          : MyTextStyle.CbS20W400,
+                      textAlign: TextAlign.center,
                       speed: const Duration(milliseconds: 50),
                     ),
                   ],
                   totalRepeatCount: 1,
-                  pause: const Duration(milliseconds: 400),
+                  pause: const Duration(milliseconds: 300),
                   displayFullTextOnTap: true,
                   stopPauseOnTap: true,
                 ),
@@ -129,7 +142,7 @@ class Onboarding {
     tutorialCoachMark = TutorialCoachMark(
       targets: _createTargetsBeforeReservation(),
       colorShadow: MyColors.purple200,
-      textSkip: "SKIP",
+      textSkip: "그만 보기",
       paddingFocus: 10,
       opacityShadow: 0.9,
     );
@@ -139,7 +152,7 @@ class Onboarding {
     tutorialCoachMark = TutorialCoachMark(
       targets: _createTargetsAfterReservation(ref),
       colorShadow: MyColors.purple200,
-      textSkip: "SKIP",
+      textSkip: "그만 보기",
       paddingFocus: 10,
       opacityShadow: 0.9,
     );
@@ -170,7 +183,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text("나 자신과의 약속보다 ", style: MyTextStyle.CwS20W400),
-                        Text("타인과의 약속은", style: MyTextStyle.CwS24W500H1),
+                        Text("타인과의 약속은", style: MyTextStyle.CwS22W600),
                       ],
                     ),
                     Text("지킬 확률이 87% 더 높아요!", style: MyTextStyle.CwS20W400),
@@ -180,7 +193,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text("캘린더에 집중할 시간을 ", style: MyTextStyle.CwS20W400),
-                        Text("예약", style: MyTextStyle.CwS24W500H1),
+                        Text("예약", style: MyTextStyle.CwS22W600),
                         Text("해 볼까요?", style: MyTextStyle.CwS20W400),
                         Icon(
                           Icons.arrow_right_alt_rounded,
@@ -204,7 +217,7 @@ class Onboarding {
                     Text("원하는 시간에 클릭하고", style: MyTextStyle.CwS20W400),
                     Row(
                       children: [
-                        Text("'예약'", style: MyTextStyle.CwS24W500H1),
+                        Text("'예약'", style: MyTextStyle.CwS22W600),
                         Text(" 버튼을 눌러봐요!", style: MyTextStyle.CwS20W400),
                       ],
                     ),
@@ -252,9 +265,9 @@ class Onboarding {
                     Row(
                       children: [
                         Text("이제 평범한 ", style: MyTextStyle.CwS20W400),
-                        Text("50분", style: MyTextStyle.CwS24W500H1),
+                        Text("50분", style: MyTextStyle.CwS22W600),
                         Text("을 특별한 ", style: MyTextStyle.CwS20W400),
-                        Text("50분", style: MyTextStyle.CwS24W500H1),
+                        Text("50분", style: MyTextStyle.CwS22W600),
                         Text("으로 ", style: MyTextStyle.CwS20W400),
                       ],
                     ),
@@ -293,7 +306,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text('예약 시간 ', style: MyTextStyle.CwS20W400),
-                        Text('10분', style: MyTextStyle.CwS24W500H1),
+                        Text('10분', style: MyTextStyle.CwS22W600),
                         Text(' 전부터', style: MyTextStyle.CwS20W400),
                         Text(" 입장할 수 있어요", style: MyTextStyle.CwS20W400),
                       ],
@@ -302,7 +315,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text("입장 후에 ", style: MyTextStyle.CwS20W400),
-                        Text("딱 50분만", style: MyTextStyle.CwS24W500H1),
+                        Text("딱 50분만", style: MyTextStyle.CwS22W600),
                         Text(" 집중해봐요", style: MyTextStyle.CwS20W400),
                       ],
                     ),
@@ -314,7 +327,7 @@ class Onboarding {
                     SizedBox(height: 30),
                     Row(
                       children: [
-                        Text('노쇼', style: MyTextStyle.CwS24W500H1),
+                        Text('노쇼', style: MyTextStyle.CwS22W600),
                         Text('는 금물!', style: MyTextStyle.CwS20W400),
                       ],
                     ),
@@ -341,7 +354,7 @@ class Onboarding {
     tutorialCoachMark = TutorialCoachMark(
       targets: _mobileCreateTargetsBeforeReservation(),
       colorShadow: MyColors.purple200,
-      textSkip: "SKIP",
+      textSkip: "그만 보기",
       paddingFocus: 10,
       opacityShadow: 0.9,
     );
@@ -351,7 +364,7 @@ class Onboarding {
     tutorialCoachMark = TutorialCoachMark(
       targets: _mobileCreateTargetsAfterReservation(ref),
       colorShadow: MyColors.purple200,
-      textSkip: "SKIP",
+      textSkip: "그만 보기",
       paddingFocus: 10,
       opacityShadow: 0.9,
     );
@@ -379,7 +392,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text("원하는 시간에 클릭하고 ", style: MyTextStyle.CwS16W400),
-                        Text("'예약'", style: MyTextStyle.CwS16W600),
+                        Text("'예약'", style: MyTextStyle.CwS18W600),
                         Text(" 버튼을 눌러봐요!", style: MyTextStyle.CwS16W400),
                       ],
                     ),
@@ -426,9 +439,9 @@ class Onboarding {
                     Row(
                       children: [
                         Text("이제 평범한 ", style: MyTextStyle.CwS16W400),
-                        Text("50분", style: MyTextStyle.CwS16W600),
+                        Text("50분", style: MyTextStyle.CwS18W600),
                         Text("을 특별한 ", style: MyTextStyle.CwS16W400),
-                        Text("50분", style: MyTextStyle.CwS16W600),
+                        Text("50분", style: MyTextStyle.CwS18W600),
                         Text("으로 ", style: MyTextStyle.CwS16W400),
                       ],
                     ),
@@ -467,39 +480,38 @@ class Onboarding {
                   children: <Widget>[
                     Row(
                       children: [
-                        Text('예약 시간 ', style: MyTextStyle.CwS20W400),
-                        Text('10분', style: MyTextStyle.CwS24W500H1),
-                        Text(' 전부터', style: MyTextStyle.CwS20W400),
-                        Text(" 입장할 수 있어요", style: MyTextStyle.CwS20W400),
+                        Text('예약 시간 ', style: MyTextStyle.CwS16W400),
+                        Text('10분', style: MyTextStyle.CwS18W600),
+                        Text(' 전부터 입장할 수 있어요', style: MyTextStyle.CwS16W400),
                       ],
                     ),
                     SizedBox(height: 30),
                     Row(
                       children: [
-                        Text("입장 후에 ", style: MyTextStyle.CwS20W400),
-                        Text("딱 50분만 ", style: MyTextStyle.CwS24W500H1),
-                        Text("집중해봐요", style: MyTextStyle.CwS20W400),
+                        Text("입장 후에 ", style: MyTextStyle.CwS16W400),
+                        Text("딱 50분만 ", style: MyTextStyle.CwS16W400),
+                        Text("집중해봐요", style: MyTextStyle.CwS16W400),
                       ],
                     ),
                     Text(
                       '다른 사람들과 함께한 50분',
-                      style: MyTextStyle.CwS20W400,
+                      style: MyTextStyle.CwS16W400,
                     ),
-                    Text('분명 특별한 시간이 될 거에요😁', style: MyTextStyle.CwS20W400),
+                    Text('분명 특별한 시간이 될 거에요😁', style: MyTextStyle.CwS16W400),
                     SizedBox(height: 30),
                     Row(
                       children: [
-                        Text('노쇼', style: MyTextStyle.CwS24W500H1),
-                        Text('는 금물!', style: MyTextStyle.CwS20W400),
+                        Text('노쇼', style: MyTextStyle.CwS18W600),
+                        Text('는 금물!', style: MyTextStyle.CwS16W400),
                       ],
                     ),
-                    Text('노쇼 당한 상대방은 외로이 남겨져요🥲', style: MyTextStyle.CwS20W600),
+                    Text('노쇼 당한 상대방은 외로이 남겨져요🥲', style: MyTextStyle.CwS18W600),
                     SizedBox(
                       height: 30,
                     ),
                     Text(
                       '오늘도 화이팅입니다🙌',
-                      style: MyTextStyle.CwS20W400,
+                      style: MyTextStyle.CwS16W400,
                     ),
                   ],
                 ),
@@ -517,7 +529,7 @@ class Onboarding {
     tutorialCoachMark = TutorialCoachMark(
       targets: _tabletCreateTargetsBeforeReservation(),
       colorShadow: MyColors.purple200,
-      textSkip: "SKIP",
+      textSkip: "그만 보기",
       paddingFocus: 10,
       opacityShadow: 0.9,
     );
@@ -527,7 +539,7 @@ class Onboarding {
     tutorialCoachMark = TutorialCoachMark(
       targets: _tabletCreateTargetsAfterReservation(ref),
       colorShadow: MyColors.purple200,
-      textSkip: "SKIP",
+      textSkip: "그만 보기",
       paddingFocus: 10,
       opacityShadow: 0.9,
     );
@@ -558,7 +570,7 @@ class Onboarding {
                     // Row(
                     //   children: [
                     //     Text("나 자신과의 약속보다 ", style: MyTextStyle.CwS20W400),
-                    //     Text("타인과의 약속은", style: MyTextStyle.CwS24W500H1),
+                    //     Text("타인과의 약속은", style: MyTextStyle.CwS22W600),
                     //   ],
                     // ),
                     // Text("지킬 확률이 87% 더 높아요!", style: MyTextStyle.CwS20W400),
@@ -568,7 +580,7 @@ class Onboarding {
                     // Row(
                     //   children: [
                     //     Text("캘린더에 집중할 시간을 ", style: MyTextStyle.CwS20W400),
-                    //     Text("예약", style: MyTextStyle.CwS24W500H1),
+                    //     Text("예약", style: MyTextStyle.CwS22W600),
                     //     Text("해 볼까요?", style: MyTextStyle.CwS20W400),
                     //     Icon(
                     //       Icons.arrow_right_alt_rounded,
@@ -586,18 +598,18 @@ class Onboarding {
                     //     width: 320,
                     //   ),
                     // ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Text("원하는 시간에 클릭하고", style: MyTextStyle.CwS20W400),
                     Row(
                       children: [
-                        Text("'예약'", style: MyTextStyle.CwS24W500H1),
+                        Text("'예약'", style: MyTextStyle.CwS22W600),
                         Text(" 버튼을 눌러봐요!", style: MyTextStyle.CwS20W400),
                       ],
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     Text("예약하시고 나서, 전 다시 찾아올게요!", style: MyTextStyle.CwS20W400),
                   ],
@@ -640,9 +652,9 @@ class Onboarding {
                     Row(
                       children: [
                         Text("이제 평범한 ", style: MyTextStyle.CwS20W400),
-                        Text("50분", style: MyTextStyle.CwS24W500H1),
+                        Text("50분", style: MyTextStyle.CwS22W600),
                         Text("을 특별한 ", style: MyTextStyle.CwS20W400),
-                        Text("50분", style: MyTextStyle.CwS24W500H1),
+                        Text("50분", style: MyTextStyle.CwS22W600),
                         Text("으로 ", style: MyTextStyle.CwS20W400),
                       ],
                     ),
@@ -682,7 +694,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text('예약 시간 ', style: MyTextStyle.CwS20W400),
-                        Text('10분', style: MyTextStyle.CwS24W500H1),
+                        Text('10분', style: MyTextStyle.CwS22W600),
                         Text(' 전부터', style: MyTextStyle.CwS20W400),
                         Text(" 입장할 수 있어요", style: MyTextStyle.CwS20W400),
                       ],
@@ -691,7 +703,7 @@ class Onboarding {
                     Row(
                       children: [
                         Text("입장 후에 ", style: MyTextStyle.CwS20W400),
-                        Text("딱 50분만", style: MyTextStyle.CwS24W500H1),
+                        Text("딱 50분만", style: MyTextStyle.CwS22W600),
                         Text(" 집중해봐요", style: MyTextStyle.CwS20W400),
                       ],
                     ),
@@ -703,7 +715,7 @@ class Onboarding {
                     SizedBox(height: 30),
                     Row(
                       children: [
-                        Text('노쇼', style: MyTextStyle.CwS24W500H1),
+                        Text('노쇼', style: MyTextStyle.CwS22W600),
                         Text('는 금물!', style: MyTextStyle.CwS20W400),
                       ],
                     ),
