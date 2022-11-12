@@ -224,6 +224,7 @@ class AuthViewModel {
         emailNoticeAllowed: emailNoticeAllowed,
         kakaoNoticeAllowed: kakaoNoticeAllowed,
         noticeMethods: noticeMethods,
+        isOnboarded: false,
       );
 
       UserPrivateModel userPrivate = UserPrivateModel(

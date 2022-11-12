@@ -14,6 +14,7 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_widget.dart';
+import 'package:focus42/widgets/onboarding.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -33,6 +34,8 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Onboarding.popupOnboardingStart(ref, context));
     database = ref.read(databaseProvider);
     WidgetsBinding.instance
         .addPostFrameCallback((_) => popupPeerFeedbacks(database, context));
@@ -86,9 +89,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
             children: <Widget>[
               const Line(),
               Column(children: <Widget>[
-                // Container(
-                //   child: MobileReservation(),
-                // ),
                 SizedBox(
                   height: 5,
                 ),
@@ -125,15 +125,20 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                   ),
                 ),
                 Container(
+                  key: Onboarding.calendarButton,
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: border100)),
                   height: screenHeight - 245,
                   child: MobileCalendar(
                     calendarController: calendarController,
                     isNotificationOpen: isNotificationOpen,
+                    createTutorial: () =>
+                        Onboarding.mobileCreateTutorialAfterReservation(ref),
+                    showTutorial: () => Onboarding.showTutorial(context),
                   ),
                 ),
                 Container(
+                  key: Onboarding.reservationButton,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),

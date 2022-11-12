@@ -1,3 +1,5 @@
+import 'dart:html' as html;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -134,11 +136,18 @@ class SignUpCompleteDialog extends ConsumerWidget {
                       height: 40,
                       child: TextButton(
                         onPressed: () {
-                          invitedGroupId != null
-                              ? Get.rootDelegate.offNamed(Routes.CALENDAR,
-                                  arguments: true,
-                                  parameters: {'g': invitedGroupId!})
-                              : Get.rootDelegate.offNamed(Routes.CALENDAR);
+                          bool isCalendarScreen =
+                              Uri.base.path == '/calendar' ? true : false;
+                          if (isCalendarScreen) {
+                            html.window.location.reload();
+                          } else {
+                            invitedGroupId != null
+                                ? Get.rootDelegate.offNamed(Routes.CALENDAR,
+                                    arguments: true,
+                                    parameters: {'g': invitedGroupId!})
+                                : Get.rootDelegate
+                                    .offNamed(Routes.CALENDAR, arguments: true);
+                          }
                           Navigator.pop(context);
                         },
                         child: Text(

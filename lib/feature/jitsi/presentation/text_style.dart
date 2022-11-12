@@ -30,15 +30,32 @@ class MyTextStyle {
       color: Colors.black,
       decoration: TextDecoration.none);
 
+  static const TextStyle CbS20W400 = TextStyle(
+      fontSize: 20.0,
+      fontWeight: FontWeight.w400,
+      color: Colors.black,
+      decoration: TextDecoration.none);
+
   static const TextStyle CbS20W600 = TextStyle(
       fontSize: 20.0,
       fontWeight: FontWeight.w600,
       color: Colors.black,
       decoration: TextDecoration.none);
 
+  static const TextStyle CbS24W400 = TextStyle(
+      fontSize: 24.0,
+      fontWeight: FontWeight.w400,
+      color: Colors.black,
+      decoration: TextDecoration.none);
+
   static const TextStyle CbS26W600 = TextStyle(
     fontSize: 26.0,
     fontWeight: FontWeight.w600,
+    decoration: TextDecoration.none,
+  );
+  static const TextStyle CbS26W400 = TextStyle(
+    fontSize: 26.0,
+    fontWeight: FontWeight.w400,
     decoration: TextDecoration.none,
   );
 
@@ -53,13 +70,6 @@ class MyTextStyle {
       fontSize: 12,
       fontWeight: FontWeight.w400,
       decoration: TextDecoration.none);
-
-  static const TextStyle CwS12W600 = TextStyle(
-    fontSize: 12.0,
-    fontWeight: FontWeight.w600,
-    color: Colors.white,
-    decoration: TextDecoration.none,
-  );
 
   static const TextStyle CpS12W600 = TextStyle(
       fontSize: 12,
@@ -85,9 +95,32 @@ class MyTextStyle {
       color: MyColors.purple300,
       decoration: TextDecoration.none);
 
+  static const TextStyle CwS12W400 = TextStyle(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w400,
+      color: Colors.white,
+      decoration: TextDecoration.none);
+
+  static const TextStyle CwS12W600 = TextStyle(
+      fontSize: 12.0,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+      decoration: TextDecoration.none);
+
   static const TextStyle CwS16W400 = TextStyle(
       fontSize: 16.0,
       fontWeight: FontWeight.w400,
+      color: Colors.white,
+      decoration: TextDecoration.none);
+
+  static const TextStyle CwS16W600 = TextStyle(
+      fontSize: 16.0,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+      decoration: TextDecoration.none);
+  static const TextStyle CwS18W600 = TextStyle(
+      fontSize: 18.0,
+      fontWeight: FontWeight.w600,
       color: Colors.white,
       decoration: TextDecoration.none);
 
@@ -103,8 +136,8 @@ class MyTextStyle {
       color: Colors.white,
       decoration: TextDecoration.none);
 
-  static const TextStyle CwS16W600 = TextStyle(
-      fontSize: 16.0,
+  static const TextStyle CwS22W600 = TextStyle(
+      fontSize: 22.0,
       fontWeight: FontWeight.w600,
       color: Colors.white,
       decoration: TextDecoration.none);
