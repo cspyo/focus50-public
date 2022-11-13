@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:focus42/feature/dashboard/data/history_model.dart';
 import 'package:focus42/feature/focus_rating/data/rating_model.dart';
 import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
 import 'package:focus42/models/group_model.dart';
@@ -10,6 +11,7 @@ import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
 import 'package:focus42/services/firestore_path.dart';
 import 'package:focus42/services/firestore_service.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
@@ -435,6 +437,32 @@ class FirestoreDatabase {
         data: rating.toMap(),
         isAdd: rating.id == null,
       );
+
+  //----------------------history----------------------//
+
+  Future<void> setHistory(HistoryModel history) => _service.setData(
+        path: FirestorePath.histories(),
+        data: history.toMap(),
+        isAdd: true,
+      );
+
+  Future<HistoryModel> getHistory() async =>
+      await _service.getData<HistoryModel>(
+          path: FirestorePath.history(uid),
+          builder: (snapshot, options) =>
+              HistoryModel.fromMap(snapshot, options));
+
+  Stream<HistoryModel> historyStream() => _service.documentStream(
+        path: FirestorePath.history(uid),
+        builder: (snapshot, options) => HistoryModel.fromMap(snapshot, options),
+      );
+
+  Future<void> updateHistory(DateTime now) =>
+      _service.updateData(path: FirestorePath.history(uid), data: {
+        "updatedDate": now,
+        "sessionHistory.${DateFormat('yyyy-MM-dd').format(now)}":
+            FieldValue.increment(1)
+      });
 
   //----------------------transaction----------------------//
   Future<void> runTransaction(TransactionHandler transactionHandler) async {

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/error_message.dart';
 import 'package:focus42/feature/auth/firebase_auth_remote_data_source.dart';
+import 'package:focus42/feature/dashboard/data/history_model.dart';
 import 'package:focus42/models/user_model.dart';
 import 'package:focus42/models/user_private_model.dart';
 import 'package:focus42/models/user_public_model.dart';
@@ -237,6 +238,7 @@ class AuthViewModel {
       UserModel userModel = UserModel(userPublic, userPrivate);
 
       await database.setUser(userModel);
+      database.setHistory(HistoryModel(uid: uid, updatedDate: DateTime.now()));
 
       ref.read(usersProvider.notifier).addAll({uid: userPublic});
       res = SUCCESS;

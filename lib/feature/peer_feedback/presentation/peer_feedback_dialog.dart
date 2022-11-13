@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/dashboard/hitmap/view_model/history_function.dart';
 import 'package:focus42/feature/focus_rating/presentation/focus_rating_widget.dart';
 import 'package:focus42/feature/focus_rating/view_model/rating_function.dart';
 import 'package:focus42/feature/peer_feedback/data/feedback.dart';
@@ -284,6 +285,7 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
                             ),
                             onPressed: () {
                               rateFocus(database, ref, reservation);
+                              historyUpdate(database);
                               Get.rootDelegate.offNamed(Routes.CALENDAR);
                             },
                             child: Align(

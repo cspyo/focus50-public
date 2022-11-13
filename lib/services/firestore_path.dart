@@ -15,4 +15,8 @@ class FirestorePath {
   static String feedbacks() => 'feedback/';
   static String feedback(String documentId) => 'feedback/$documentId';
   static String ratings() => 'rating/';
+  static String histories() => 'history/';
+  static String history(String uid) => 'history/$uid';
+  static String updateSessionHistory(String nowDate) =>
+      'sessionHistory.$nowDate';
 }
