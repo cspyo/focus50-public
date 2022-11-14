@@ -18,10 +18,12 @@ Future<dynamic> popupPeerFeedbacks(
     WidgetRef ref, dynamic database, BuildContext context) async {
   final fToast = FToast();
   fToast.init(context);
-  // if (database.uid == 'none') return;
+  if (database.uid == 'none') return;
 
   List<PeerFeedbackModel> peerFeedbacks = await database.getPeerFeedbacks();
-  // if (peerFeedbacks.isEmpty) return;
+  final user = await database.getUserPublic();
+  int? netPromoterScore = user.netPromoterScore;
+  if (peerFeedbacks.isEmpty) return;
 
   Map<String, List<PeerFeedbackModel>> peerFeedbackMap = new Map();
   peerFeedbacks.forEach((element) {
@@ -46,35 +48,39 @@ Future<dynamic> popupPeerFeedbacks(
   const double feedbackTextHeight = 40;
   const double feedbackDividerHeight = 0.5;
   int? currentScore;
-  final user = await database.getUserPublic();
-  int? netPromoterScore = user.netPromoterScore;
   watchFeedbacks(database, peerFeedbacks);
   return showDialog(
     barrierDismissible: true,
     context: context,
     builder: (BuildContext context) {
       return StatefulBuilder(builder: ((context, setState) {
+        double _screenWidth = MediaQuery.of(context).size.width;
+        bool isMobileSize = _screenWidth < 500 ? true : false;
         return AlertDialog(
+          contentPadding: EdgeInsets.all(10),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(32.0))),
+              borderRadius: BorderRadius.all(Radius.circular(8.0))),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Center(
-                  child: Container(
-                    width: _dialogWidth,
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: FittedBox(
-                      fit: BoxFit.cover,
-                      child: Text("🔥 당신의 열정을 응원합니다 🔥",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600,
-                          )),
-                    ),
-                  ),
-                ),
+                !peerFeedbacks.isEmpty
+                    ? Center(
+                        child: Container(
+                          width: _dialogWidth,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: FittedBox(
+                            fit: BoxFit.cover,
+                            child: Text("🔥 당신의 열정을 응원합니다 🔥",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                )),
+                          ),
+                        ),
+                      )
+                    : SizedBox.shrink(),
                 Container(
                   width: 350,
                   height: feedbackListLength *
@@ -215,58 +221,66 @@ Future<dynamic> popupPeerFeedbacks(
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: _dialogWidth,
-                            height: 28,
-                            child: ListView.separated(
-                              itemCount: 11,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (BuildContext context, int index) {
-                                return SizedBox(
-                                  width: 28,
-                                  height: 28,
-                                  child: TextButton(
-                                    child: Text(
-                                      '$index',
-                                      style: TextStyle(
-                                          color: currentScore == index
-                                              ? Colors.white
-                                              : MyColors.purple300,
-                                          fontSize: 10),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    onPressed: () {
-                                      print(index);
-                                      setState(() {
-                                        currentScore = index;
-                                        updateNetPromoterScore(ref, index);
-                                        _showNpsCompleteToast(fToast);
-                                      });
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all<Color>(
-                                              currentScore == index
-                                                  ? MyColors.purple300
-                                                  : Colors.white),
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          side: BorderSide(
-                                              color: MyColors.purple300),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                          Center(
+                            child: SizedBox(
+                              width: isMobileSize ? 284 : 348,
+                              height: isMobileSize ? 24 : 28,
+                              child: Center(
+                                child: ListView.separated(
+                                  itemCount: 11,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return SizedBox(
+                                      width: isMobileSize ? 24 : 28,
+                                      height: isMobileSize ? 24 : 28,
+                                      child: TextButton(
+                                        child: Text(
+                                          '$index',
+                                          style: TextStyle(
+                                              color: currentScore == index
+                                                  ? Colors.white
+                                                  : MyColors.purple300,
+                                              fontSize: 8),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            currentScore = index;
+                                            updateNetPromoterScore(ref, index);
+                                            Navigator.pop(context);
+                                            _showNpsCompleteToast(fToast);
+                                          });
+                                        },
+                                        style: ButtonStyle(
+                                          padding: MaterialStateProperty.all<
+                                                  EdgeInsetsGeometry>(
+                                              EdgeInsets.zero),
+                                          backgroundColor:
+                                              MaterialStateProperty.all<Color>(
+                                                  currentScore == index
+                                                      ? MyColors.purple300
+                                                      : Colors.white),
+                                          shape: MaterialStateProperty.all<
+                                              RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  color: MyColors.purple300),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              },
-                              separatorBuilder:
-                                  (BuildContext context, int index) =>
-                                      SizedBox(width: 3),
+                                    );
+                                  },
+                                  separatorBuilder:
+                                      (BuildContext context, int index) =>
+                                          SizedBox(width: isMobileSize ? 2 : 4),
+                                ),
+                              ),
                             ),
-                          )
+                          ),
                         ],
                       )
                     : SizedBox.shrink(),
