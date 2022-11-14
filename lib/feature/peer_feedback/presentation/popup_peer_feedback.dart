@@ -23,7 +23,7 @@ Future<dynamic> popupPeerFeedbacks(
   List<PeerFeedbackModel> peerFeedbacks = await database.getPeerFeedbacks();
   final user = await database.getUserPublic();
   int? netPromoterScore = user.netPromoterScore;
-  if (peerFeedbacks.isEmpty) return;
+  if (peerFeedbacks.isEmpty && netPromoterScore != null) return;
 
   Map<String, List<PeerFeedbackModel>> peerFeedbackMap = new Map();
   peerFeedbacks.forEach((element) {
@@ -57,7 +57,9 @@ Future<dynamic> popupPeerFeedbacks(
         double _screenWidth = MediaQuery.of(context).size.width;
         bool isMobileSize = _screenWidth < 500 ? true : false;
         return AlertDialog(
-          contentPadding: EdgeInsets.all(10),
+          contentPadding: isMobileSize
+              ? EdgeInsets.only(top: 0, left: 10, right: 10, bottom: 10)
+              : EdgeInsets.only(top: 10, left: 20, right: 20, bottom: 20),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(8.0))),
           content: SingleChildScrollView(
