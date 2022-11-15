@@ -23,7 +23,7 @@ Future<dynamic> popupPeerFeedbacks(
   List<PeerFeedbackModel> peerFeedbacks = await database.getPeerFeedbacks();
   final user = await database.getUserPublic();
   int? netPromoterScore = user.netPromoterScore;
-  if (peerFeedbacks.isEmpty && netPromoterScore != null) return;
+  if (peerFeedbacks.isEmpty) return;
 
   Map<String, List<PeerFeedbackModel>> peerFeedbackMap = new Map();
   peerFeedbacks.forEach((element) {
