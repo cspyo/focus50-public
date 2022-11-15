@@ -43,13 +43,6 @@ class _ProfilePopupMenuButtonState
                   Row(
                     children: [
                       Text(
-                        '반갑습니다, ',
-                        style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Text(
                         '${user.userPublicModel!.nickname}',
                         style: TextStyle(
                             fontSize: 15,
@@ -57,7 +50,7 @@ class _ProfilePopupMenuButtonState
                             fontWeight: FontWeight.w600),
                       ),
                       Text(
-                        '님!',
+                        '님',
                         style: TextStyle(
                             fontSize: 15,
                             color: Colors.black,

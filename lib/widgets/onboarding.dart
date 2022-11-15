@@ -23,7 +23,6 @@ class Onboarding {
     if (isOnboarded != null && isOnboarded ||
         !(await authViewModel.isSignedUp()) ||
         isOnboarded == null) {
-      print('isonboarded: ${isOnboarded}, user:${user.nickname}');
       return null;
     } else {
       return showDialog(
@@ -100,13 +99,10 @@ class Onboarding {
                     onPressed: () {
                       Navigator.pop(context);
                       if (_screenWidth < 500) {
-                        print('mobile');
                         mobileCreateTutorialBeforeReservation();
                       } else if (_screenWidth >= 500 && _screenWidth < 1200) {
-                        print('tablet');
                         tabletCreateTutorialBeforeReservation();
                       } else {
-                        print('pc');
                         createTutorialBeforeReservation();
                       }
                       showTutorial(context);
