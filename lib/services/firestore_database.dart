@@ -441,5 +441,10 @@ class FirestoreDatabase {
     await _service.runTransaction(transactionHandler);
   }
 
-  //----------------------transaction----------------------//
+  //----------------------nps----------------------//
+  // Future<void> updateNetPromoterScore(UserPublicModel netPromoterScore) async {
+  //   await _service.updateData(
+  //       path: FirestorePath.feedback(peerFeedback.id!),
+  //       data: peerFeedback.toMap());
+  // }
 }
