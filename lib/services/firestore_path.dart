@@ -15,4 +15,5 @@ class FirestorePath {
   static String feedbacks() => 'feedback/';
   static String feedback(String documentId) => 'feedback/$documentId';
   static String ratings() => 'rating/';
+  static String reports() => 'report/';
 }

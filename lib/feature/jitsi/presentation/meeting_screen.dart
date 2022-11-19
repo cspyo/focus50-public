@@ -12,6 +12,7 @@ import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/feature/jitsi/presentation/todo_list_tile_widget.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/feature/peer_feedback/provider/provider.dart';
+import 'package:focus42/feature/report_abuse/report_user_dialog.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -442,249 +443,12 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
     );
   }
 
-  Future<void> reportUserAlertdialog() {
-    return showDialog<void>(
+  Future<dynamic> reportUserAlertdialog(BuildContext context) {
+    return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16.0))),
-          content: Column(mainAxisSize: MainAxisSize.min, children: [
-            // Container(
-            //   alignment: Alignment.centerRight,
-            //   child: IconButton(
-            //     padding: EdgeInsets.all(0),
-            //     onPressed: () {
-            //       Navigator.pop(context);
-            //     },
-            //     icon: Icon(
-            //       Icons.close,
-            //       color: Colors.black,
-            //       size: 30,
-            //     ),
-            //   ),
-            // ),
-            Text(
-              '⚠️신고⚠️',
-              style: MyTextStyle.CbS18W600,
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            Text(
-              '신고할 유저를 선택해주세요',
-              style: MyTextStyle.CgS12W400,
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            Container(
-              width: 240,
-              height: 40,
-              child: Center(
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Icon(
-                      Icons.check_box,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.black38,
-                      backgroundImage: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2F9AOUQF8iJ3cABxGN4ZrUOKNTBxZ2%2F20221101043411?alt=media&token=ada98484-f49a-4fb5-87d8-82cbc2b80259'),
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    FittedBox(
-                      fit: BoxFit.cover,
-                      child: Text("Jaewon님"),
-                    ),
-                  ],
-                ),
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.black38,
-                  width: 0.5,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            Container(
-              width: 240,
-              height: 40,
-              child: Center(
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Icon(
-                      Icons.check_box_outline_blank,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.black38,
-                      backgroundImage: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2FLNwFZLsMyXbZDeeHQcvP74AQFj83?alt=media&token=f6c48fe8-425f-474e-a51a-181399835572'),
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    FittedBox(
-                      fit: BoxFit.cover,
-                      child: Text("cspyo님"),
-                    ),
-                  ],
-                ),
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.black38,
-                  width: 0.5,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            SizedBox(
-              height: 6,
-            ),
-            Container(
-              width: 240,
-              height: 40,
-              child: Center(
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 6,
-                    ),
-                    Icon(
-                      Icons.check_box_outline_blank,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.black38,
-                      backgroundImage: NetworkImage(
-                          'https://firebasestorage.googleapis.com/v0/b/focus-50.appspot.com/o/profilePics%2FQ289mHY8q8eRxaEbX1Y7VR5Jp0B2%2F20221101044037?alt=media&token=190d9b02-49cb-425e-8b02-bca252dce076'),
-                    ),
-                    SizedBox(
-                      width: 6,
-                    ),
-                    FittedBox(
-                      fit: BoxFit.cover,
-                      child: Text("기묘인재님"),
-                    ),
-                  ],
-                ),
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.black38,
-                  width: 0.5,
-                ),
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextFormField(
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              cursorColor: Colors.grey.shade600,
-              cursorHeight: 18,
-              keyboardType: TextInputType.multiline,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(
-                  // borderRadius: BorderRadius.all(Radius.circular(12.0)),
-                  borderSide: BorderSide(
-                    color: MyColors.purple300,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                hoverColor: purple300,
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: purple300)),
-                hintText: '신고 사유를 적어주세요',
-                labelText: '신고 사유',
-                labelStyle: TextStyle(color: Colors.black),
-                floatingLabelStyle: TextStyle(
-                  color: purple300,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              maxLines: 1,
-            ),
-            SizedBox(
-              height: 16,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 40,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      '신고하기',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(MyColors.purple300),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: Colors.white)),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                SizedBox(
-                  height: 40,
-                  child: TextButton(
-                    onPressed: () {},
-                    child: Text(
-                      '취소',
-                      style: TextStyle(color: MyColors.purple300),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: MyColors.purple300)),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ]),
-        );
+        return ReportUserDialog(reservation: reservation);
+        // return AlertDialog(content: Text('asdas'));
       },
     );
   }
@@ -697,7 +461,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
         height: 50,
         child: TextButton(
           onPressed: () {
-            reportUserAlertdialog();
+            reportUserAlertdialog(context);
           },
           style: ButtonStyle(
             backgroundColor:
@@ -705,7 +469,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.white)),
+                  side: BorderSide(color: Color.fromARGB(255, 254, 227, 227))),
             ),
           ),
           child: Icon(
