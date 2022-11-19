@@ -206,7 +206,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         leading: Icon(Icons.push_pin, color: Colors.white),
         onTap: () {
           launchUrl(Uri.parse(
-              'https://cspyo.notion.site/Focus-50-88016be305f245f4b9b626db19a7c0f0'));
+              'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08'));
         },
         title: Text(
           '공지사항',
@@ -218,7 +218,7 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
     return ListTile(
         leading: Icon(Icons.phone, color: Colors.white),
         onTap: () {
-          launchUrl(Uri.parse('https://open.kakao.com/o/gJyG7Dse'));
+          launchUrl(Uri.parse('https://open.kakao.com/o/s1lFdjse'));
         },
         title: Text(
           '문의하기',
