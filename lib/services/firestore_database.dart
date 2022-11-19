@@ -285,17 +285,24 @@ class FirestoreDatabase {
   // 내 전체 투두
   Stream<List<TodoModel>> myEntireTodoStream() => _service.collectionStream(
         path: FirestorePath.todos(),
-        queryBuilder: (query) => query.where("userUid", isEqualTo: uid),
+        queryBuilder: (query) => query
+            .where("userUid", isEqualTo: uid)
+            .orderBy("isComplete")
+            .orderBy("completedDate", descending: true)
+            .orderBy("modifiedDate", descending: true),
         builder: (snapshot, options) => TodoModel.fromMap(snapshot, options),
       );
 
-  // 내 전체 투두
+  // 세션에 할당한 내 투두
   Stream<List<TodoModel>> mySessionTodoStream({required String sessionId}) =>
       _service.collectionStream(
         path: FirestorePath.todos(),
         queryBuilder: (query) => query
             .where("userUid", isEqualTo: uid)
-            .where("assignedSessionId", isEqualTo: sessionId),
+            .where("assignedSessionId", isEqualTo: sessionId)
+            .orderBy("isComplete")
+            .orderBy("completedDate", descending: true)
+            .orderBy("modifiedDate", descending: true),
         builder: (snapshot, options) => TodoModel.fromMap(snapshot, options),
       );
 
