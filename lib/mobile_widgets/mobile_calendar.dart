@@ -457,11 +457,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                     appointment.subject = RESERVE;
                   }
                   final user = await database.getUserPublic();
-                  bool? isOnboarded = user.isOnboarded;
+                  bool isOnboarded = user.isOnboarded ?? false;
                   final authViewModel = ref.read(authViewModelProvider);
-                  if (isOnboarded != null &&
-                      !isOnboarded &&
-                      (await authViewModel.isSignedUp())) {
+                  if (!isOnboarded) {
                     widget.createTutorial();
                     widget.showTutorial();
                   }

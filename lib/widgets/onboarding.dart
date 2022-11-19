@@ -14,15 +14,15 @@ class Onboarding {
   static GlobalKey calendarButton = GlobalKey();
   static GlobalKey reservationButton = GlobalKey();
   static late TutorialCoachMark tutorialCoachMark;
+
   static Future<dynamic>? popupOnboardingStart(
       WidgetRef ref, BuildContext context) async {
     final database = ref.watch(databaseProvider);
     final user = await database.getUserPublic();
-    bool? isOnboarded = user.isOnboarded;
+    bool isOnboarded = user.isOnboarded ?? false;
     final authViewModel = ref.read(authViewModelProvider);
-    if (isOnboarded != null && isOnboarded ||
-        !(await authViewModel.isSignedUp()) ||
-        isOnboarded == null) {
+
+    if (isOnboarded) {
       return null;
     } else {
       return showDialog(

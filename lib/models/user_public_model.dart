@@ -15,7 +15,7 @@ class UserPublicModel {
   bool? kakaoNoticeAllowed; // 카카오톡으로 예약 알림 동의 여부 (우리 서비스에서 알림 설정)
   List<String?>? noticeMethods;
   final List<String>? groups;
-  bool? isOnboarded; // 온보딩 페이지 봤는 지 안봤는 지 null이면 안보여주기
+  bool? isOnboarded; // 온보딩 페이지 봤는 지 안봤는 지, 모든 유저 한번은 보여주기 ㅎㅎ
   int? netPromoterScore;
 
   UserPublicModel({
