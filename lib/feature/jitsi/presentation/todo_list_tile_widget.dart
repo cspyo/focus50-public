@@ -96,7 +96,9 @@ class TodoListTile extends ConsumerWidget {
               padding: EdgeInsets.only(right: 20),
               child: Text(
                 model.task!,
-                style: Theme.of(context).textTheme.bodyText1,
+                style: TextStyle(
+                  decoration: TextDecoration.none,
+                ),
               ),
             ),
     );
