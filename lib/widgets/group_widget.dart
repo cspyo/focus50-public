@@ -50,7 +50,9 @@ final myGroupFutureProvider =
 
 class Group extends ConsumerStatefulWidget {
   final bool isNotificationOpen;
-  const Group({required this.isNotificationOpen});
+  const Group({
+    required this.isNotificationOpen,
+  });
 
   @override
   _GroupState createState() => _GroupState();

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
-import 'package:focus42/feature/auth/presentation/login_dialog.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/models/group_model.dart';
@@ -24,10 +24,14 @@ class MobileCalendar extends ConsumerStatefulWidget {
     Key? key,
     required this.calendarController,
     required this.isNotificationOpen,
+    required this.createTutorial,
+    required this.showTutorial,
     // required this.changeVisibleDates,
   }) : super(key: key);
   CalendarController calendarController;
   bool isNotificationOpen;
+  final void Function() createTutorial;
+  final void Function() showTutorial;
   // Function(List<DateTime>) changeVisibleDates;
   List<DateTime> visibleDates = [
     DateTime.now(),
@@ -164,6 +168,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                 borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(8), topRight: Radius.circular(8))),
             child: Row(
+              key: widget.key,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
@@ -450,6 +455,13 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                         groupId: _groupId);
                   } catch (err) {
                     appointment.subject = RESERVE;
+                  }
+                  final user = await database.getUserPublic();
+                  bool isOnboarded = user.isOnboarded ?? false;
+                  final authViewModel = ref.read(authViewModelProvider);
+                  if (!isOnboarded) {
+                    widget.createTutorial();
+                    widget.showTutorial();
                   }
                 },
                 style: ElevatedButton.styleFrom(

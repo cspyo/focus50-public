@@ -53,27 +53,26 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                       child: _buildLoginProfile(user.userPublicModel!.photoUrl!,
                           user.userPublicModel!.nickname!)),
                   SizedBox(
-                    height: 10,
-                  ),
-                  _buildMenuItem(
-                      text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
-                  SizedBox(
-                    height: 10,
+                    height: 4,
                   ),
                   _buildMenuItem(
                       text: '캘린더',
                       icon: Icons.calendar_month,
                       route: Routes.CALENDAR),
                   SizedBox(
-                    height: 10,
+                    height: 4,
                   ),
                   _buildNoticeListTile(),
                   SizedBox(
-                    height: 10,
+                    height: 4,
+                  ),
+                  _buildContactListTile(),
+                  SizedBox(
+                    height: 4,
                   ),
                   _buildMenuItem(
                       text: '프로필', icon: Icons.person, route: Routes.PROFILE),
-                  SizedBox(height: 10),
+                  SizedBox(height: 4),
                   Divider(
                     color: Colors.white,
                     thickness: 1,
@@ -100,25 +99,29 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         ),
         SizedBox(height: 60, child: _buildNotLoginProfile()),
         SizedBox(
-          height: 10,
+          height: 4,
         ),
         _buildMenuItem(
             text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
         SizedBox(
-          height: 10,
+          height: 4,
         ),
         _buildMenuItem(
             text: '캘린더', icon: Icons.calendar_month, route: Routes.CALENDAR),
         SizedBox(
-          height: 10,
+          height: 4,
         ),
         _buildNoticeListTile(),
+        SizedBox(
+          height: 4,
+        ),
+        _buildContactListTile(),
         Divider(
           color: Colors.white,
           thickness: 1,
         ),
         SizedBox(
-          height: 20,
+          height: 4,
         ),
         _buildSignUpButton(),
         SizedBox(height: 10),
@@ -134,8 +137,12 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Image.network(
-                photoUrl,
+              CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(
+                  photoUrl,
+                ),
+                backgroundColor: Colors.white,
               ),
               SizedBox(width: 20),
               Column(
@@ -199,10 +206,22 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
         leading: Icon(Icons.push_pin, color: Colors.white),
         onTap: () {
           launchUrl(Uri.parse(
-              'https://cspyo.notion.site/Focus-50-88016be305f245f4b9b626db19a7c0f0'));
+              'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08'));
         },
         title: Text(
           '공지사항',
+          style: TextStyle(color: Colors.white),
+        ));
+  }
+
+  Widget _buildContactListTile() {
+    return ListTile(
+        leading: Icon(Icons.phone, color: Colors.white),
+        onTap: () {
+          launchUrl(Uri.parse('https://open.kakao.com/o/s1lFdjse'));
+        },
+        title: Text(
+          '문의하기',
           style: TextStyle(color: Colors.white),
         ));
   }

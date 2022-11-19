@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:focus42/consts/routes.dart';
+import 'package:focus42/feature/focus_rating/presentation/focus_rating_widget.dart';
+import 'package:focus42/feature/focus_rating/view_model/rating_function.dart';
 import 'package:focus42/feature/peer_feedback/data/feedback.dart';
 import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
 import 'package:focus42/feature/peer_feedback/provider/provider.dart';
@@ -68,21 +70,7 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
                   children: [
                     Container(
                       width: _dialogWidth,
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: Text(
-                              "포공 세션이 종료되었습니다",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      child: RatingWidget(),
                     ),
                     Container(
                       child: Padding(
@@ -295,6 +283,7 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
                                   Colors.transparent),
                             ),
                             onPressed: () {
+                              rateFocus(database, ref, reservation);
                               Get.rootDelegate.offNamed(Routes.CALENDAR);
                             },
                             child: Align(

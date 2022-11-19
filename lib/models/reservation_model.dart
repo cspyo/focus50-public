@@ -121,9 +121,14 @@ class ReservationModel {
     Map<String, dynamic> userInfos = data["userInfos"] as Map<String, dynamic>;
     Map<String, ReservationUserInfo> userInfoMap =
         <String, ReservationUserInfo>{};
-    userInfos.forEach((key, value) {
-      String uid = value['uid'] as String;
-      String? nickname = value['nickname'] as String;
+
+    final userInfoKeyList = userInfos.keys.toList();
+    for (int i = 0; i < userInfoKeyList.length; i++) {
+      final value = userInfos[userInfoKeyList[i]];
+      String? uid = value['uid'] as String?;
+      String? nickname = value['nickname'] as String?;
+      if (uid == null || nickname == null) continue;
+
       DateTime? enterDTTM = value['enterDTTM'] != null
           ? value['enterDTTM'].toDate() as DateTime
           : null;
@@ -150,7 +155,7 @@ class ReservationModel {
         sessionAgent: sessionAgent,
       );
       userInfoMap.addAll({uid: reservationUserInfo});
-    });
+    }
 
     return ReservationModel(
       id: documentId,

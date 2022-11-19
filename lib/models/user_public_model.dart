@@ -15,6 +15,8 @@ class UserPublicModel {
   bool? kakaoNoticeAllowed; // 카카오톡으로 예약 알림 동의 여부 (우리 서비스에서 알림 설정)
   List<String?>? noticeMethods;
   final List<String>? groups;
+  bool? isOnboarded; // 온보딩 페이지 봤는 지 안봤는 지, 모든 유저 한번은 보여주기 ㅎㅎ
+  int? netPromoterScore;
 
   UserPublicModel({
     this.nickname,
@@ -31,6 +33,8 @@ class UserPublicModel {
     this.kakaoNoticeAllowed,
     this.noticeMethods,
     this.groups,
+    this.isOnboarded,
+    this.netPromoterScore,
   });
 
   UserPublicModel addGroup(String groupId) {
@@ -95,6 +99,8 @@ class UserPublicModel {
           ? List.from(data?['noticeMethods'])
           : null,
       groups: data?["groups"] is Iterable ? List.from(data?["groups"]) : null,
+      isOnboarded: data?["isOnboarded"],
+      netPromoterScore: data?['netPromoterScore'],
     );
   }
 
@@ -114,6 +120,8 @@ class UserPublicModel {
       if (kakaoNoticeAllowed != null) "kakaoNoticeAllowed": kakaoNoticeAllowed,
       if (noticeMethods != null) "noticeMethods": noticeMethods,
       if (groups != null) "groups": groups,
+      if (isOnboarded != null) "isOnboarded": isOnboarded,
+      if (netPromoterScore != null) "netPromoterScore": netPromoterScore,
     };
   }
 }

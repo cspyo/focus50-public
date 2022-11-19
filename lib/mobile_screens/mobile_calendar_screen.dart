@@ -14,6 +14,7 @@ import 'package:focus42/services/firestore_database.dart';
 import 'package:focus42/top_level_providers.dart';
 import 'package:focus42/view_models.dart/reservation_view_model.dart';
 import 'package:focus42/widgets/group_widget.dart';
+import 'package:focus42/widgets/onboarding.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -33,9 +34,11 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Onboarding.popupOnboardingStart(ref, context));
     database = ref.read(databaseProvider);
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => popupPeerFeedbacks(database, context));
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => popupPeerFeedbacks(ref, database, context));
   }
 
   @override
@@ -61,7 +64,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                 'Focus',
                 style: TextStyle(
                   fontFamily: 'Okddung',
-                  fontSize: 30,
+                  fontSize: 24,
                   color: Colors.black,
                 ),
               ),
@@ -69,7 +72,7 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                 '50',
                 style: TextStyle(
                   fontFamily: 'Okddung',
-                  fontSize: 30,
+                  fontSize: 24,
                   color: purple300,
                 ),
               ),
@@ -78,6 +81,21 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
           backgroundColor: Colors.white,
           iconTheme: IconThemeData(color: purple300),
         ),
+        // bottomNavigationBar:
+        //     BottomNavigationBar(items: const <BottomNavigationBarItem>[
+        //   BottomNavigationBarItem(
+        //     icon: Icon(Icons.waving_hand),
+        //     label: '소개',
+        //   ),
+        //   BottomNavigationBarItem(
+        //     icon: Icon(Icons.calendar_month),
+        //     label: '캘린더',
+        //   ),
+        //   BottomNavigationBarItem(
+        //     icon: Icon(Icons.menu),
+        //     label: '메뉴',
+        //   ),
+        // ]),
         drawer: MobileDrawer(),
         body: SingleChildScrollView(
           child: Column(
@@ -86,9 +104,6 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
             children: <Widget>[
               const Line(),
               Column(children: <Widget>[
-                // Container(
-                //   child: MobileReservation(),
-                // ),
                 SizedBox(
                   height: 5,
                 ),
@@ -125,15 +140,20 @@ class _MobileCalendarScreenState extends ConsumerState<MobileCalendarScreen> {
                   ),
                 ),
                 Container(
+                  key: Onboarding.calendarButton,
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: border100)),
                   height: screenHeight - 245,
                   child: MobileCalendar(
                     calendarController: calendarController,
                     isNotificationOpen: isNotificationOpen,
+                    createTutorial: () =>
+                        Onboarding.mobileCreateTutorialAfterReservation(ref),
+                    showTutorial: () => Onboarding.showTutorial(context),
                   ),
                 ),
                 Container(
+                  key: Onboarding.reservationButton,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(12),

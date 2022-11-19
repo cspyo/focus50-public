@@ -11,6 +11,7 @@ import 'package:focus42/widgets/calendar.dart';
 import 'package:focus42/widgets/desktop_header.dart';
 import 'package:focus42/widgets/group_widget.dart';
 import 'package:focus42/widgets/line.dart';
+import 'package:focus42/widgets/onboarding.dart';
 import 'package:focus42/widgets/reservation.dart';
 import 'package:focus42/widgets/todo.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,7 +24,6 @@ final noticeStreamProvider =
 
 // ignore: use_key_in_widget_constructors
 class CalendarScreen extends ConsumerStatefulWidget {
-  CalendarScreen({Key? key}) : super(key: key);
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
 }
@@ -43,9 +43,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => Onboarding.popupOnboardingStart(ref, context));
     database = ref.read(databaseProvider);
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => popupPeerFeedbacks(database, context));
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => popupPeerFeedbacks(ref, database, context));
   }
 
   @override
@@ -259,12 +261,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ? Column(
                   children: [
                     Container(
+                      key: Onboarding.reservationButton,
                       height: 100,
                       child: Reservation(),
                     ),
                     Row(
                       children: [
                         Container(
+                          // key: Onboarding.reservationButton,
                           width: 100,
                           height: isNotificationOpen
                               ? screenHeight - 225
@@ -278,11 +282,19 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           ),
                         ),
                         Container(
+                          key: Onboarding.calendarButton,
                           height: isNotificationOpen
                               ? screenHeight - 225
                               : screenHeight - 175,
                           width: screenWidth - 100,
-                          child: Calendar(),
+                          child: Calendar(
+                            // calendarKey: keyButton,
+                            createTutorial: () =>
+                                Onboarding.tabletCreateTutorialAfterReservation(
+                                    ref),
+                            showTutorial: () =>
+                                Onboarding.showTutorial(context),
+                          ),
                         ),
                       ],
                     )
@@ -298,7 +310,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                               right: BorderSide(color: border100, width: 1.5))),
                       child: Column(
                         children: <Widget>[
-                          Reservation(),
+                          SizedBox(
+                            key: Onboarding.reservationButton,
+                            child: Reservation(),
+                          ),
                           Todo(),
                         ],
                       ),
@@ -317,12 +332,18 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           child: Group(isNotificationOpen: isNotificationOpen),
                         ),
                         Container(
-                          width: screenWidth - 520,
-                          height: isNotificationOpen
-                              ? screenHeight - 125
-                              : screenHeight - 75,
-                          child: Calendar(),
-                        ),
+                            key: Onboarding.calendarButton,
+                            width: screenWidth - 520,
+                            height: isNotificationOpen
+                                ? screenHeight - 125
+                                : screenHeight - 75,
+                            child: Calendar(
+                              createTutorial: () =>
+                                  Onboarding.createTutorialAfterReservation(
+                                      ref),
+                              showTutorial: () =>
+                                  Onboarding.showTutorial(context),
+                            )),
                       ],
                     ),
                   ],

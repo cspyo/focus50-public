@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus42/consts/colors.dart';
+import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
 import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
 import 'package:focus42/resources/matching_methods.dart';
@@ -17,6 +18,11 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 class Calendar extends ConsumerStatefulWidget {
+  // final GlobalKey calendarKey;
+  final void Function() showTutorial;
+  final void Function() createTutorial;
+  const Calendar({required this.createTutorial, required this.showTutorial});
+
   @override
   CalendarState createState() => CalendarState();
 }
@@ -275,6 +281,7 @@ class CalendarState extends ConsumerState<Calendar> {
       BuildContext context, TimeRegionDetails timeRegionDetails) {
     if (timeRegionDetails.region.text == HOVER) {
       return Container(
+        // key: widget.calendarKey, // TODO: key 여기다 박아놨음.
         decoration: BoxDecoration(
           border: Border.all(color: purple300, width: 2),
           borderRadius: BorderRadius.circular(8),
@@ -459,6 +466,13 @@ class CalendarState extends ConsumerState<Calendar> {
                     );
                   } catch (err) {
                     appointment.subject = RESERVE;
+                  }
+                  final user = await database.getUserPublic();
+                  bool isOnboarded = user.isOnboarded ?? false;
+                  final authViewModel = ref.read(authViewModelProvider);
+                  if (!isOnboarded) {
+                    widget.createTutorial();
+                    widget.showTutorial();
                   }
                 },
                 style: ElevatedButton.styleFrom(
