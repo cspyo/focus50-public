@@ -451,4 +451,11 @@ class FirestoreDatabase {
         data: report.toMap(),
         isAdd: report.id == null,
       );
+      
+  //----------------------nps----------------------//
+  // Future<void> updateNetPromoterScore(UserPublicModel netPromoterScore) async {
+  //   await _service.updateData(
+  //       path: FirestorePath.feedback(peerFeedback.id!),
+  //       data: peerFeedback.toMap());
+  // }
 }
