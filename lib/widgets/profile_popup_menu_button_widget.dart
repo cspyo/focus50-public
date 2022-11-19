@@ -24,7 +24,7 @@ class _ProfilePopupMenuButtonState
     final user = ref.watch(userStreamProvider);
     return user.when(
       data: (user) {
-        if (user.userPublicModel!.createdDate != null) {
+        if (user.userPublicModel!.nickname != null) {
           return PopupMenuButton(
             padding: EdgeInsets.zero,
             tooltip: '',
