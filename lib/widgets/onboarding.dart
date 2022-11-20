@@ -25,6 +25,7 @@ class Onboarding {
     if (isOnboarded) {
       return null;
     } else {
+      bool isSignedUp = await authViewModel.isSignedUp();
       return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -49,7 +50,7 @@ class Onboarding {
                 AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      '안녕하세요 ${user.nickname}님!',
+                      isSignedUp ? '안녕하세요 ${user.nickname}님!' : '안녕하세요 회원님!',
                       textStyle: isMobile
                           ? MyTextStyle.CbS18W400
                           : MyTextStyle.CbS20W400,
