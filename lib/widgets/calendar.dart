@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:focus42/consts/colors.dart';
 import 'package:focus42/feature/auth/auth_view_model.dart';
 import 'package:focus42/feature/auth/show_auth_dialog.dart';
@@ -30,6 +31,7 @@ class Calendar extends ConsumerStatefulWidget {
 class CalendarState extends ConsumerState<Calendar> {
   bool isEdit = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final FToast fToast;
 
   int tabletBoundSize = 1200;
 
@@ -74,6 +76,33 @@ class CalendarState extends ConsumerState<Calendar> {
     return defaultPositionValue + oneBoxWidth * (currentDay - 1);
   }
 
+  void _showCantReserveToast() {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.black45,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "현재 시간 이전에는 예약을 할 수 없습니다!",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.CENTER,
+      toastDuration: Duration(seconds: 1),
+    );
+  }
+
   void _calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = _auth.currentUser?.uid;
     DateTime? tappedDate = calendarTapDetails.date;
@@ -91,6 +120,7 @@ class CalendarState extends ConsumerState<Calendar> {
     if (calendarTapDetails.targetElement == CalendarElement.calendarCell) {
       // 현재 시간 이전은 불가능
       if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+        _showCantReserveToast();
         return;
       }
 
@@ -178,6 +208,8 @@ class CalendarState extends ConsumerState<Calendar> {
   @override
   void initState() {
     super.initState();
+    fToast = FToast();
+    fToast.init(context);
     groupId = ref.read(activatedGroupIdProvider);
     reservationViewModel = ref.read(reservationViewModelProvider);
     reservationViewModel.startView();
