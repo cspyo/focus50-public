@@ -17,7 +17,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_strategy/url_strategy.dart';
 
-const String VERSION = "1.10.2";
+const String VERSION = "1.11.0";
 late final AGENT;
 
 Future<void> versionCheck() async {
