@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:focus42/feature/focus_rating/data/rating_model.dart';
-import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
-import 'package:focus42/models/group_model.dart';
-import 'package:focus42/models/notice_model.dart';
-import 'package:focus42/models/reservation_model.dart';
-import 'package:focus42/models/todo_model.dart';
-import 'package:focus42/models/user_model.dart';
-import 'package:focus42/models/user_private_model.dart';
-import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/services/firestore_path.dart';
-import 'package:focus42/services/firestore_service.dart';
+import 'package:focus50/feature/auth/data/user_model.dart';
+import 'package:focus50/feature/auth/data/user_private_model.dart';
+import 'package:focus50/feature/auth/data/user_public_model.dart';
+import 'package:focus50/feature/calendar/data/notice_model.dart';
+import 'package:focus50/feature/calendar/data/reservation_model.dart';
+import 'package:focus50/feature/focus_rating/data/rating_model.dart';
+import 'package:focus50/feature/group/data/group_model.dart';
+import 'package:focus50/feature/peer_feedback/data/peer_feedback_model.dart';
+import 'package:focus50/feature/report_abuse/data/report_model.dart';
+import 'package:focus50/feature/todo/data/todo_model.dart';
+import 'package:focus50/services/firestore_path.dart';
+import 'package:focus50/services/firestore_service.dart';
 import 'package:rxdart/rxdart.dart';
 
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
@@ -447,6 +448,16 @@ class FirestoreDatabase {
   Future<void> runTransaction(TransactionHandler transactionHandler) async {
     await _service.runTransaction(transactionHandler);
   }
+
+  //----------------------report----------------------//
+  Future<void> updateReport(
+    ReportModel report,
+  ) =>
+      _service.setData(
+        path: FirestorePath.reports(),
+        data: report.toMap(),
+        isAdd: report.id == null,
+      );
 
   //----------------------nps----------------------//
   // Future<void> updateNetPromoterScore(UserPublicModel netPromoterScore) async {

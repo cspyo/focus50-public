@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:focus42/consts/routes.dart';
+import 'package:focus50/consts/routes.dart';
 import 'package:get/route_manager.dart';
 
 class AppRouterDelegate extends GetDelegate {

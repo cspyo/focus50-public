@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:focus42/main.dart';
-import 'package:focus42/models/reservation_model.dart';
-import 'package:focus42/models/reservation_user_info.dart';
-import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/services/firestore_database.dart';
+import 'package:focus50/feature/auth/data/user_public_model.dart';
+import 'package:focus50/feature/calendar/data/reservation_model.dart';
+import 'package:focus50/feature/calendar/data/reservation_user_info.dart';
+import 'package:focus50/main.dart';
+import 'package:focus50/services/firestore_database.dart';
 import 'package:logger/logger.dart';
 
 class MatchingMethods {

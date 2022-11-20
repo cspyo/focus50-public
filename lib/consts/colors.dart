@@ -35,4 +35,5 @@ class MyColors {
   static const Color calendarBackgroundColor = Colors.white;
   static const Color headerNotificationColor =
       Color.fromARGB(114, 106, 111, 253);
+  static const Color reportIconColor = Color(0xffE15241);
 }

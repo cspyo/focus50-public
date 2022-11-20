@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:focus42/consts/colors.dart';
+import 'package:focus50/consts/colors.dart';
 
 class MyTextStyle {
   static const TextStyle CbS14W400 = TextStyle(

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/models/todo_model.dart';
-import 'package:focus42/top_level_providers.dart';
+import 'package:focus50/feature/todo/data/todo_model.dart';
+import 'package:focus50/top_level_providers.dart';
 
 final partnerTodoToggleStateProvider = StateProvider.autoDispose<bool>((ref) {
   final _ret = false;

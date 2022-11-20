@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:focus42/services/firestore_path.dart';
+import 'package:focus50/services/firestore_path.dart';
 
 class FirestoreService {
   FirestoreService._();

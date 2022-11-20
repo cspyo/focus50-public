@@ -1,15 +1,14 @@
-import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/jitsi/presentation/meeting_screen.dart';
-import 'package:focus42/feature/profile/presentation/profile_screen.dart';
-import 'package:focus42/mobile_screens/mobile_about_screen.dart';
-// import 'package:focus42/m.screens/m.profile_screen.dart';
-import 'package:focus42/mobile_screens/mobile_calendar_screen.dart';
-import 'package:focus42/mobile_screens/mobile_meeting_screen.dart';
-import 'package:focus42/mobile_screens/mobile_profile_screen.dart';
-import 'package:focus42/screens/calendar_screen.dart';
+import 'package:focus50/consts/routes.dart';
+import 'package:focus50/feature/about/presentation/mobile/mobile_about_screen.dart';
+import 'package:focus50/feature/calendar/presentation/calendar_screen.dart';
+import 'package:focus50/feature/calendar/presentation/mobile/mobile_calendar_screen.dart';
+import 'package:focus50/feature/jitsi/presentation/meeting_screen.dart';
+import 'package:focus50/feature/jitsi/presentation/mobile_meeting_screen.dart';
+import 'package:focus50/feature/profile/presentation/mobile/mobile_profile_screen.dart';
+import 'package:focus50/feature/profile/presentation/profile_screen.dart';
 import 'package:get/get.dart';
 
-import '../screens/about_screen.dart';
+import '../feature/about/presentation/about_screen.dart';
 
 abstract class AppPages {
   static final pcPages = [

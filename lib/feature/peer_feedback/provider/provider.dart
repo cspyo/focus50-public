@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/models/reservation_model.dart';
-import 'package:focus42/top_level_providers.dart';
+import 'package:focus50/feature/calendar/data/reservation_model.dart';
+import 'package:focus50/top_level_providers.dart';
 
 final runningSessionIdProvider = StateProvider<String>((ref) {
   final String _ret = '';

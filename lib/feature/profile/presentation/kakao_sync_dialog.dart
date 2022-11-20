@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/consts/colors.dart';
-import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
-import 'package:focus42/models/user_model.dart';
-import 'package:focus42/models/user_private_model.dart';
-import 'package:focus42/models/user_public_model.dart';
-import 'package:focus42/top_level_providers.dart';
+import 'package:focus50/consts/colors.dart';
+import 'package:focus50/feature/auth/data/user_model.dart';
+import 'package:focus50/feature/auth/data/user_private_model.dart';
+import 'package:focus50/feature/auth/data/user_public_model.dart';
+import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
+import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 
 class KakaoSyncDialog extends ConsumerStatefulWidget {

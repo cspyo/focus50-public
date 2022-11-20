@@ -1,6 +1,6 @@
 import 'dart:html' as html;
 
-import 'package:focus42/feature/popup/view_model/cookie_utils.dart';
+import 'package:focus50/feature/popup/view_model/cookie_utils.dart';
 
 //* Ex) 주소/MainPop.do?popType=1&popSeq=12193
 //* 참조 - 4대 보험 제출
