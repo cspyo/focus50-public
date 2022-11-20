@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:focus42/models/user_model.dart';
+import 'package:focus50/feature/auth/data/user_model.dart';
 import 'package:jitsi_meet/jitsi_meet.dart';
 
 class JitsiMeetMethods {

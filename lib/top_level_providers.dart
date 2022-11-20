@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/models/user_model.dart';
-import 'package:focus42/services/firestore_database.dart';
+import 'package:focus50/feature/auth/data/user_model.dart';
+import 'package:focus50/services/firestore_database.dart';
 import 'package:logger/logger.dart';
 
 final firebaseAuthProvider =

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:focus42/consts/routes.dart';
-import 'package:focus42/feature/focus_rating/presentation/focus_rating_widget.dart';
-import 'package:focus42/feature/focus_rating/view_model/rating_function.dart';
-import 'package:focus42/feature/peer_feedback/data/feedback.dart';
-import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
-import 'package:focus42/feature/peer_feedback/provider/provider.dart';
-import 'package:focus42/models/reservation_model.dart';
-import 'package:focus42/models/user_model.dart';
-import 'package:focus42/top_level_providers.dart';
-import 'package:focus42/view_models.dart/users_notifier.dart';
+import 'package:focus50/consts/routes.dart';
+import 'package:focus50/feature/auth/data/user_model.dart';
+import 'package:focus50/feature/auth/view_model/users_notifier.dart';
+import 'package:focus50/feature/calendar/data/reservation_model.dart';
+import 'package:focus50/feature/focus_rating/presentation/focus_rating_widget.dart';
+import 'package:focus50/feature/focus_rating/view_model/rating_function.dart';
+import 'package:focus50/feature/peer_feedback/data/feedback.dart';
+import 'package:focus50/feature/peer_feedback/data/peer_feedback_model.dart';
+import 'package:focus50/feature/peer_feedback/provider/provider.dart';
+import 'package:focus50/top_level_providers.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 

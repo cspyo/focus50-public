@@ -6,17 +6,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/consts/app_pages.dart';
-import 'package:focus42/services/firestore_database.dart';
-import 'package:focus42/top_level_providers.dart';
-import 'package:focus42/utils/version_compare.dart';
+import 'package:focus50/consts/app_pages.dart';
+import 'package:focus50/consts/app_router_delegate.dart';
+import 'package:focus50/firebase_options.dart';
+import 'package:focus50/services/firestore_database.dart';
+import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/version_compare.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_strategy/url_strategy.dart';
-
-import 'consts/app_router_delegate.dart';
-import 'firebase_options.dart';
 
 const String VERSION = "1.10.2";
 late final AGENT;

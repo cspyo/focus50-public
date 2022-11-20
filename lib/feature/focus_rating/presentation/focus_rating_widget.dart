@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/feature/focus_rating/view_model/provider.dart';
+import 'package:focus50/feature/focus_rating/view_model/provider.dart';
 
 class RatingWidget extends ConsumerStatefulWidget {
   final double starSize = 40.0;

@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
-import 'package:focus42/feature/jitsi/presentation/custom_timer_painter.dart';
-import 'package:focus42/feature/jitsi/presentation/text_style.dart';
-import 'package:focus42/feature/peer_feedback/presentation/peer_feedback_dialog.dart';
+import 'package:focus50/feature/jitsi/presentation/custom_timer_painter.dart';
+import 'package:focus50/feature/jitsi/presentation/text_style.dart';
+import 'package:focus50/feature/peer_feedback/presentation/peer_feedback_dialog.dart';
 import 'package:video_player/video_player.dart';
 
 Future<dynamic> peerFeedbackPopup(BuildContext context) {

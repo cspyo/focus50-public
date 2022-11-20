@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/feature/jitsi/presentation/text_style.dart';
+import 'package:focus50/feature/jitsi/presentation/text_style.dart';
 
 // * Provider 를 이용해 이번 미팅 상대방들의 투두를 List 타입으로 관리할 수 있어야 한다. : List< Map< String, List<TodoModel> > >
 // * MeetingScreen 으로부터 provider 를 이용하여 추척할 reservation docId 를 매개변수로 넘겨 받는다.
