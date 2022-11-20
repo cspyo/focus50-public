@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:focus42/models/reservation_model.dart';
+import 'package:focus50/feature/calendar/data/reservation_model.dart';
 
 class PeerFeedbackModel {
   String? id;

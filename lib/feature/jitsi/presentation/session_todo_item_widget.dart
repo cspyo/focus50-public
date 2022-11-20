@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/feature/jitsi/presentation/text_style.dart';
-import 'package:focus42/models/todo_model.dart';
+import 'package:focus50/feature/jitsi/presentation/text_style.dart';
+import 'package:focus50/feature/todo/data/todo_model.dart';
 
 // * Todo Check / Update / Delete 시나리오
 // * 1) 매개변수 : TodoModel

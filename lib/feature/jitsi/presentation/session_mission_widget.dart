@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/feature/jitsi/presentation/text_style.dart';
-import 'package:focus42/feature/jitsi/provider/provider.dart';
-// import 'package:focus42/widgets/mirai_dropdown_item_widget.dart';
-// import 'package:focus42/widgets/dropdown_button_widget.dart';
+import 'package:focus50/feature/jitsi/presentation/text_style.dart';
+import 'package:focus50/feature/jitsi/provider/provider.dart';
+// import 'package:focus50/widgets/mirai_dropdown_item_widget.dart';
+// import 'package:focus50/widgets/dropdown_button_widget.dart';
 
 class SessionMission extends ConsumerStatefulWidget {
   const SessionMission();

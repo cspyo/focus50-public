@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/consts/colors.dart';
-import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
-import 'package:focus42/feature/jitsi/presentation/empty_content.dart';
+import 'package:focus50/consts/colors.dart';
+import 'package:focus50/utils/circular_progress_indicator.dart';
+import 'package:focus50/feature/jitsi/presentation/empty_content.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 

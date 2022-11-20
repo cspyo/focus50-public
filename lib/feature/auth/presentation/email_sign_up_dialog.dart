@@ -1,11 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focus42/consts/colors.dart';
-import 'package:focus42/consts/error_message.dart';
-import 'package:focus42/feature/auth/auth_view_model.dart';
-import 'package:focus42/feature/auth/show_auth_dialog.dart';
-import 'package:focus42/feature/indicator/circular_progress_indicator.dart';
+import 'package:focus50/consts/colors.dart';
+import 'package:focus50/consts/error_message.dart';
+import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
+import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
+import 'package:focus50/utils/circular_progress_indicator.dart';
 
 class EmailSignUpDialog extends ConsumerStatefulWidget {
   const EmailSignUpDialog({Key? key}) : super(key: key);
