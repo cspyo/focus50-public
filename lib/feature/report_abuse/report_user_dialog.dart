@@ -164,38 +164,48 @@ class _ReportUserDialogState extends ConsumerState<ReportUserDialog> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        SizedBox(height: 20),
                         TextFormField(
                           controller: _reportReasonController,
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w500),
-                          cursorColor: Colors.grey.shade600,
-                          cursorHeight: 18,
                           decoration: const InputDecoration(
-                            border: UnderlineInputBorder(
+                            constraints: BoxConstraints(maxWidth: 240),
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(
-                                color: Colors.grey,
-                                style: BorderStyle.solid,
+                                  color: MyColors.border300, width: 1.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 1.0),
+                            ),
+                            focusColor: MyColors.border300,
+                            hintText: "신고 사유를 적어주세요.",
+                            label: Text(
+                              "신고 사유",
+                              style: TextStyle(
+                                color: purple300,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            hoverColor: purple300,
-                            focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: purple300)),
-                            labelText: '신고 사유',
                             floatingLabelStyle: TextStyle(
                               color: purple300,
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
                             ),
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
                           ),
-                          maxLines: 1,
+                          cursorColor: purple300,
+                          maxLines: 5,
+                          maxLength: 300,
                           textInputAction: TextInputAction.next,
                         ),
-                        SizedBox(
-                          height: 30,
-                        ),
+                        SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -284,7 +294,7 @@ class _ReportUserDialogState extends ConsumerState<ReportUserDialog> {
                           height: 2,
                         ),
                         Text(
-                          '신고할 유저가 없습니다 😭',
+                          '신고할 유저가 없습니다',
                           style: MyTextStyle.CgS12W400,
                         ),
                         SizedBox(
