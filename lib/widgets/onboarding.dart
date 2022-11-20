@@ -21,6 +21,7 @@ class Onboarding {
     final user = await database.getUserPublic();
     bool isOnboarded = user.isOnboarded ?? false;
     final authViewModel = ref.read(authViewModelProvider);
+    String username = user.nickname ?? "회원";
 
     if (isOnboarded) {
       return null;
@@ -49,7 +50,7 @@ class Onboarding {
                 AnimatedTextKit(
                   animatedTexts: [
                     TypewriterAnimatedText(
-                      '안녕하세요 ${user.nickname}님!',
+                      '안녕하세요 ${username}님!',
                       textStyle: isMobile
                           ? MyTextStyle.CbS18W400
                           : MyTextStyle.CbS20W400,
