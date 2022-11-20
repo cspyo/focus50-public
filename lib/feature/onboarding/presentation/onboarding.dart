@@ -27,6 +27,7 @@ class Onboarding {
       return null;
     } else {
       return showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           double _screenWidth = MediaQuery.of(context).size.width;
@@ -104,7 +105,7 @@ class Onboarding {
                       } else if (_screenWidth >= 500 && _screenWidth < 1200) {
                         tabletCreateTutorialBeforeReservation();
                       } else {
-                        createTutorialBeforeReservation();
+                        createTutorialBeforeReservation(context);
                       }
                       showTutorial(context);
                     },
@@ -135,9 +136,9 @@ class Onboarding {
     tutorialCoachMark.show(context: context);
   }
 
-  static void createTutorialBeforeReservation() {
+  static void createTutorialBeforeReservation(context) {
     tutorialCoachMark = TutorialCoachMark(
-      targets: _createTargetsBeforeReservation(),
+      targets: _createTargetsBeforeReservation(context),
       colorShadow: MyColors.purple200,
       textSkip: "그만 보기",
       paddingFocus: 10,
@@ -155,8 +156,9 @@ class Onboarding {
     );
   }
 
-  static List<TargetFocus> _createTargetsBeforeReservation() {
+  static List<TargetFocus> _createTargetsBeforeReservation(context) {
     List<TargetFocus> targets = [];
+    double height = MediaQuery.of(context).size.height;
 
     targets.add(
       TargetFocus(
@@ -167,15 +169,16 @@ class Onboarding {
         shape: ShapeLightFocus.RRect,
         contents: [
           TargetContent(
-            align: ContentAlign.left,
+            align: ContentAlign.custom,
+            customPosition: CustomTargetContentPosition(left: 20),
             builder: (context, controller) {
               return Container(
                 width: 200,
-                height: 900,
+                height: height,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Row(
                       children: [
@@ -243,9 +246,11 @@ class Onboarding {
         keyTarget: calendarButton,
         alignSkip: Alignment.topRight,
         enableOverlayTab: true,
+        shape: ShapeLightFocus.RRect,
         contents: [
           TargetContent(
-            align: ContentAlign.left,
+            align: ContentAlign.custom,
+            customPosition: CustomTargetContentPosition(left: 30),
             builder: (context, controller) {
               return Container(
                 width: 200,
@@ -253,7 +258,7 @@ class Onboarding {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text("훌륭해요!", style: MyTextStyle.CwS20W400),
                     SizedBox(
@@ -320,7 +325,7 @@ class Onboarding {
                       '다른 사람들과 함께한 50분',
                       style: MyTextStyle.CwS20W400,
                     ),
-                    Text('분명 특별한 시간이 될 거에요😁', style: MyTextStyle.CwS20W400),
+                    Text('분명 특별한 시간이 될 거에요!!', style: MyTextStyle.CwS20W400),
                     SizedBox(height: 30),
                     Row(
                       children: [
@@ -328,12 +333,13 @@ class Onboarding {
                         Text('는 금물!', style: MyTextStyle.CwS20W400),
                       ],
                     ),
-                    Text('노쇼 당한 상대방은 외로이 남겨져요🥲', style: MyTextStyle.CwS20W600),
+                    Text('노쇼 당한 상대방은 외로이 남겨져요 ㅠㅠ',
+                        style: MyTextStyle.CwS20W600),
                     SizedBox(
                       height: 30,
                     ),
                     Text(
-                      '오늘도 화이팅입니다🙌',
+                      '오늘도 화이팅입니다 :)',
                       style: MyTextStyle.CwS20W400,
                     ),
                   ],
@@ -494,7 +500,7 @@ class Onboarding {
                       '다른 사람들과 함께한 50분',
                       style: MyTextStyle.CwS16W400,
                     ),
-                    Text('분명 특별한 시간이 될 거에요😁', style: MyTextStyle.CwS16W400),
+                    Text('분명 특별한 시간이 될 거에요!', style: MyTextStyle.CwS16W400),
                     SizedBox(height: 30),
                     Row(
                       children: [
@@ -502,12 +508,13 @@ class Onboarding {
                         Text('는 금물!', style: MyTextStyle.CwS16W400),
                       ],
                     ),
-                    Text('노쇼 당한 상대방은 외로이 남겨져요🥲', style: MyTextStyle.CwS18W600),
+                    Text('노쇼 당한 상대방은 외로이 남겨져요 ㅠㅠ',
+                        style: MyTextStyle.CwS18W600),
                     SizedBox(
                       height: 30,
                     ),
                     Text(
-                      '오늘도 화이팅입니다🙌',
+                      '오늘도 화이팅입니다 :)',
                       style: MyTextStyle.CwS16W400,
                     ),
                   ],
@@ -554,61 +561,47 @@ class Onboarding {
         shape: ShapeLightFocus.RRect,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            align: ContentAlign.custom,
+            customPosition: CustomTargetContentPosition(),
             builder: (context, controller) {
               return Container(
-                width: 200,
-                height: 900,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                width: 300,
+                height: 300,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    // Row(
-                    //   children: [
-                    //     Text("나 자신과의 약속보다 ", style: MyTextStyle.CwS20W400),
-                    //     Text("타인과의 약속은", style: MyTextStyle.CwS22W600),
-                    //   ],
-                    // ),
-                    // Text("지킬 확률이 87% 더 높아요!", style: MyTextStyle.CwS20W400),
-                    // SizedBox(
-                    //   height: 5,
-                    // ),
-                    // Row(
-                    //   children: [
-                    //     Text("캘린더에 집중할 시간을 ", style: MyTextStyle.CwS20W400),
-                    //     Text("예약", style: MyTextStyle.CwS22W600),
-                    //     Text("해 볼까요?", style: MyTextStyle.CwS20W400),
-                    //     Icon(
-                    //       Icons.arrow_right_alt_rounded,
-                    //       color: Colors.white,
-                    //     ),
-                    //   ],
-                    // ),
-                    // SizedBox(
-                    //   height: 20,
-                    // ),
-                    // ClipRRect(
-                    //   borderRadius: BorderRadius.circular(16),
-                    //   child: Image.asset(
-                    //     'assets/images/calendar_screen_reserve.gif',
-                    //     width: 320,
-                    //   ),
-                    // ),
-                    SizedBox(
-                      height: 20,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/calendar_screen_reserve.gif',
+                        width: 175,
+                      ),
                     ),
-                    Text("원하는 시간에 클릭하고", style: MyTextStyle.CwS20W400),
-                    Row(
-                      children: [
-                        Text("'예약'", style: MyTextStyle.CwS22W600),
-                        Text(" 버튼을 눌러봐요!", style: MyTextStyle.CwS20W400),
+                    SizedBox(width: 30),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text("원하는 시간에 클릭하고", style: MyTextStyle.CwS20W400),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("'예약'", style: MyTextStyle.CwS22W600),
+                            Text(" 버튼을 눌러봐요!", style: MyTextStyle.CwS20W400),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text("예약하시고 나서, 전 다시 찾아올게요!",
+                            style: MyTextStyle.CwS20W400),
                       ],
                     ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text("예약하시고 나서, 전 다시 찾아올게요!", style: MyTextStyle.CwS20W400),
                   ],
                 ),
               );
@@ -633,20 +626,22 @@ class Onboarding {
         shape: ShapeLightFocus.RRect,
         contents: [
           TargetContent(
-            align: ContentAlign.top,
+            align: ContentAlign.custom,
+            customPosition: CustomTargetContentPosition(top: 20),
             builder: (context, controller) {
               return Container(
-                width: 200,
-                height: 500,
+                width: 300,
+                height: 300,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     SizedBox(
                       height: 5,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text("이제 평범한 ", style: MyTextStyle.CwS20W400),
                         Text("50분", style: MyTextStyle.CwS22W600),
@@ -708,7 +703,7 @@ class Onboarding {
                       '다른 사람들과 함께한 50분',
                       style: MyTextStyle.CwS20W400,
                     ),
-                    Text('분명 특별한 시간이 될 거에요😁', style: MyTextStyle.CwS20W400),
+                    Text('분명 특별한 시간이 될 거에요!!', style: MyTextStyle.CwS20W400),
                     SizedBox(height: 30),
                     Row(
                       children: [
@@ -716,12 +711,13 @@ class Onboarding {
                         Text('는 금물!', style: MyTextStyle.CwS20W400),
                       ],
                     ),
-                    Text('노쇼 당한 상대방은 외로이 남겨져요🥲', style: MyTextStyle.CwS20W600),
+                    Text('노쇼 당한 상대방은 외로이 남겨져요 ㅠㅠ',
+                        style: MyTextStyle.CwS20W600),
                     SizedBox(
                       height: 30,
                     ),
                     Text(
-                      '오늘도 화이팅입니다🙌',
+                      '오늘도 화이팅입니다 :)',
                       style: MyTextStyle.CwS20W400,
                     ),
                   ],
