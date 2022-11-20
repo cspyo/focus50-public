@@ -12,6 +12,7 @@ import 'package:focus42/feature/jitsi/presentation/text_style.dart';
 import 'package:focus42/feature/jitsi/presentation/todo_list_tile_widget.dart';
 import 'package:focus42/feature/jitsi/provider/provider.dart';
 import 'package:focus42/feature/peer_feedback/provider/provider.dart';
+import 'package:focus42/feature/report_abuse/report_user_dialog.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -105,7 +106,22 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
                 children: [
                   _buildMission(),
                   SizedBox(width: 330, height: 330, child: _buildGoogleTimer()),
-                  _buildExitButton(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      _buildReportButton(),
+                      SizedBox(
+                        width: 6,
+                      ),
+                      _buildExitButton(),
+                      SizedBox(
+                        width: 6,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 6,
+                  )
                 ],
               ),
             ),
@@ -420,6 +436,44 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
           ),
           child: Icon(
             Icons.close,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> reportUserAlertdialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ReportUserDialog(reservation: reservation);
+        // return AlertDialog(content: Text('asdas'));
+      },
+    );
+  }
+
+  Widget _buildReportButton() {
+    return Container(
+      alignment: Alignment.centerRight,
+      child: SizedBox(
+        width: 50,
+        height: 50,
+        child: TextButton(
+          onPressed: () {
+            reportUserAlertdialog(context);
+          },
+          style: ButtonStyle(
+            backgroundColor:
+                MaterialStateProperty.all<Color>(MyColors.reportIconColor),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: Color.fromARGB(255, 254, 227, 227))),
+            ),
+          ),
+          child: Icon(
+            Icons.notifications,
             color: Colors.white,
           ),
         ),

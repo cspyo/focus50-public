@@ -3,6 +3,7 @@ import 'package:focus42/feature/focus_rating/data/rating_model.dart';
 import 'package:focus42/feature/peer_feedback/data/peer_feedback_model.dart';
 import 'package:focus42/models/group_model.dart';
 import 'package:focus42/models/notice_model.dart';
+import 'package:focus42/models/report_model.dart';
 import 'package:focus42/models/reservation_model.dart';
 import 'package:focus42/models/todo_model.dart';
 import 'package:focus42/models/user_model.dart';
@@ -448,6 +449,16 @@ class FirestoreDatabase {
     await _service.runTransaction(transactionHandler);
   }
 
+  //----------------------report----------------------//
+  Future<void> updateReport(
+    ReportModel report,
+  ) =>
+      _service.setData(
+        path: FirestorePath.reports(),
+        data: report.toMap(),
+        isAdd: report.id == null,
+      );
+      
   //----------------------nps----------------------//
   // Future<void> updateNetPromoterScore(UserPublicModel netPromoterScore) async {
   //   await _service.updateData(
