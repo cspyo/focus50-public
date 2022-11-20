@@ -92,77 +92,84 @@ class _ReportUserDialogState extends ConsumerState<ReportUserDialog> {
                           height: 6,
                         ),
                         for (int index = 0; index < userIds.length; index++)
-                          Container(
-                            width: 240,
-                            height: 40,
-                            child: Center(
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: Center(
-                                      child: TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            if (selectedUsers
-                                                .contains(userIds[index])) {
-                                              selectedUsers
-                                                  .remove(userIds[index]);
-                                            } else {
-                                              selectedUsers.add(userIds[index]);
-                                            }
-                                          });
-                                        },
-                                        style: ButtonStyle(
-                                          padding: MaterialStateProperty.all<
-                                                  EdgeInsetsGeometry>(
-                                              EdgeInsets.zero),
-                                        ),
-                                        child: selectedUsers
-                                                .contains(userIds[index])
-                                            ? Icon(
-                                                Icons.check_box_outlined,
-                                                color: Colors.black,
-                                                size: 20,
-                                              )
-                                            : Icon(
-                                                Icons.check_box_outline_blank,
-                                                color: Colors.black,
-                                                size: 20,
-                                              ),
+                          Column(
+                            children: [
+                              Container(
+                                width: 240,
+                                height: 40,
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 8,
                                       ),
-                                    ),
+                                      SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: Center(
+                                          child: TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                if (selectedUsers
+                                                    .contains(userIds[index])) {
+                                                  selectedUsers
+                                                      .remove(userIds[index]);
+                                                } else {
+                                                  selectedUsers
+                                                      .add(userIds[index]);
+                                                }
+                                              });
+                                            },
+                                            style: ButtonStyle(
+                                              padding: MaterialStateProperty
+                                                  .all<EdgeInsetsGeometry>(
+                                                      EdgeInsets.zero),
+                                            ),
+                                            child: selectedUsers
+                                                    .contains(userIds[index])
+                                                ? Icon(
+                                                    Icons.check_box_outlined,
+                                                    color: Colors.black,
+                                                    size: 20,
+                                                  )
+                                                : Icon(
+                                                    Icons
+                                                        .check_box_outline_blank,
+                                                    color: Colors.black,
+                                                    size: 20,
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      CircleAvatar(
+                                        radius: 12,
+                                        backgroundColor: Colors.black38,
+                                        backgroundImage:
+                                            NetworkImage(userPhotoUrls[index]),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      FittedBox(
+                                        fit: BoxFit.cover,
+                                        child: Text(userNicknames[index]),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(
-                                    width: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black38,
+                                    width: 0.5,
                                   ),
-                                  CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: Colors.black38,
-                                    backgroundImage:
-                                        NetworkImage(userPhotoUrls[index]),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  FittedBox(
-                                    fit: BoxFit.cover,
-                                    child: Text(userNicknames[index]),
-                                  ),
-                                ],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black38,
-                                width: 0.5,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                              SizedBox(height: 5),
+                            ],
                           ),
                         SizedBox(height: 20),
                         TextFormField(
