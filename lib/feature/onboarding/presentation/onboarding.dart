@@ -17,6 +17,7 @@ class Onboarding {
 
   static Future<dynamic>? popupOnboardingStart(
       WidgetRef ref, BuildContext context) async {
+    await Future.delayed(Duration(microseconds: 1));
     final database = ref.watch(databaseProvider);
     final user = await database.getUserPublic();
     bool isOnboarded = user.isOnboarded ?? false;
