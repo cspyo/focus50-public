@@ -11,6 +11,7 @@ import 'package:focus50/consts/app_router_delegate.dart';
 import 'package:focus50/firebase_options.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/version_compare.dart';
 import 'package:get/get.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
@@ -50,6 +51,9 @@ void main() async {
     }
     await FirebaseAuth.instance.authStateChanges().first;
   }
+
+  AmplitudeAnalytics().logEvent("first_event");
+
   setPathUrlStrategy();
   runApp(ProviderScope(child: MyApp(isMobile)));
 }
