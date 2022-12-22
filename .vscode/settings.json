@@ -9,5 +9,6 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[dart]": {
     "editor.defaultFormatter": "Dart-Code.dart-code"
-  }
+  },
+  "cSpell.words": ["Firestore", "jitsi", "riverpod"]
 }

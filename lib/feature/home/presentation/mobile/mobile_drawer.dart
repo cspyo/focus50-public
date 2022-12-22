@@ -5,6 +5,7 @@ import 'package:focus50/consts/routes.dart';
 import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,20 +59,42 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
                   _buildMenuItem(
                       text: '캘린더',
                       icon: Icons.calendar_month,
-                      route: Routes.CALENDAR),
-                  SizedBox(
-                    height: 4,
-                  ),
-                  _buildNoticeListTile(),
-                  SizedBox(
-                    height: 4,
-                  ),
-                  _buildContactListTile(),
+                      onTap: () {
+                        AmplitudeAnalytics().logClickCalendarNavigator();
+                        Get.rootDelegate.toNamed(Routes.CALENDAR);
+                      }),
                   SizedBox(
                     height: 4,
                   ),
                   _buildMenuItem(
-                      text: '프로필', icon: Icons.person, route: Routes.PROFILE),
+                      text: '내 정보',
+                      icon: Icons.person,
+                      onTap: () {
+                        AmplitudeAnalytics().logClickProfileNavigator();
+                        Get.rootDelegate.toNamed(Routes.PROFILE);
+                      }),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  _buildMenuItem(
+                      text: '공지사항',
+                      icon: Icons.push_pin,
+                      onTap: () {
+                        AmplitudeAnalytics().logClickNoticeNavigator();
+                        launchUrl(Uri.parse(
+                            'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08'));
+                      }),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  _buildMenuItem(
+                      text: '문의하기',
+                      icon: Icons.phone,
+                      onTap: () {
+                        AmplitudeAnalytics().logClickInquiryNavigator();
+                        launchUrl(
+                            Uri.parse('https://open.kakao.com/o/s1lFdjse'));
+                      }),
                   SizedBox(height: 4),
                   Divider(
                     color: Colors.white,
@@ -102,20 +125,44 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
           height: 4,
         ),
         _buildMenuItem(
-            text: '소개', icon: Icons.waving_hand, route: Routes.ABOUT),
+            text: '소개',
+            icon: Icons.waving_hand,
+            onTap: () {
+              AmplitudeAnalytics().logClickAboutNavigator();
+              Get.rootDelegate.toNamed(Routes.ABOUT);
+            }),
         SizedBox(
           height: 4,
         ),
         _buildMenuItem(
-            text: '캘린더', icon: Icons.calendar_month, route: Routes.CALENDAR),
+            text: '캘린더',
+            icon: Icons.calendar_month,
+            onTap: () {
+              AmplitudeAnalytics().logClickCalendarNavigator();
+              Get.rootDelegate.toNamed(Routes.CALENDAR);
+            }),
         SizedBox(
           height: 4,
         ),
-        _buildNoticeListTile(),
+        _buildMenuItem(
+            text: '공지사항',
+            icon: Icons.push_pin,
+            onTap: () {
+              AmplitudeAnalytics().logClickNoticeNavigator();
+              launchUrl(Uri.parse(
+                  'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08'));
+            }),
         SizedBox(
           height: 4,
         ),
-        _buildContactListTile(),
+        _buildMenuItem(
+            text: '문의하기',
+            icon: Icons.phone,
+            onTap: () {
+              AmplitudeAnalytics().logClickInquiryNavigator();
+              launchUrl(Uri.parse('https://open.kakao.com/o/s1lFdjse'));
+            }),
+        SizedBox(height: 4),
         Divider(
           color: Colors.white,
           thickness: 1,
@@ -187,14 +234,12 @@ class _MobileDrawerState extends ConsumerState<MobileDrawer> {
   Widget _buildMenuItem({
     required String text,
     required IconData icon,
-    required String route,
+    required void Function()? onTap,
   }) {
     final color = Colors.white;
     return ListTile(
         leading: Icon(icon, color: color),
-        onTap: () {
-          Get.rootDelegate.toNamed(route);
-        },
+        onTap: onTap,
         title: Text(
           text,
           style: TextStyle(color: color),

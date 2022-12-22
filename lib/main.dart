@@ -51,9 +51,7 @@ void main() async {
     }
     await FirebaseAuth.instance.authStateChanges().first;
   }
-
-  AmplitudeAnalytics().logEvent("first_event");
-
+  AmplitudeAnalytics().logEvent("in session");
   setPathUrlStrategy();
   runApp(ProviderScope(child: MyApp(isMobile)));
 }

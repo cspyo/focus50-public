@@ -6,7 +6,7 @@ import 'package:focus50/feature/group/data/group_model.dart';
 import 'package:focus50/feature/group/presentation/group_widget.dart';
 import 'package:focus50/feature/jitsi/presentation/list_items_builder_2.dart';
 import 'package:focus50/feature/jitsi/presentation/text_style.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 
 class GroupSelectAlertDialog extends ConsumerWidget {
   const GroupSelectAlertDialog();
@@ -107,8 +107,8 @@ class GroupSelectAlertDialog extends ConsumerWidget {
               onPressed: () {
                 _changeActivatedGroup(group.id ?? 'public', ref);
                 group.id == null
-                    ? AnalyticsMethod().logPressPublicGroupButton()
-                    : AnalyticsMethod().logPressPrivateGroupButton();
+                    ? AmplitudeAnalytics().logClickPublicGroupButton()
+                    : AmplitudeAnalytics().logClickPrivateGroupButton();
                 Navigator.pop(context);
               },
               style: ButtonStyle(
@@ -181,5 +181,6 @@ class GroupSelectAlertDialog extends ConsumerWidget {
 
   void _changeActivatedGroup(String newGroupId, WidgetRef ref) {
     ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    AmplitudeAnalytics().logChangeGroup();
   }
 }

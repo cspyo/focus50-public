@@ -9,9 +9,8 @@ import 'package:focus50/feature/auth/view_model/users_notifier.dart';
 import 'package:focus50/resources/storage_method.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:universal_html/html.dart' as html;
 
 final authViewModelProvider = Provider<AuthViewModel>(
   (ref) {
@@ -240,14 +239,6 @@ class AuthViewModel {
 
       ref.read(usersProvider.notifier).addAll({uid: userPublic});
       res = SUCCESS;
-
-      String userAgent =
-          html.window.navigator.userAgent.toString().toLowerCase();
-      if (userAgent.contains("iphone") || userAgent.contains("android")) {
-        AnalyticsMethod().mobileLogSignUp(signUpMethod);
-      } else {
-        AnalyticsMethod().logSignUp(signUpMethod);
-      }
     } catch (err) {
       res = err.toString();
     }
@@ -275,7 +266,7 @@ class AuthViewModel {
     // if (_auth.currentUser!.uid.contains('kakao')) {
     //   await kakao.UserApi.instance.unlink();
     // }
-    AnalyticsMethod().logSignOut();
+    AmplitudeAnalytics().logSignOut();
     await _auth.signOut();
   }
 

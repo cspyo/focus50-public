@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:focus50/consts/colors.dart';
 import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
@@ -13,7 +14,7 @@ import 'package:focus50/feature/group/presentation/group_setting_widget.dart';
 import 'package:focus50/feature/group/presentation/group_widget.dart';
 import 'package:focus50/resources/matching_methods.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -44,6 +45,7 @@ class MobileCalendar extends ConsumerStatefulWidget {
 class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
   bool isEdit = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final FToast fToast;
 
   final LOADING_RESERVE = "loading reserve";
   final LOADING_CANCEL = "loading cancel";
@@ -63,6 +65,33 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   late ReservationViewModel reservationViewModel;
 
+  void _showCantReserveToast() {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: Colors.black45,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "현재 시간 이전에는 예약을 할 수 없습니다!",
+            style: TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.CENTER,
+      toastDuration: Duration(seconds: 1),
+    );
+  }
+
   void _calendarTapped(CalendarTapDetails calendarTapDetails) async {
     String? uid = _auth.currentUser?.uid;
     DateTime? tappedDate = calendarTapDetails.date;
@@ -72,6 +101,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
     // 로그인이 안되어있으면 회원가입 페이지로
     if (uid == null) {
+      AmplitudeAnalytics().logCalendarTapWithoutLogin();
       ShowAuthDialog().showSignUpDialog(context);
       return;
     }
@@ -80,8 +110,12 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
     if (calendarTapDetails.targetElement == CalendarElement.calendarCell) {
       // 현재 시간 이전은 불가능
       if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+        AmplitudeAnalytics().logCalendarTapBeforeNow();
+        _showCantReserveToast();
         return;
       }
+
+      AmplitudeAnalytics().logCalendarTapToReserve();
 
       DateTime startTime = tappedDate!;
       DateTime endTime = tappedDate.add(Duration(hours: 1));
@@ -118,6 +152,7 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
 
   void _changeActivatedGroup(String newGroupId) {
     ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    AmplitudeAnalytics().logChangeGroup();
     setState(() {});
   }
 
@@ -453,6 +488,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                         startTime: startTime,
                         endTime: endTime,
                         groupId: _groupId);
+                    final group = await database.getGroup(groupId);
+                    AmplitudeAnalytics()
+                        .logReserveComplete(startTime, _groupId, group.name!);
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }
@@ -707,6 +745,9 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                     try {
                       await MatchingMethods(database: database)
                           .cancelRoom(docId);
+                      final group = await database.getGroup(groupId);
+                      AmplitudeAnalytics().logCancelReservation(
+                          startTime, groupId, group.name!);
                     } catch (e) {
                       if (appointment.notes == null) {
                         appointment.subject = MATCHING;
@@ -714,7 +755,6 @@ class MobileCalendarAppointment extends ConsumerState<MobileCalendar> {
                         appointment.subject = MATCHED;
                       }
                     }
-                    AnalyticsMethod().mobileLogCancelReservation();
                   },
                   child: Text(
                     "삭제",

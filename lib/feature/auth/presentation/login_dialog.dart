@@ -5,9 +5,8 @@ import 'package:focus50/consts/error_message.dart';
 import 'package:focus50/consts/routes.dart';
 import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
-import 'package:universal_html/html.dart' as html;
 
 class LoginDialog extends ConsumerStatefulWidget {
   const LoginDialog({Key? key}) : super(key: key);
@@ -22,17 +21,9 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
 
   String? invitedGroupId = Uri.base.queryParameters["g"];
 
-  void _logLoginAnalyticsAboutAgent(String loginMethod) {
-    String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
-    if (userAgent.contains("iphone") || userAgent.contains("android")) {
-      AnalyticsMethod().mobileLogLogin(loginMethod);
-    } else {
-      AnalyticsMethod().logLogin(loginMethod);
-    }
-  }
-
   // 구글로 로그인
   void _loginWithGoogle() async {
+    AmplitudeAnalytics().logClickLoginButton("google");
     String res = await ref.read(authViewModelProvider).loginWithGoogle();
     setState(() => _isLoading = true);
     if (res == SUCCESS) {
@@ -40,16 +31,17 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
+        AmplitudeAnalytics().logCompleteSignUp("google");
         Navigator.of(context).pop();
         ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
+        AmplitudeAnalytics().logCompleteLogin("google");
         Navigator.of(context).pop();
         invitedGroupId != null
             ? Get.rootDelegate.offNamed(Routes.CALENDAR,
                 arguments: true, parameters: {'g': invitedGroupId!})
             : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
-      _logLoginAnalyticsAboutAgent("google");
     } else {
       setState(() => _errorMessage = "로그인을 다시 진행해주세요");
     }
@@ -58,6 +50,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
 
   // 카카오로 로그인
   void _loginWithKakao() async {
+    AmplitudeAnalytics().logClickLoginButton("kakao");
     String res = ERROR;
     setState(() => _isLoading = true);
     res = await ref.read(authViewModelProvider).loginWithKakao();
@@ -66,16 +59,17 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
+        AmplitudeAnalytics().logCompleteSignUp("kakao");
         Navigator.of(context).pop();
         ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
+        AmplitudeAnalytics().logCompleteLogin("email");
         Navigator.of(context).pop();
         invitedGroupId != null
             ? Get.rootDelegate.offNamed(Routes.CALENDAR,
                 arguments: true, parameters: {'g': invitedGroupId!})
             : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
-      _logLoginAnalyticsAboutAgent("kakao");
     } else if (res == EMAIL_ALREADY_EXISTS) {
       setState(() => _errorMessage = "이미 가입한 이메일입니다");
     } else {
@@ -279,6 +273,7 @@ class _LoginDialogState extends ConsumerState<LoginDialog> {
           elevation: 4,
         ),
         onPressed: () {
+          AmplitudeAnalytics().logClickLoginButton("email");
           Navigator.of(context).pop();
           ShowAuthDialog().showEmailLoginDialog(context);
         },
