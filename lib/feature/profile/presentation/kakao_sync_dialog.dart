@@ -6,6 +6,7 @@ import 'package:focus50/feature/auth/data/user_private_model.dart';
 import 'package:focus50/feature/auth/data/user_public_model.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 
@@ -62,6 +63,7 @@ class _KakaoSyncDialogState extends ConsumerState<KakaoSyncDialog> {
       UserModel updateUser = UserModel(userPublic, userPrivate);
 
       await database.updateUser(updateUser);
+      AmplitudeAnalytics().logCompleteKakaoSync();
 
       setState(() => _isUpdating = false);
     }
@@ -195,7 +197,9 @@ class _KakaoSyncDialogState extends ConsumerState<KakaoSyncDialog> {
           ),
           elevation: 4,
         ),
-        onPressed: _tapKakaoSyncButton,
+        onPressed: () {
+          _tapKakaoSyncButton();
+        },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -12,6 +12,7 @@ import 'package:focus50/feature/jitsi/presentation/text_style.dart';
 import 'package:focus50/resources/storage_method.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:focus50/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -539,5 +540,6 @@ class _GroupSettingAlertDialogState
 
   void _changeActivatedGroup(String newGroupId) {
     ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    AmplitudeAnalytics().logChangeGroup();
   }
 }

@@ -13,6 +13,7 @@ import 'package:focus50/feature/onboarding/presentation/onboarding.dart';
 import 'package:focus50/feature/peer_feedback/presentation/popup_peer_feedback.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/color_convert.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -355,6 +356,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   void _launchURL(String url) async {
     final _url = url;
+    AmplitudeAnalytics().logClickCarousel(url);
     if (await canLaunchUrl(Uri.parse(_url))) {
       await launchUrl(Uri.parse(_url));
     } else {

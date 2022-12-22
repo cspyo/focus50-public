@@ -5,7 +5,7 @@ import 'package:focus50/consts/colors.dart';
 import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/calendar/presentation/todo_ui.dart';
 import 'package:focus50/feature/todo/data/todo_model.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:logger/logger.dart';
 
 class Todo extends StatefulWidget {
@@ -137,7 +137,7 @@ class TodoState extends State<Todo> {
                                   isComplete: false,
                                 );
                                 _todoColRef.add(todo);
-                                AnalyticsMethod().logMakeTodoInCalendar();
+                                AmplitudeAnalytics().logMakeTodoInCalendar();
                               });
                             } else {
                               ShowAuthDialog().showLoginDialog(context);

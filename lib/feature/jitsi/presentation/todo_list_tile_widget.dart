@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus50/feature/jitsi/provider/provider.dart';
 import 'package:focus50/feature/todo/data/todo_model.dart';
+import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 
 // * Todo Check / Update / Delete 시나리오
 // * 1) 매개변수 : TodoModel
@@ -52,13 +54,14 @@ class TodoListTile extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeadButton(database, _entireTodoFocusState) {
+  Widget _buildHeadButton(
+      FirestoreDatabase database, bool _entireTodoFocusState) {
     return (_entireTodoFocusState)
         ? _buildAssignButton(database)
         : _buildCompleteButton(database);
   }
 
-  Widget _buildCompleteButton(database) {
+  Widget _buildCompleteButton(FirestoreDatabase database) {
     return TextButton(
       onPressed: () {
         _onComplete(database);
@@ -69,7 +72,7 @@ class TodoListTile extends ConsumerWidget {
     );
   }
 
-  Widget _buildAssignButton(database) {
+  Widget _buildAssignButton(FirestoreDatabase database) {
     return TextButton(
       onPressed: () {
         _onAssign(database);
@@ -104,7 +107,7 @@ class TodoListTile extends ConsumerWidget {
     );
   }
 
-  Widget _buildDeleteButton(database) {
+  Widget _buildDeleteButton(FirestoreDatabase database) {
     return Container(
       width: 40,
       child: TextButton(
@@ -122,27 +125,32 @@ class TodoListTile extends ConsumerWidget {
     );
   }
 
-  void _onComplete(database) {
+  void _onComplete(FirestoreDatabase database) {
     if (model.isComplete == false) {
       database.setTodo(model.doComplete());
+      AmplitudeAnalytics().logCompleteTodoInSession();
     } else {
       database.setTodo(model.undoComplete());
+      AmplitudeAnalytics().logUncompleteTodoInSession();
     }
   }
 
-  void _onAssign(database) {
+  void _onAssign(FirestoreDatabase database) {
     if (model.assignedSessionId != reservationId) {
       database.setTodo(model.doAssign(reservationId!));
+      AmplitudeAnalytics().logAssignTodoInSession();
     } else {
       database.setTodo(model.undoAssign());
+      AmplitudeAnalytics().logUnassignTodoInSession();
     }
   }
 
-  void _onSubmit(text, database) {
+  void _onSubmit(String text, FirestoreDatabase database) {
     database.setTodo(model.editTask(text));
   }
 
-  void _onDelete(database) {
+  void _onDelete(FirestoreDatabase database) {
     database.deleteTodo(model);
+    AmplitudeAnalytics().logDeleteTodoInSession();
   }
 }

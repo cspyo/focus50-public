@@ -6,10 +6,9 @@ import 'package:focus50/consts/error_message.dart';
 import 'package:focus50/consts/routes.dart';
 import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:get/get.dart';
-import 'package:universal_html/html.dart' as html;
 
 class EmailLoginDialog extends ConsumerStatefulWidget {
   const EmailLoginDialog({Key? key}) : super(key: key);
@@ -28,15 +27,6 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
 
   String? invitedGroupId = Uri.base.queryParameters["g"];
 
-  void _logLoginAnalyticsAboutAgent(String loginMethod) {
-    String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
-    if (userAgent.contains("iphone") || userAgent.contains("android")) {
-      AnalyticsMethod().mobileLogLogin(loginMethod);
-    } else {
-      AnalyticsMethod().logLogin(loginMethod);
-    }
-  }
-
   // 이메일로 로그인
   void _loginWithEmail(String email, String password) async {
     setState(() => _isLoading = true);
@@ -44,12 +34,12 @@ class _EmailLoginDialogState extends ConsumerState<EmailLoginDialog> {
         .read(authViewModelProvider)
         .loginWithEmail(email: email, password: password);
     if (res == SUCCESS) {
+      AmplitudeAnalytics().logCompleteLogin("email");
       Navigator.of(context).pop();
       invitedGroupId != null
           ? Get.rootDelegate.offNamed(Routes.CALENDAR,
               arguments: true, parameters: {'g': invitedGroupId!})
           : Get.rootDelegate.offNamed(Routes.CALENDAR);
-      _logLoginAnalyticsAboutAgent("email");
     } else if (res == USER_NOT_FOUND) {
       setState(() => _errorMessage = "회원으로 등록되어있지 않습니다");
     } else if (res == WRONG_PASSWORD) {

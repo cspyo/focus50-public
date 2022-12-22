@@ -15,7 +15,7 @@ import 'package:focus50/feature/peer_feedback/provider/provider.dart';
 import 'package:focus50/feature/report_abuse/presentation/report_user_dialog.dart';
 import 'package:focus50/resources/matching_methods.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 import 'package:jitsi_meet/jitsi_meet.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -61,8 +61,7 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
     });
     html.window.onUnload.listen((event) async {
       MatchingMethods(database: database).leaveRoom(reservation.id!);
-
-      AnalyticsMethod().mobileLogForceExit();
+      AmplitudeAnalytics().logForceExitInSession();
     });
   }
 
@@ -179,7 +178,7 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
     const url = 'https://focus50.day';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
-      AnalyticsMethod().mobileLogPressSessionLogo();
+      AmplitudeAnalytics().logClickLogoInSession();
     } else {
       throw 'Could not launch $url';
     }
@@ -266,7 +265,7 @@ class _MobileMeetingScreenState extends ConsumerState<MobileMeetingScreen> {
         child: TextButton(
           onPressed: () {
             Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-            AnalyticsMethod().mobileLogPressExitButton();
+            AmplitudeAnalytics().logClickExitButtonDuringSession();
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(Colors.black),

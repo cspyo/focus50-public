@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focus50/consts/colors.dart';
 import 'package:focus50/consts/routes.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 
 class HeaderLogo extends StatelessWidget {
@@ -10,6 +11,7 @@ class HeaderLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+        AmplitudeAnalytics().logClickLogo();
         Get.rootDelegate.toNamed(Routes.ABOUT);
       },
       child: Row(

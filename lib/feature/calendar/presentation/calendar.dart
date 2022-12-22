@@ -11,8 +11,9 @@ import 'package:focus50/feature/calendar/view_model/appointments_notifier.dart';
 import 'package:focus50/feature/calendar/view_model/reservation_view_model.dart';
 import 'package:focus50/feature/calendar/view_model/timeregions_notifier.dart';
 import 'package:focus50/resources/matching_methods.dart';
+import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -52,7 +53,7 @@ class CalendarState extends ConsumerState<Calendar> {
   List<TimeRegion> onHoverRegions = <TimeRegion>[];
   late ReservationViewModel reservationViewModel;
 
-  late var database;
+  late FirestoreDatabase database;
   late String groupId;
   //highlighter 위치 정하는 함수
   int _getFirstDayOfWeek(int highlighterPosition) {
@@ -112,6 +113,7 @@ class CalendarState extends ConsumerState<Calendar> {
 
     // 로그인이 안되어있으면 회원가입 페이지로
     if (uid == null) {
+      AmplitudeAnalytics().logCalendarTapWithoutLogin();
       ShowAuthDialog().showSignUpDialog(context);
       return;
     }
@@ -120,9 +122,12 @@ class CalendarState extends ConsumerState<Calendar> {
     if (calendarTapDetails.targetElement == CalendarElement.calendarCell) {
       // 현재 시간 이전은 불가능
       if (calendarTapDetails.date!.isBefore(DateTime.now())) {
+        AmplitudeAnalytics().logCalendarTapBeforeNow();
         _showCantReserveToast();
         return;
       }
+
+      AmplitudeAnalytics().logCalendarTapToReserve();
 
       DateTime startTime = tappedDate!;
       DateTime endTime = tappedDate.add(Duration(hours: 1));
@@ -211,6 +216,7 @@ class CalendarState extends ConsumerState<Calendar> {
     fToast = FToast();
     fToast.init(context);
     groupId = ref.read(activatedGroupIdProvider);
+
     reservationViewModel = ref.read(reservationViewModelProvider);
     reservationViewModel.startView();
     database = ref.read(databaseProvider);
@@ -496,6 +502,9 @@ class CalendarState extends ConsumerState<Calendar> {
                       endTime: endTime,
                       groupId: _groupId,
                     );
+                    final group = await database.getGroup(groupId);
+                    AmplitudeAnalytics()
+                        .logReserveComplete(startTime, _groupId, group.name!);
                   } catch (err) {
                     appointment.subject = RESERVE;
                   }
@@ -753,6 +762,9 @@ class CalendarState extends ConsumerState<Calendar> {
                     try {
                       await MatchingMethods(database: database)
                           .cancelRoom(docId);
+                      final group = await database.getGroup(groupId);
+                      AmplitudeAnalytics().logCancelReservation(
+                          startTime, groupId, group.name!);
                     } catch (e) {
                       if (appointment.notes == null) {
                         appointment.subject = MATCHING;
@@ -760,7 +772,6 @@ class CalendarState extends ConsumerState<Calendar> {
                         appointment.subject = MATCHED;
                       }
                     }
-                    AnalyticsMethod().logCancelReservation();
                   },
                   child: Text(
                     "삭제",

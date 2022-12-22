@@ -10,6 +10,7 @@ import 'package:focus50/feature/peer_feedback/provider/provider.dart';
 import 'package:focus50/feature/report_abuse/data/report_model.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -239,6 +240,7 @@ class _ReportUserDialogState extends ConsumerState<ReportUserDialog> {
                                       return;
                                     },
                                   );
+                                  AmplitudeAnalytics().logCompleteReport();
                                   _showToast('신고가 정상적으로 접수되었습니다 😊');
                                   Get.rootDelegate.offNamed(Routes.CALENDAR);
                                 },
