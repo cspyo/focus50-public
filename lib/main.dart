@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus50/consts/app_pages.dart';
 import 'package:focus50/consts/app_router_delegate.dart';
 import 'package:focus50/firebase_options.dart';
+import 'package:focus50/options.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
 import 'package:focus50/utils/amplitude_analytics.dart';
@@ -23,7 +24,7 @@ late final AGENT;
 
 Future<void> versionCheck() async {
   const version = VERSION;
-  final remoteVersionStream = await FirestoreDatabase(uid: "none").getVersion();
+  final remoteVersionStream = FirestoreDatabase(uid: "none").getVersion();
   remoteVersionStream.listen((v) {
     if (version.isLessThan(v)) {
       html.window.location.reload();
@@ -34,8 +35,8 @@ Future<void> versionCheck() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(
-    nativeAppKey: '1a793b7dbc55cd4e80c9971c6c5bdc6e',
-    javaScriptAppKey: '47caa6871b9758b5895998565adcb42b',
+    nativeAppKey: Options.kakaoNativeAppKey,
+    javaScriptAppKey: Options.kakaoJavaScriptAppKey,
   );
 
   await Firebase.initializeApp(

@@ -1,5 +1,6 @@
 import 'package:amplitude_flutter/amplitude.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:focus50/options.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -9,11 +10,7 @@ class AmplitudeAnalytics {
 
   String username = "none";
 
-  // DEV
-  String APIKey = '76d1c089b6aeab92df053cc227492479';
-
-  // Product
-  // String APIKey = 'fa192e47c997442220759cf62b71e816';
+  String APIKey = Options.amplitudeApiKey;
 
   AmplitudeAnalytics._privateConstructor() {
     analytics = Amplitude.getInstance();
