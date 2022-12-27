@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePopupMenuButton extends ConsumerStatefulWidget {
-  ProfilePopupMenuButton({Key? key}) : super(key: key);
+  const ProfilePopupMenuButton({Key? key}) : super(key: key);
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -32,14 +32,15 @@ class _ProfilePopupMenuButtonState
             padding: EdgeInsets.zero,
             tooltip: '',
             position: PopupMenuPosition.under,
-            offset: Offset(0, 16),
+            offset: const Offset(0, 16),
             elevation: 10,
-            constraints: BoxConstraints.tight(Size(120, 208)),
-            shape: RoundedRectangleBorder(
+            constraints: BoxConstraints.tight(const Size(120, 208)),
+            shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
                 Radius.circular(16.0),
               ),
             ),
+            itemBuilder: _buildPopUpMenuEntry,
             child: SizedBox(
               child: Row(
                 children: [
@@ -73,15 +74,15 @@ class _ProfilePopupMenuButtonState
                 ],
               ),
             ),
-            itemBuilder: _buildPopUpMenuEntry,
           );
         } else {
-          return CircularIndicator(
+          return const CircularIndicator(
               size: 20, color: MyColors.purple300); //TODO: 무조건 바꾸기
         }
       },
-      error: (_, __) => Text(""),
-      loading: () => CircularIndicator(size: 20, color: MyColors.purple300),
+      error: (_, __) => const Text(""),
+      loading: () =>
+          const CircularIndicator(size: 20, color: MyColors.purple300),
     );
   }
 
@@ -97,28 +98,28 @@ class _ProfilePopupMenuButtonState
                   arguments: true, parameters: {'g': invitedGroupId})
               : Get.rootDelegate.offNamed(Routes.PROFILE);
         }),
-        child: Center(
-          child: const Text(
+        child: const Center(
+          child: Text(
             '내 정보',
             style: TextStyle(fontSize: 17, color: Colors.black),
           ),
         ),
       ),
-      PopupMenuDivider(),
+      const PopupMenuDivider(),
       PopupMenuItem(
         height: 36,
         onTap: () {
           AmplitudeAnalytics().logClickInquiryNavigator();
-          _launchURL('https://open.kakao.com/o/s1lFdjse');
+          _launchURL('https://open.kakao.com/o/sGdPSAVe');
         },
-        child: Center(
-          child: const Text(
+        child: const Center(
+          child: Text(
             '1:1 문의',
             style: TextStyle(fontSize: 17, color: Colors.black),
           ),
         ),
       ),
-      PopupMenuDivider(),
+      const PopupMenuDivider(),
       PopupMenuItem(
         height: 36,
         onTap: () {
@@ -126,14 +127,14 @@ class _ProfilePopupMenuButtonState
           _launchURL(
               'https://cspyo.notion.site/Focus50-6c5a9c9bd11d48d7a4bf171cfe3c2a08');
         },
-        child: Center(
-          child: const Text(
+        child: const Center(
+          child: Text(
             '공지사항',
             style: TextStyle(fontSize: 17, color: Colors.black),
           ),
         ),
       ),
-      PopupMenuDivider(),
+      const PopupMenuDivider(),
       PopupMenuItem(
         height: 36,
         padding: EdgeInsets.zero,
