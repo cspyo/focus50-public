@@ -5,9 +5,8 @@ import 'package:focus50/consts/error_message.dart';
 import 'package:focus50/consts/routes.dart';
 import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
-import 'package:universal_html/html.dart' as html;
 
 class SignUpDialog extends ConsumerStatefulWidget {
   const SignUpDialog({Key? key}) : super(key: key);
@@ -22,17 +21,9 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
 
   String? invitedGroupId = Uri.base.queryParameters["g"];
 
-  void _logLoginAnalyticsAboutAgent(String loginMethod) {
-    String userAgent = html.window.navigator.userAgent.toString().toLowerCase();
-    if (userAgent.contains("iphone") || userAgent.contains("android")) {
-      AnalyticsMethod().mobileLogLogin(loginMethod);
-    } else {
-      AnalyticsMethod().logLogin(loginMethod);
-    }
-  }
-
   // 구글로 회원가입
   void _signUpWithGoogle() async {
+    AmplitudeAnalytics().logClickSignUpButton("google");
     String res = await ref.read(authViewModelProvider).loginWithGoogle();
     setState(() => _isLoading = true);
     if (res == SUCCESS) {
@@ -40,16 +31,17 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "google");
+        AmplitudeAnalytics().logCompleteSignUp("google");
         Navigator.of(context).pop();
         ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
+        AmplitudeAnalytics().logCompleteLogin("google");
         Navigator.of(context).pop();
         invitedGroupId != null
             ? Get.rootDelegate.offNamed(Routes.CALENDAR,
                 arguments: true, parameters: {'g': invitedGroupId!})
             : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
-      _logLoginAnalyticsAboutAgent("google");
     } else {
       setState(() => _errorMessage = "회원가입을 다시 진행해주세요");
     }
@@ -58,6 +50,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
 
   // 카카오로 회원가입
   void _signUpWithKakao() async {
+    AmplitudeAnalytics().logClickSignUpButton("kakao");
     String res = ERROR;
     setState(() => _isLoading = true);
     res = await ref.read(authViewModelProvider).loginWithKakao();
@@ -66,16 +59,17 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
       if (!await authViewModel.isSignedUp()) {
         await authViewModel.saveUserProfile(
             nickname: null, signUpMethod: "kakao");
+        AmplitudeAnalytics().logCompleteSignUp("kakao");
         Navigator.of(context).pop();
         ShowAuthDialog().showSignUpCompleteDialog(context);
       } else {
+        AmplitudeAnalytics().logCompleteLogin("kakao");
         Navigator.of(context).pop();
         invitedGroupId != null
             ? Get.rootDelegate.offNamed(Routes.CALENDAR,
                 arguments: true, parameters: {'g': invitedGroupId!})
             : Get.rootDelegate.offNamed(Routes.CALENDAR);
       }
-      _logLoginAnalyticsAboutAgent("kakao");
     } else if (res == EMAIL_ALREADY_EXISTS) {
       setState(() => _errorMessage = "이미 가입한 이메일입니다");
     } else {
@@ -283,6 +277,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           elevation: 4,
         ),
         onPressed: () {
+          AmplitudeAnalytics().logClickSignUpButton("email");
           Navigator.of(context).pop();
           ShowAuthDialog().showEmailSignUpDialog(context);
         },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focus50/feature/focus_rating/view_model/provider.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 
 class RatingWidget extends ConsumerStatefulWidget {
   final double starSize = 40.0;
@@ -81,6 +82,7 @@ class _RatingWidgetState extends ConsumerState<RatingWidget> {
                         onRatingUpdate: (rating) {
                           ref.read(ratingCountStateProvider.notifier).state =
                               rating;
+                          AmplitudeAnalytics().logRatingFocus();
                         },
                         itemBuilder: (context, _) => MouseRegion(
                           cursor: SystemMouseCursors.click,

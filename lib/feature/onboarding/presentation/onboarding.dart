@@ -8,6 +8,7 @@ import 'package:focus50/feature/auth/data/user_public_model.dart';
 import 'package:focus50/feature/auth/view_model/auth_view_model.dart';
 import 'package:focus50/feature/jitsi/presentation/text_style.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class Onboarding {
@@ -135,6 +136,7 @@ class Onboarding {
 
   static void showTutorial(context) {
     tutorialCoachMark.show(context: context);
+    AmplitudeAnalytics().logShowTutorial();
   }
 
   static void createTutorialBeforeReservation(context) {
@@ -740,5 +742,6 @@ class Onboarding {
     UserPrivateModel userPrivate = UserPrivateModel();
     UserModel updateUser = UserModel(userPublic, userPrivate);
     await database.updateUser(updateUser);
+    AmplitudeAnalytics().logCompleteTutorial();
   }
 }

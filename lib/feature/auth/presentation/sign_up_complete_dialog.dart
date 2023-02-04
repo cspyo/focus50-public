@@ -7,6 +7,7 @@ import 'package:focus50/consts/colors.dart';
 import 'package:focus50/consts/routes.dart';
 import 'package:focus50/feature/auth/view_model/users_notifier.dart';
 import 'package:focus50/feature/jitsi/presentation/text_style.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 
 class SignUpCompleteDialog extends ConsumerWidget {
@@ -106,6 +107,7 @@ class SignUpCompleteDialog extends ConsumerWidget {
                       height: 40,
                       child: TextButton(
                         onPressed: () {
+                          AmplitudeAnalytics().logClickCorrectProfileButton();
                           invitedGroupId != null
                               ? Get.rootDelegate.offNamed(Routes.PROFILE,
                                   arguments: true,
@@ -136,6 +138,7 @@ class SignUpCompleteDialog extends ConsumerWidget {
                       height: 40,
                       child: TextButton(
                         onPressed: () {
+                          AmplitudeAnalytics().logClickGoToFocusButton();
                           bool isCalendarScreen =
                               Uri.base.path == '/calendar' ? true : false;
                           if (isCalendarScreen) {

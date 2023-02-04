@@ -11,6 +11,7 @@ import 'package:focus50/feature/group/presentation/group_widget.dart';
 import 'package:focus50/feature/jitsi/presentation/text_style.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 
 final searchedGroupStreamProvider =
@@ -471,6 +472,7 @@ class _GroupSearchAlertDialogState
                         onPressed: () {
                           _changeActivatedGroup(group.id!);
                           ref.refresh(myGroupIdFutureProvider);
+                          AmplitudeAnalytics().logSignUpGroup();
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
@@ -500,6 +502,7 @@ class _GroupSearchAlertDialogState
                       onPressed: () {
                         _changeActivatedGroup(group.id!);
                         ref.refresh(myGroupIdFutureProvider);
+                        AmplitudeAnalytics().logSignUpGroup();
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                         Navigator.pop(context);
                       },

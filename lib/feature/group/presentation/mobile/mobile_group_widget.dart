@@ -17,7 +17,7 @@ import 'package:focus50/feature/jitsi/presentation/text_style.dart';
 import 'package:focus50/resources/storage_method.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:focus50/utils/utils.dart';
 import 'package:get/get.dart';
@@ -84,7 +84,10 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                 color: MyColors.purple300,
                 size: 18,
               ),
-              onPressed: () => _popupSearchGroupDialog(context),
+              onPressed: () {
+                AmplitudeAnalytics().logClickSearchGroupButton();
+                _popupSearchGroupDialog(context);
+              },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -107,10 +110,9 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
               ),
               onPressed: () {
                 if (uid != null) {
-                  AnalyticsMethod().logPressGroupCreateButton();
+                  AmplitudeAnalytics().logClickCreateGroupButton();
                   _popupCreateGroupDialog(context);
                 } else {
-                  AnalyticsMethod().logPressGroupCreateButtonWithoutSignIn();
                   ShowAuthDialog().showSignUpDialog(context);
                 }
               },
@@ -146,6 +148,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
         ? '귀하는 $groupName그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n 비밀번호: ${groupPassword} \n ${uri.origin}${uri.path}?g=$groupDocId'
         : '귀하는 $groupName그룹에 초대되었습니다.\n아래 링크를 눌러 입장해주세요!\n ${uri.origin}${uri.path}?g=$groupDocId';
     bool isCopied = false;
+    AmplitudeAnalytics().logCompleteCreateGroup();
     return StatefulBuilder(
       builder: ((context, setState) {
         return Column(
@@ -175,6 +178,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
               height: 44,
               child: TextButton(
                 onPressed: () {
+                  AmplitudeAnalytics().logCopyGroupLink();
                   Clipboard.setData(ClipboardData(text: quote));
                   setState(() => isCopied = true);
                 },
@@ -481,6 +485,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
       GroupModel? group = await database.getGroup(groupId);
       String? groupName = group.name;
       String? password = group.password;
+      AmplitudeAnalytics().logInviteGroupByLink();
       return showDialog(
         barrierDismissible: false,
         context: context,
@@ -765,6 +770,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                         onPressed: () {
                           _changeActivatedGroup(group.id!);
                           ref.refresh(myGroupIdFutureProvider);
+                          AmplitudeAnalytics().logSignUpGroup();
                           Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                           Navigator.pop(context);
                         },
@@ -793,6 +799,7 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
                       onPressed: () {
                         _changeActivatedGroup(group.id!);
                         ref.refresh(myGroupIdFutureProvider);
+                        AmplitudeAnalytics().logSignUpGroup();
                         Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
                         Navigator.pop(context);
                         Navigator.pop(context);
@@ -824,5 +831,6 @@ class _MobileGroupState extends ConsumerState<MobileGroup>
 
   void _changeActivatedGroup(String newGroupId) {
     ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    AmplitudeAnalytics().logChangeGroup();
   }
 }

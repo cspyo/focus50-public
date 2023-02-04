@@ -11,6 +11,7 @@ import 'package:focus50/feature/peer_feedback/data/feedback.dart';
 import 'package:focus50/feature/peer_feedback/data/peer_feedback_model.dart';
 import 'package:focus50/feature/peer_feedback/provider/provider.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
@@ -284,6 +285,8 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
                             ),
                             onPressed: () {
                               rateFocus(database, ref, reservation);
+                              AmplitudeAnalytics()
+                                  .logClickExitButtonAfterSession();
                               Get.rootDelegate.offNamed(Routes.CALENDAR);
                             },
                             child: Align(
@@ -351,6 +354,8 @@ class _PeerFeedbackDialogState extends ConsumerState<PeerFeedbackDialog> {
     });
     _showCompleteToast();
     database.setFeedback(feedback);
+    AmplitudeAnalytics().logSendPeerFeedback(
+        feedbackType.code.contains("POSITIVE") ? "positive" : "negative");
   }
 
   //* Reference: pub dev <fluttertoast> readme

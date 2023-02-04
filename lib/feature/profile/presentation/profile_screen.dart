@@ -13,6 +13,7 @@ import 'package:focus50/feature/home/presentation/line.dart';
 import 'package:focus50/feature/profile/presentation/kakao_sync_dialog.dart';
 import 'package:focus50/resources/storage_method.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:focus50/utils/circular_progress_indicator.dart';
 import 'package:focus50/utils/utils.dart';
 import 'package:image_picker/image_picker.dart';
@@ -122,6 +123,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     await database.updateUser(updateUser);
 
     showSnackBar("업데이트 완료", context);
+    AmplitudeAnalytics().logCompleteUpdateProfile();
 
     _image = null;
     ref.read(isUpdatingProvider.notifier).state = false;
@@ -285,7 +287,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 width: 80,
                 height: 25,
                 child: ElevatedButton(
-                  onPressed: _selectImage,
+                  onPressed: () {
+                    AmplitudeAnalytics().logClickUploadProfileImageButton();
+                    _selectImage();
+                  },
                   style: ElevatedButton.styleFrom(
                     primary: purple300,
                   ),
@@ -447,7 +452,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Row(
                 children: [
                   InkWell(
-                    onTap: _showSyncKakaoDialog,
+                    onTap: () {
+                      AmplitudeAnalytics().logClickKakaoSyncButton();
+                      _showSyncKakaoDialog();
+                    },
                     child: Row(
                       children: [
                         Icon(

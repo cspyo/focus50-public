@@ -6,6 +6,7 @@ import 'package:focus50/feature/group/data/group_model.dart';
 import 'package:focus50/feature/group/presentation/mobile/mobile_group_setting_widget.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 
 class MobilRowGroupToggleButtonWidget extends ConsumerStatefulWidget {
   final GroupModel group;
@@ -148,5 +149,6 @@ class _MobilRowGroupToggleButtonWidgetState
 
   void _changeActivatedGroup(String newGroupId) {
     ref.read(activatedGroupIdProvider.notifier).state = newGroupId;
+    AmplitudeAnalytics().logChangeGroup();
   }
 }

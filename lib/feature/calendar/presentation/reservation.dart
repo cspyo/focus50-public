@@ -11,7 +11,7 @@ import 'package:focus50/feature/calendar/data/reservation_model.dart';
 import 'package:focus50/feature/calendar/view_model/reservation_view_model.dart';
 import 'package:focus50/main.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -41,7 +41,7 @@ class ReservationState extends ConsumerState<Reservation> {
     super.dispose();
   }
 
-  void enterReservation(ReservationModel nextReservation) {
+  void enterReservation(ReservationModel nextReservation) async {
     final database = ref.read(databaseProvider);
     final uid = database.uid;
     database.updateReservationUserInfo(
@@ -50,8 +50,13 @@ class ReservationState extends ConsumerState<Reservation> {
         nextReservation.id!, uid, "sessionVersion", VERSION);
     database.updateReservationUserInfo(
         nextReservation.id!, uid, "sessionAgent", AGENT);
-    AnalyticsMethod().logEnterSession();
     Get.rootDelegate.toNamed(Routes.MEET, arguments: nextReservation);
+    final group = await database.getGroup(nextReservation.groupId!);
+    AmplitudeAnalytics().logEnterSession(
+      nextReservation.startTime!,
+      nextReservation.groupId!,
+      group.name!,
+    );
   }
 
   @override

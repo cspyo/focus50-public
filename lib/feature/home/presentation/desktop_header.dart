@@ -6,6 +6,7 @@ import 'package:focus50/feature/auth/presentation/show_auth_dialog.dart';
 import 'package:focus50/feature/home/presentation/header_logo.dart';
 import 'package:focus50/feature/profile/presentation/profile_popup_menu_button_widget.dart';
 import 'package:focus50/top_level_providers.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 
 class DesktopHeader extends ConsumerStatefulWidget {
@@ -39,6 +40,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               TextButton(
                   onPressed: () {
                     String? invitedGroupId = Uri.base.queryParameters["g"];
+                    AmplitudeAnalytics().logClickAboutNavigator();
                     invitedGroupId != null
                         ? Get.rootDelegate.offNamed(Routes.ABOUT,
                             arguments: true, parameters: {'g': invitedGroupId})
@@ -50,6 +52,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               TextButton(
                   onPressed: () {
                     String? invitedGroupId = Uri.base.queryParameters["g"];
+                    AmplitudeAnalytics().logClickCalendarNavigator();
                     invitedGroupId != null
                         ? Get.rootDelegate.offNamed(Routes.CALENDAR,
                             arguments: true, parameters: {'g': invitedGroupId})
@@ -70,7 +73,7 @@ class DesktopHeaderState extends ConsumerState<DesktopHeader> {
               //         ),
               //         onPressed: () {
               //           ref.read(authViewModelProvider).signOut();
-              //           AnalyticsMethod().logSignOut();
+              //
               //           Get.rootDelegate.toNamed(Routes.ABOUT);
               //         },
               //         child: const Text(

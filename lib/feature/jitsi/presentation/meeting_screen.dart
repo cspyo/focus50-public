@@ -19,7 +19,7 @@ import 'package:focus50/feature/todo/data/todo_model.dart';
 import 'package:focus50/resources/matching_methods.dart';
 import 'package:focus50/services/firestore_database.dart';
 import 'package:focus50/top_level_providers.dart';
-import 'package:focus50/utils/analytics_method.dart';
+import 'package:focus50/utils/amplitude_analytics.dart';
 import 'package:get/get.dart';
 import 'package:jitsi_meet/jitsi_meet.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -65,7 +65,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
     });
     html.window.onUnload.listen((event) async {
       MatchingMethods(database: database).leaveRoom(reservation.id!);
-      AnalyticsMethod().logForceExit();
+      AmplitudeAnalytics().logForceExitInSession();
     });
   }
 
@@ -230,17 +230,6 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
       ),
       child: Column(
         children: [
-          // Container(
-          //     margin: EdgeInsets.only(top: 15),
-          //     child: _entireTodoFocusState
-          //         ? Text(
-          //             '이번 세션 할 일',
-          //             style: borderBlack,
-          //           )
-          //         : Text(
-          //             '전체 목록',
-          //             style: borderBlack,
-          //           )),
           SizedBox(
             width: _missionContentWidth,
             child: Row(
@@ -424,7 +413,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
         child: TextButton(
           onPressed: () {
             Get.rootDelegate.toNamed(DynamicRoutes.CALENDAR());
-            AnalyticsMethod().logPressExitButton();
+            AmplitudeAnalytics().logClickExitButtonDuringSession();
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
@@ -462,6 +451,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
         child: TextButton(
           onPressed: () {
             reportUserAlertdialog(context);
+            AmplitudeAnalytics().logClickReportButton();
           },
           style: ButtonStyle(
             backgroundColor:
@@ -485,7 +475,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
     const url = 'https://focus50.day';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
-      AnalyticsMethod().logPressSessionLogo();
+      AmplitudeAnalytics().logClickLogoInSession();
     } else {
       throw 'Could not launch $url';
     }
@@ -497,11 +487,12 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
     } else {
       ref.read(entireTodoFocusStateProvider.notifier).state = true;
     }
+    AmplitudeAnalytics().logToggleTodoList();
   }
 
   void _onAdd(text) async {
     database.setTodo(TodoModel.newTodo(database.uid, text));
-    AnalyticsMethod().logMakeTodoInSession();
+    AmplitudeAnalytics().logMakeTodoInSession();
   }
 
   void _onConferenceWillJoin(message) {
